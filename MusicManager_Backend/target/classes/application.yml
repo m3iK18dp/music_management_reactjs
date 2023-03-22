@@ -1,0 +1,10 @@
+spring:
+  jpa:
+    show-sql: true
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    password: root
+    username: 123456
+    url: jdbc:mysql://localhost:3306/musicmanager?sessionVariables=sql_mode='NO_ENGINE_SUBSTITUTION'&jdbcCompliantTruncation=false&useSSL=false&allowMultiQueries=true&serverTimezone=UTC
+server:
+  port: 8080

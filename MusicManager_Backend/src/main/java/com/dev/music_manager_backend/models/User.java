@@ -1,0 +1,55 @@
+package com.dev.music_manager_backend.models;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import lombok.*;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Builder
+@Table(name = "users")
+public class User {
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @NotBlank
+    @Column(nullable = false)
+    private String firstName;
+    @NotBlank
+    @Column(nullable = false)
+    private String lastName;
+    @NotBlank
+    @Column(nullable = false, unique = true)
+    private String email;
+    @NotBlank
+    @Column(nullable = false)
+    @Builder.Default
+    private String password = "Abcd@1234";
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean status = true;
+
+    @Column
+    private LocalDateTime lastUpdate = LocalDateTime.now();
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "id")})
+//    @JsonManagedReference
+    private List<Role> roles = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    @JsonBackReference
+    private List<Token> tokens;
+}

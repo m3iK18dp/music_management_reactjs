@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="music_manager_backend" />
+        <module name="music_manager_frontend" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="music_manager" target="17" />
+      <module name="music_manager (1)" target="1.8" />
+      <module name="music_manager (2)" target="1.8" />
+      <module name="MusicManager_Backend" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="MusicManager_Backend" options="-parameters" />
+      <module name="music_manager" options="-parameters" />
+      <module name="music_manager (1)" options="-parameters" />
+      <module name="music_manager (2)" options="-parameters" />
+      <module name="music_manager_backend" options="-parameters" />
+      <module name="music_manager_frontend" options="-parameters" />
+    </option>
+  </component>
+</project>
