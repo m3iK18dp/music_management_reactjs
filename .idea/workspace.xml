@@ -7,11 +7,16 @@
     <list default="true" id="35eb1f67-c063-4eb4-9195-99fe53a5385b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/controllers/SongController.java" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/controllers/SongController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/controllers/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/controllers/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/services/ISongService.java" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/services/ISongService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/services/impl/SongServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/services/impl/SongServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/NewSong.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/NewSong.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/controllers/SongController.class" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/controllers/SongController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/controllers/UserController.class" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/controllers/UserController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/services/ISongService.class" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/services/ISongService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/services/impl/SongServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/services/impl/SongServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/PaginationComponent.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/PaginationComponent.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/Songs.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/Songs.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/UpdateSong.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/UpdateSong.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/services/SongService.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/services/SongService.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -73,22 +78,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "DefaultHtmlFileTemplate": "HTML File",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "jdk.selected.JAVA_MODULE": "temurin-17",
-    "last_opened_file_path": "D:/music_management_reactjs/MusicManager_Backend",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "MavenSettings"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;temurin-17&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/music_management_reactjs/MusicManager_Backend&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;MavenSettings&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="com.dev.music_manager_backend.services" />

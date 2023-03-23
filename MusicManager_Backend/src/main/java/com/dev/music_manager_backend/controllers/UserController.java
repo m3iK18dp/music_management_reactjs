@@ -54,7 +54,7 @@ public class UserController {
 
     //admin //user
     @GetMapping("/users/get_by_id/{id}")
-    public ResponseObject<User> getUserById(
+    public ResponseObject<Page<User>> getUserById(
             @PathVariable Long id
     ) {
         try {
@@ -62,20 +62,20 @@ public class UserController {
                     new ResponseObject<>(
                             "ok",
                             "Get user successfully",
-                            user
+                            (Page<User>) new PageImpl<>(List.of(user), PageRequest.of(0, 10), 1)
                     )
             ).orElseGet(() ->
                     new ResponseObject<>(
                             "failed",
                             "Not found user with id = " + id,
-                            new User()
+                            new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 1)
                     )
             );
         } catch (Exception e) {
             return new ResponseObject<>(
                     "failed",
                     "Cannot get user with id = " + id + "\n" + e.getMessage(),
-                    new User()
+                    new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 1)
             );
         }
     }

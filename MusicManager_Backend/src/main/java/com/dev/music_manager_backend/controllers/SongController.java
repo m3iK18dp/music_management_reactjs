@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 @RestController
@@ -26,34 +27,35 @@ public class SongController {
     private final ISongService songService;
 
     @GetMapping("")
-    ResponseObject<?> get(
+    ResponseObject<Page<Song>> get(
             @RequestParam(value = "_id", defaultValue = "-1") Long id,
             @RequestParam(value = "_title", defaultValue = "%") String title,
             @RequestParam(value = "_musician", defaultValue = "%") String musician,
             @RequestParam(value = "_genre", defaultValue = "%") String genre,
             @RequestParam(value = "_page", defaultValue = "0") int page,
             @RequestParam(value = "_limit", defaultValue = "10") int limit,
-            @RequestParam(value = "_field", defaultValue = "id") String field
+            @RequestParam(value = "_field", defaultValue = "id") String field,
+            @RequestParam(value = "_type_sort", defaultValue = "asc") String typeSort
     ) {
         if (id != -1) {
             return getSongById(id);
         }
         if (!Objects.equals(title, "%")) {
-            return getSongByTitle(title, page, limit, field);
+            return getSongByTitle(title, page, limit, field, typeSort);
         }
         if (!Objects.equals(musician, "%")) {
-            return getSongByMusician(musician, page, limit, field);
+            return getSongByMusician(musician, page, limit, field, typeSort);
         }
         if (!Objects.equals(genre, "%")) {
-            return getSongByGenre(genre, page, limit, field);
+            return getSongByGenre(genre, page, limit, field, typeSort);
         }
-        return getAllSongs(page, limit, field);
+        return getAllSongs(page, limit, field, typeSort);
     }
 
-    ResponseObject<Page<Song>> getAllSongs(int page, int limit, String field) {
+    ResponseObject<Page<Song>> getAllSongs(int page, int limit, String field, String typeSort) {
         Page<Song> songs = new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 0);
         try {
-            songs = songService.findAllSongs(page, limit, field);
+            songs = songService.findAllSongs(page, limit, field, typeSort);
             if (songs.isEmpty()) {
                 return new ResponseObject<>(
                         "failed",
@@ -76,35 +78,35 @@ public class SongController {
         }
     }
 
-    ResponseObject<Song> getSongById(Long id) {
+    ResponseObject<Page<Song>> getSongById(Long id) {
         try {
             return songService.findSongById(id).map(song ->
                     new ResponseObject<>(
                             "ok",
                             "Query song successfully",
-                            song
+                            (Page<Song>) new PageImpl<>(List.of(song), PageRequest.of(0, 10), 1)
                     )
             ).orElseGet(() ->
                     new ResponseObject<>(
                             "failed",
                             "Not found song with id = " + id,
-                            new Song()
+                            new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 1)
                     )
             );
         } catch (Exception e) {
             return new ResponseObject<>(
                     "failed",
                     "Cannot get song with id = " + id + "\n" + e.getMessage(),
-                    new Song()
+                    new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 1)
             );
         }
 
     }
 
-    ResponseObject<Page<Song>> getSongByTitle(String title, int page, int limit, String field) {
+    ResponseObject<Page<Song>> getSongByTitle(String title, int page, int limit, String field, String typeSort) {
         Page<Song> songs = new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 0);
         try {
-            songs = songService.findSongByTitle(title, page, limit, field);
+            songs = songService.findSongByTitle(title, page, limit, field, typeSort);
             if (songs.isEmpty()) {
                 return new ResponseObject<>(
                         "failed",
@@ -127,10 +129,10 @@ public class SongController {
         }
     }
 
-    ResponseObject<Page<Song>> getSongByMusician(String musician, int page, int limit, String field) {
+    ResponseObject<Page<Song>> getSongByMusician(String musician, int page, int limit, String field, String typeSort) {
         Page<Song> songs = new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 0);
         try {
-            songs = songService.findSongByMusician(musician, page, limit, field);
+            songs = songService.findSongByMusician(musician, page, limit, field, typeSort);
             if (songs.isEmpty()) {
                 return new ResponseObject<>(
                         "failed",
@@ -153,10 +155,10 @@ public class SongController {
         }
     }
 
-    ResponseObject<Page<Song>> getSongByGenre(String genre, int page, int limit, String field) {
+    ResponseObject<Page<Song>> getSongByGenre(String genre, int page, int limit, String field, String typeSort) {
         Page<Song> songs = new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 0);
         try {
-            songs = songService.findSongByGenre(genre, page, limit, field);
+            songs = songService.findSongByGenre(genre, page, limit, field, typeSort);
             if (songs.isEmpty()) {
                 return new ResponseObject<>(
                         "failed",

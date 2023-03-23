@@ -29,8 +29,8 @@ public class SongServiceImpl implements ISongService {
     private final IStorageService storageService;
 
     @Override
-    public Page<Song> findAllSongs(int page, int limit, String field) {
-        return songRepository.findAll(PageRequest.of(page, limit).withSort(Sort.by(Sort.Direction.ASC, field)));
+    public Page<Song> findAllSongs(int page, int limit, String field, String typeSort) {
+        return songRepository.findAll(PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
     }
 
     @Override
@@ -40,21 +40,21 @@ public class SongServiceImpl implements ISongService {
     }
 
     @Override
-    public Page<Song> findSongByTitle(String title, int page, int limit, String field) {
+    public Page<Song> findSongByTitle(String title, int page, int limit, String field, String typeSort) {
         log.info("Get song by title: {}", title);
-        return songRepository.findByTitleContaining(title.replace("%20", " "), PageRequest.of(page, limit).withSort(Sort.Direction.ASC, field));
+        return songRepository.findByTitleContaining(title.replace("%20", " "), PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
     }
 
     @Override
-    public Page<Song> findSongByMusician(String musician, int page, int limit, String field) {
+    public Page<Song> findSongByMusician(String musician, int page, int limit, String field, String typeSort) {
         log.info("Get song by musician: {}", musician);
-        return songRepository.findByMusicianContaining(musician.replace("%20", " "), PageRequest.of(page, limit).withSort(Sort.Direction.ASC, field));
+        return songRepository.findByMusicianContaining(musician.replace("%20", " "), PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
     }
 
     @Override
-    public Page<Song> findSongByGenre(String genre, int page, int limit, String field) {
+    public Page<Song> findSongByGenre(String genre, int page, int limit, String field, String typeSort) {
         log.info("Get song by genre: {}", genre);
-        return songRepository.findByGenreContaining(genre.replace("%20", " "), PageRequest.of(page, limit).withSort(Sort.Direction.ASC, field));
+        return songRepository.findByGenreContaining(genre.replace("%20", " "), PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
 
     }
 

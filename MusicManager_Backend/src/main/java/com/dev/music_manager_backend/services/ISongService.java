@@ -11,15 +11,15 @@ import java.util.Optional;
 public interface ISongService {
 
 
-    Page<Song> findAllSongs(int page, int limit, String field);
+    Page<Song> findAllSongs(int page, int limit, String field, String typeSort);
 
     Optional<Song> findSongById(Long id);
 
-    Page<Song> findSongByTitle(String title, int page, int limit, String field);
+    Page<Song> findSongByTitle(String title, int page, int limit, String field, String typeSort);
 
-    Page<Song> findSongByMusician(String musician, int page, int limit, String field);
+    Page<Song> findSongByMusician(String musician, int page, int limit, String field, String typeSort);
 
-    Page<Song> findSongByGenre(String genre, int page, int limit, String field);
+    Page<Song> findSongByGenre(String genre, int page, int limit, String field, String typeSort);
 
     Song insertSong(Song song, MultipartFile file);
 
