@@ -184,10 +184,9 @@ public class SongController {
             @RequestParam("song") String data,
             @RequestParam("file") MultipartFile file
     ) {
+
         try {
             Song song = MyObjectMapper.readValue(data, Song.class);
-            System.out.println(song);
-            System.out.print(file.getResource());
             return new ResponseObject<>(
                     "ok",
                     "Song successfully inserted",
@@ -202,18 +201,40 @@ public class SongController {
         }
     }
 
-    @PutMapping("/{id}")
-    ResponseObject<Song> updateSong(
+    @PutMapping("/withf/{id}")
+    ResponseObject<Song> updateSongWithFile(
             @PathVariable Long id,
             @RequestParam("song") String data,
             @RequestParam("file") MultipartFile file
+    ) {
+        try {
+            System.out.print(file);
+            Song song = MyObjectMapper.readValue(data, Song.class);
+            return new ResponseObject<>(
+                    "ok",
+                    "Update Song successfully",
+                    songService.updateSong(id, song, file)
+            );
+        } catch (Exception exception) {
+            return new ResponseObject<>(
+                    "failed",
+                    "Cannot update Song\n" + exception.getMessage(),
+                    new Song()
+            );
+        }
+    }
+
+    @PutMapping("/withoutf/{id}")
+    ResponseObject<Song> updateSongWithoutFile(
+            @PathVariable Long id,
+            @RequestParam("song") String data
     ) {
         try {
             Song song = MyObjectMapper.readValue(data, Song.class);
             return new ResponseObject<>(
                     "ok",
                     "Update Song successfully",
-                    songService.updateSong(id, song, file)
+                    songService.updateSong(id, song, null)
             );
         } catch (Exception exception) {
             return new ResponseObject<>(

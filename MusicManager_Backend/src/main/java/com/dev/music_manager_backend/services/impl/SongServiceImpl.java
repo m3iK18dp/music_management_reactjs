@@ -91,7 +91,7 @@ public class SongServiceImpl implements ISongService {
         }
         return songRepository.findById(id).map(updateSong -> {
             try {
-                if (file.isEmpty()) {
+                if (file == null) {
                     return songRepository.save(Song.builder()
                             .id(id)
                             .title(song.getTitle())

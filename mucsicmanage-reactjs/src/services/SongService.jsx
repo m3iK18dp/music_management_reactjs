@@ -41,12 +41,18 @@ const songService = {
 		const headers = { 'Content-Type': 'multipart/form-data' };
 		return await callApi('songs', 'post', formData, {}, headers);
 	},
-	updateSong: async (id, song, file) => {
+	updateSongWithFile: async (id, song, file) => {
 		const formData = new FormData();
 		formData.append('file', file);
 		formData.append('song', JSON.stringify(song));
 		const headers = { 'Content-Type': 'multipart/form-data' };
-		return await callApi(`songs/${id}`, 'put', formData, {}, headers);
+		return await callApi(`songs/withf/${id}`, 'put', formData, {}, headers);
+	},
+	updateSongWithoutFile: async (id, song) => {
+		const formData = new FormData();
+		formData.append('song', JSON.stringify(song));
+		const headers = { 'Content-Type': 'multipart/form-data' };
+		return await callApi(`songs/withoutf/${id}`, 'put', formData, {}, headers);
 	},
 	deleteSong: async (id) => {
 		return await callApi(`songs/${id}`, 'delete');

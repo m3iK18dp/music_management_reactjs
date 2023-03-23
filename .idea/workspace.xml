@@ -6,21 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="35eb1f67-c063-4eb4-9195-99fe53a5385b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/AudioControlButton.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/AuthNavbarComponent.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/AuthNavbarComponent.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/NavbarComponent.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/NavbarComponent.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/PlaySongComponent.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/App.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/controllers/SongController.java" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/controllers/SongController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/services/impl/SongServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/services/impl/SongServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/NewSong.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/NewSong.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/PlaySong.jsx" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/Songs.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/Songs.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/UpdateSong.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/UpdateSong.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/services/AuthenticationService.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/services/AuthenticationService.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/services/Roles.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/services/UserController.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/services/UserController.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/services/SongService.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/services/SongService.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -91,7 +82,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "jdk.selected.JAVA_MODULE": "temurin-17",
-    "last_opened_file_path": "D:/GitHub/MusicManager_ReactJS",
+    "last_opened_file_path": "D:/music_management_reactjs/MusicManager_Backend",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",

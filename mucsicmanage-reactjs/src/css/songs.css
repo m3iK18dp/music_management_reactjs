@@ -1,0 +1,30 @@
+audio::-webkit-media-controls-play-button,
+audio::-webkit-media-controls-pause-button,
+audio::-webkit-media-controls-start-playback-button {
+	display: none !important;
+}
+
+audio::-webkit-media-controls {
+	display: inline-flex !important;
+	width: auto !important;
+}
+audio {
+	width: 70%;
+	height: 20px;
+	display: block;
+	margin: 20px auto 10px auto;
+}
+.mr-15 {
+	margin-right: 15px;
+}
+
+a:hover {
+	color: rgb(40, 144, 144);
+	cursor: pointer;
+}
+.controls-audio {
+	margin: 0 auto;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
