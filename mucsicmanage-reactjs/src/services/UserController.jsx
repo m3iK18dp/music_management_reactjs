@@ -1,15 +1,64 @@
-import axios from "axios";
-const USER_API_URL = "http://localhost:8080/api/auth";
-const headers = {
-  Authorization:
-    "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE2Nzg4NjE3MjAsImV4cCI6MTY4MDA3MTMyMH0.U9uJcpQsw9e1OIwDVCnOkvHS3gY81PUtCX8Np56wKP2E62q0rL1ptENGkFIvvDkvhvIr9nb87hUtirX1FbiTHw",
+import callApi from './Request';
+
+const userService = {
+	get: async (params) => {
+		return await callApi('songs', 'get', null, params);
+	},
+	getAllSongs: async (params) => {
+		return await callApi('songs', 'get', null, params);
+	},
+	getSongById: async (id) => {
+		return await callApi('songs', 'get', null, {
+			_id: id,
+		});
+	},
+	searchSongByTitle: async (title, page = 0, limit = 10, field = 'id') => {
+		return await callApi('songs', 'get', null, {
+			_title: title,
+			_page: page,
+			_limit: limit,
+			_field: field,
+		});
+	},
+	searchSongByMusician: async (
+		musician,
+		page = 0,
+		limit = 10,
+		field = 'id',
+	) => {
+		return await callApi('songs', 'get', null, {
+			_musician: musician,
+			_page: page,
+			_limit: limit,
+			_field: field,
+		});
+	},
+	insertSong: async (song, file) => {
+		const formData = new FormData();
+		formData.append('file', file);
+		formData.append('song', JSON.stringify(song));
+		console.log(formData);
+		const headers = { 'Content-Type': 'multipart/form-data' };
+		return await callApi('songs', 'post', formData, {}, headers);
+	},
+	updateSongWithFile: async (id, song, file) => {
+		const formData = new FormData();
+		formData.append('file', file);
+		formData.append('song', JSON.stringify(song));
+		const headers = { 'Content-Type': 'multipart/form-data' };
+		return await callApi(`songs/withf/${id}`, 'put', formData, {}, headers);
+	},
+	updateSongWithoutFile: async (id, song) => {
+		const formData = new FormData();
+		formData.append('song', JSON.stringify(song));
+		const headers = { 'Content-Type': 'multipart/form-data' };
+		return await callApi(`songs/withoutf/${id}`, 'put', formData, {}, headers);
+	},
+	deleteSong: async (id) => {
+		return await callApi(`songs/${id}`, 'delete');
+	},
+	deleteAllSong: async () => {
+		return await callApi('songs', 'delete');
+	},
 };
-const authenticationService = {
-  // getToken: (authenticationRequest) => {
-  // 	return axios.get(`${USER_API_URL}`, authenticationRequest, { headers });
-  // },
-  // register: (user) => {
-  // 	return axios.post(`${USER_API_URL}`, user, { headers });
-  // },
-};
-export default authenticationService;
+export default userService;

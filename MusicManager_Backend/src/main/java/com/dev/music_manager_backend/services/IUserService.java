@@ -10,15 +10,15 @@ import java.util.Optional;
 
 @Service
 public interface IUserService {
-    Page<User> findAllUsers(int page, int limit, String field);
+    Page<User> findAllUsers(int page, int limit, String field, String typeSort);
 
     Optional<User> findUserById(Long id);
 
     Optional<User> findUserByEmail(String email);
 
-    Page<User> findUsersByRoleId(int roleId, int page, int limit, String field);
+//    Page<User> findUsersByRoleId(int roleId, int page, int limit, String field);
 
-    Page<User> findUsersByRoleIds(List<Integer> roleIds, int page, int limit, String field);
+    Page<User> findUsersByRoleIds(List<Integer> roleIds, int page, int limit, String field, String typeSort);
 
     User saveUser(User user);
 

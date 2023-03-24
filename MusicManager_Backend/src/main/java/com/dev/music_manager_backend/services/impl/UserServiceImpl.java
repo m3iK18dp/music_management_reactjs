@@ -213,22 +213,22 @@ public class UserServiceImpl implements IUserService {
         return userRepository.findByEmail(email);
     }
 
-    @Override
-    public Page<User> findUsersByRoleId(int roleId, int page, int limit, String field) {
-        log.info("Finding users by role id: {}", roleId);
-        return userRepository.findUsersByRoleName(roleId, PageRequest.of(page, limit).withSort(Sort.by(Sort.Direction.ASC, field)));
-    }
+//    @Override
+//    public Page<User> findUsersByRoleId(int roleId, int page, int limit, String field) {
+//        log.info("Finding users by role id: {}", roleId);
+//        return userRepository.findUsersByRoleName(roleId, PageRequest.of(page, limit).withSort(Sort.by(Sort.Direction.ASC, field)));
+//    }
 
     @Override
-    public Page<User> findUsersByRoleIds(List<Integer> roleIds, int page, int limit, String field) {
+    public Page<User> findUsersByRoleIds(List<Integer> roleIds, int page, int limit, String field, String typeSort) {
         log.info("Finding users by role names: {}", roleIds);
-        return userRepository.findUsersByRoles(roleIds, roleIds.size(), PageRequest.of(page, limit).withSort(Sort.by(Sort.Direction.ASC, field)));
+        return userRepository.findUsersByRoles(roleIds, roleIds.size(), PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
     }
 
     @Override
-    public Page<User> findAllUsers(int page, int limit, String field) {
+    public Page<User> findAllUsers(int page, int limit, String field, String typeSort) {
         log.info("Finding all users");
-        return userRepository.findAll(PageRequest.of(page, limit).withSort(Sort.by(Sort.Direction.ASC, field)));
+        return userRepository.findAll(PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
     }
 
     @Override
