@@ -16,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,35 +27,46 @@ public class SongServiceImpl implements ISongService {
     @Autowired
     private final IStorageService storageService;
 
+    //    @Override
+//    public Page<Song> findSongsWithPaginationAndSort(Long id, String title, String genre, String musician, int page, int limit, String field, String typeSort) {
+//        return new PageImpl<>(songRepository.findSongsWithPaginationAndSort(id, title, genre, musician, page * limit, limit, field, typeSort));
+////        page*limit bở vì trong file SongRepository ta dùng offset, nó có tác dụng bỏ qua số phần tử tính từ đầu dữ liệu bảng đầu ra, nên vậy
+////        ta cần nhân để bỏ qua đúng số phần tử của 1 trang, có nghĩa ta sẽ được những dòng dữ liệu của trang tiếp theo
+//    }
     @Override
-    public Page<Song> findAllSongs(int page, int limit, String field, String typeSort) {
-        return songRepository.findAll(PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
+    public Page<Song> findSongsWithPaginationAndSort(Long id, String title, String genre, String musician, int page, int limit, String field, String typeSort) {
+        return songRepository.findSongsWithPaginationAndSort(id, title, genre, musician, PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
     }
 
-    @Override
-    public Optional<Song> findSongById(Long id) {
-        log.info("Get song by id: {}", id);
-        return songRepository.findById(id);
-    }
+//    @Override
+//    public Page<Song> findAllSongs(int page, int limit, String field, String typeSort) {
+//        return songRepository.findAll(PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
+//    }
+//
+//    @Override
+//    public Optional<Song> findSongById(Long id) {
+//        log.info("Get song by id: {}", id);
+//        return songRepository.findById(id);
+//    }
 
-    @Override
-    public Page<Song> findSongByTitle(String title, int page, int limit, String field, String typeSort) {
-        log.info("Get song by title: {}", title);
-        return songRepository.findByTitleContaining(title.replace("%20", " "), PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
-    }
-
-    @Override
-    public Page<Song> findSongByMusician(String musician, int page, int limit, String field, String typeSort) {
-        log.info("Get song by musician: {}", musician);
-        return songRepository.findByMusicianContaining(musician.replace("%20", " "), PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
-    }
-
-    @Override
-    public Page<Song> findSongByGenre(String genre, int page, int limit, String field, String typeSort) {
-        log.info("Get song by genre: {}", genre);
-        return songRepository.findByGenreContaining(genre.replace("%20", " "), PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
-
-    }
+//    @Override
+//    public Page<Song> findSongByTitle(String title, int page, int limit, String field, String typeSort) {
+//        log.info("Get song by title: {}", title);
+//        return songRepository.findByTitleContaining(title.replace("%20", " "), PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
+//    }
+//
+//    @Override
+//    public Page<Song> findSongByMusician(String musician, int page, int limit, String field, String typeSort) {
+//        log.info("Get song by musician: {}", musician);
+//        return songRepository.findByMusicianContaining(musician.replace("%20", " "), PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
+//    }
+//
+//    @Override
+//    public Page<Song> findSongByGenre(String genre, int page, int limit, String field, String typeSort) {
+//        log.info("Get song by genre: {}", genre);
+//        return songRepository.findByGenreContaining(genre.replace("%20", " "), PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
+//
+//    }
 
     @Override
     public Song insertSong(Song song, MultipartFile file) {

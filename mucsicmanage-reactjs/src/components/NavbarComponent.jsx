@@ -35,13 +35,13 @@ function NavbarComponent() {
         <Nav>
           <Nav.Link
             href="/songs"
-            disabled={useLocation().pathname === "/songs"}
+            // disabled={useLocation().pathname === "/songs"}
           >
             <strong color="black">Song Management</strong>
           </Nav.Link>
           <Nav.Link
             href="/users"
-            disabled={useLocation().pathname === "/users"}
+            // disabled={useLocation().pathname === "/users"}
           >
             <strong color="black">Users Management</strong>
           </Nav.Link>

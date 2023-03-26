@@ -1,22 +1,29 @@
-const convertPathSearchUrl = (property_values, type = 1) => {
-	const url = new URL(window.location.href);
-	const searchParams = url.searchParams;
-
-	for (const propertyValue of property_values) {
-		const property = propertyValue.property;
-		const value = propertyValue.value;
-		if (type)
-			if (searchParams.has(property)) {
-				searchParams.set(property, value);
-			} else {
-				searchParams.append(property, value);
-			}
-		else if (searchParams.has(property)) {
-			searchParams.delete(property);
-		}
-	}
-
-	return `${url.pathname}?${searchParams.toString()}`;
+const convertPathSearchUrl = (property_value) => {
+  const url = new URL(window.location.href);
+  const searchParams = url.searchParams;
+  console.log(property_value);
+  if (Array.isArray(property_value))
+    for (const propertyValue of property_value) {
+      const property = propertyValue.property;
+      const value =
+        property === "id" ? parseInt(propertyValue.value) : propertyValue.value;
+      if (
+        value === "" ||
+        !value ||
+        (property === "id" && isNaN(parseInt(value)))
+      ) {
+        if (searchParams.has(property)) {
+          searchParams.delete(property);
+        }
+      } else {
+        if (searchParams.has(property)) {
+          searchParams.set(property, value);
+        } else {
+          searchParams.append(property, value);
+        }
+      }
+    }
+  return `${url.pathname}?${searchParams.toString()}`;
 };
 
 export default convertPathSearchUrl;
