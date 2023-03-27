@@ -91,10 +91,13 @@ function Songs() {
       console.log("==========================");
     });
   }, [path]);
-  const handlePlaySong = (id, url) => {
+  const handlePlaySong = (id) => {
     if (get("currentSongPlay") !== id) {
       set("currentSongPlay", id);
-      set("currentSongPlayUrl", url);
+      set(
+        "currentSongPlayUrl",
+        get("currentSongs").find((s) => s.id === id).url
+      );
       handlePlay(true);
     } else {
       set("currentSongPlay", -1);
@@ -123,7 +126,13 @@ function Songs() {
     });
     navigate(convertPathSearchUrl(search));
   };
-  const handleDelete = (id) => {
+  const handleNewSong = () => {
+    navigate("/songs/new");
+  };
+  const handleUpdateSong = (id) => {
+    navigate(`/songs/${id}`);
+  };
+  const handleDeleteSong = (id) => {
     if (window.confirm("Do you want to delete this song?")) {
       songService.deleteSong(id);
       set(
@@ -170,203 +179,102 @@ function Songs() {
       ])
     );
   };
+  const searchInput = (field, type, min) => {
+    const lowerCaseField = field.toLowerCase();
+    return (
+      <>
+        <Col className="col" xl={1}>
+          <Form.Label>
+            <strong>{field}</strong>
+          </Form.Label>
+        </Col>
+        <Col className="col" xl={4}>
+          <Form.Control
+            type={type}
+            min={min ? min : "none"}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+                handleSearch();
+              }
+            }}
+            placeholder={`Enter Search with ${field}`}
+            value={get(lowerCaseField)}
+            onChange={(event) => set(lowerCaseField, event.target.value)}
+          />
+        </Col>
+        <Col className="col" xl={1}>
+          {customButton(
+            field,
+            MdCancel,
+            40,
+            handleCancelSearch,
+            `Cancel Search with ${field}`
+          )}
+        </Col>
+      </>
+    );
+  };
+  const customButton = (field, IconButton, size, func, title) => {
+    return (
+      <div
+        className="mr-15"
+        style={{ display: "inline" }}
+        onClick={() => func(!isNaN(field) ? field : field.toLowerCase())}
+        onMouseOver={(e) => {
+          e.target.style.color = "rgb(40, 144, 144)";
+          e.target.style.cursor = "pointer";
+        }}
+        onMouseOut={(e) => (e.target.style.color = "black")}
+        title={title}
+      >
+        <IconButton size={size} color="black"></IconButton>
+      </div>
+    );
+  };
   return (
     <>
       <NavbarComponent />
       <Container fluid style={{ marginTop: 80 }}>
         <Form>
           <Row>
-            <Col className="col" xl={1}>
-              <Form.Label>
-                <strong>ID</strong>
-              </Form.Label>
-            </Col>
-            <Col className="col" xl={4}>
-              <Form.Control
-                type="number"
-                min="1"
-                // type="text"
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") {
-                    event.preventDefault();
-                    handleSearch();
-                  }
-                }}
-                placeholder={"Enter Search with ID"}
-                value={get("id")}
-                onChange={(event) => set("id", event.target.value)}
-              />
-            </Col>
-            <Col className="col" xl={1}>
-              <div
-                className="mr-15"
-                style={{ display: "inline" }}
-                onClick={() => handleCancelSearch("id")}
-                onMouseOver={(e) => {
-                  e.target.style.color = "rgb(40, 144, 144)";
-                  e.target.style.cursor = "pointer";
-                }}
-                onMouseOut={(e) => (e.target.style.color = "black")}
-                title="Cancel Search with ID"
-              >
-                <MdCancel size={40} color="black"></MdCancel>
-              </div>
-            </Col>
-            <Col className="col" xl={1}>
-              <Form.Label>
-                <strong>Title</strong>
-              </Form.Label>
-            </Col>
-            <Col className="col" xl={4}>
-              <Form.Control
-                type="text"
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") {
-                    event.preventDefault();
-                    handleSearch();
-                  }
-                }}
-                placeholder={"Enter Search with Title"}
-                value={get("title")}
-                onChange={(event) => set("title", event.target.value)}
-              />
-            </Col>
-            <Col className="col" xl={1}>
-              <div
-                className="mr-15"
-                style={{ display: "inline" }}
-                onClick={() => handleCancelSearch("title")}
-                onMouseOver={(e) => {
-                  e.target.style.color = "rgb(40, 144, 144)";
-                  e.target.style.cursor = "pointer";
-                }}
-                onMouseOut={(e) => (e.target.style.color = "black")}
-                title="Cancel Search with Title"
-              >
-                <MdCancel size={40} color="black"></MdCancel>
-              </div>
-            </Col>
+            {searchInput("ID", "number", 1)}
+            {searchInput("Title", "text")}
           </Row>
           <Row>
-            <Col className="col" xl={1}>
-              <Form.Label>
-                <strong>Genre</strong>
-              </Form.Label>
-            </Col>
-            <Col className="col" xl={4}>
-              <Form.Control
-                type="text"
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") {
-                    event.preventDefault();
-                    handleSearch();
-                  }
-                }}
-                placeholder={"Enter Search with Genre"}
-                value={get("genre")}
-                onChange={(event) => set("genre", event.target.value)}
-              />
-            </Col>
-            <Col className="col" xl={1}>
-              <div
-                className="mr-15"
-                style={{ display: "inline" }}
-                onClick={() => handleCancelSearch("genre")}
-                onMouseOver={(e) => {
-                  e.target.style.color = "rgb(40, 144, 144)";
-                  e.target.style.cursor = "pointer";
-                }}
-                onMouseOut={(e) => (e.target.style.color = "black")}
-                title="Cancel Search with Genre"
-              >
-                <MdCancel size={40} color="black"></MdCancel>
-              </div>
-            </Col>
-            <Col className="col" xl={1}>
-              <Form.Label>
-                <strong>Musician</strong>
-              </Form.Label>
-            </Col>
-            <Col className="col" xl={4}>
-              <Form.Control
-                type="text"
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") {
-                    event.preventDefault();
-                    handleSearch();
-                  }
-                }}
-                placeholder={"Enter Search with Musician"}
-                value={get("musician")}
-                onChange={(event) => {
-                  set("musician", event.target.value);
-                }}
-              />
-            </Col>
-            <Col className="col" xl={1}>
-              <div
-                className="mr-15"
-                style={{ display: "inline" }}
-                onClick={() => handleCancelSearch("musician")}
-                onMouseOver={(e) => {
-                  e.target.style.color = "rgb(40, 144, 144)";
-                  e.target.style.cursor = "pointer";
-                }}
-                onMouseOut={(e) => (e.target.style.color = "black")}
-                title="Cancel Search with Musician"
-              >
-                <MdCancel size={40} color="black"></MdCancel>
-              </div>
-            </Col>
+            {searchInput("Genre", "text")}
+            {searchInput("Musician", "text")}
           </Row>
           <Row>
+            <Col />
             <Col>
-              <div
-                className="mr-15"
-                style={{ display: "inline" }}
-                onClick={() => handleSearch()}
-                onMouseOver={(e) => {
-                  e.target.style.color = "rgb(40, 144, 144)";
-                  e.target.style.cursor = "pointer";
-                }}
-                onMouseOut={(e) => (e.target.style.color = "black")}
-                title="Search Song"
-              >
-                <BsFillSearchHeartFill
-                  size={40}
-                  color="black"
-                ></BsFillSearchHeartFill>
-              </div>
+              {customButton(
+                "",
+                BsFillSearchHeartFill,
+                40,
+                handleSearch,
+                "Search Song"
+              )}
             </Col>
             <Col>
-              <div
-                className="mr-15"
-                style={{ display: "inline" }}
-                onClick={() => handleCancelSearch("all")}
-                onMouseOver={(e) => {
-                  e.target.style.color = "rgb(40, 144, 144)";
-                  e.target.style.cursor = "pointer";
-                }}
-                onMouseOut={(e) => (e.target.style.color = "black")}
-                title="Cancel Search All filter"
-              >
-                <ImCancelCircle size={40} color="black"></ImCancelCircle>
-              </div>
+              {customButton(
+                "all",
+                ImCancelCircle,
+                40,
+                handleCancelSearch,
+                "Cancel Search All filter"
+              )}
             </Col>
             <Col>
-              <Link
-                style={{ display: "inline" }}
-                to={"/songs/new"}
-                onMouseOver={(e) => {
-                  e.target.style.color = "rgb(40, 144, 144)";
-                  e.target.style.cursor = "pointer";
-                }}
-                onMouseOut={(e) => (e.target.style.color = "black")}
-                title="Add new Song"
-              >
-                <RiHeartAddFill size={40} color="black"></RiHeartAddFill>
-              </Link>
+              {customButton(
+                "",
+                RiHeartAddFill,
+                40,
+                handleNewSong,
+                "Add new Song"
+              )}
             </Col>
+            <Col />
           </Row>
         </Form>
         <audio
@@ -376,140 +284,51 @@ function Songs() {
           ref={audio}
         />
         <div className="controls-audio">
-          <div
-            className="mr-15"
-            onClick={previousSong}
-            onMouseOver={(e) => {
-              e.target.style.color = "rgb(40, 144, 144)";
-              e.target.style.cursor = "pointer";
-            }}
-            onMouseOut={(e) => (e.target.style.color = "black")}
-          >
-            <BsSkipStartCircleFill size={30} color="black" variant="primary" />
-          </div>
-          <div
-            className="mr-15"
-            onMouseOver={(e) => {
-              e.target.style.color = "rgb(40, 144, 144)";
-              e.target.style.cursor = "pointer";
-            }}
-            onMouseOut={(e) => (e.target.style.color = "black")}
-          >
-            {!get("playing") && (
-              <BsPlayCircleFill
-                onClick={handlePlay}
-                size={30}
-                color="black"
-                variant="primary"
-              />
-            )}
-            {get("playing") && (
-              <BsPauseCircleFill
-                onClick={handlePause}
-                size={30}
-                color="black"
-                variant="primary"
-              />
-            )}
-          </div>
-          <div
-            onClick={nextSong}
-            className="mr-15"
-            onMouseOver={(e) => {
-              e.target.style.color = "rgb(40, 144, 144)";
-              e.target.style.cursor = "pointer";
-            }}
-            onMouseOut={(e) => (e.target.style.color = "black")}
-          >
-            <BsSkipEndCircleFill size={30} color="black" variant="primary" />
-          </div>
+          {customButton(
+            "",
+            BsSkipStartCircleFill,
+            35,
+            previousSong,
+            "Prev Song"
+          )}
+          {!get("playing")
+            ? customButton("", BsPlayCircleFill, 50, handlePlay, "Play")
+            : customButton("", BsPauseCircleFill, 50, handlePause, "Pause")}
+          {customButton("", BsSkipEndCircleFill, 35, nextSong, "Prev Song")}
         </div>
         <Table striped bordered>
           <colgroup>
             <col width="50" span="2" />
             <col width="auto" span="1" />
             <col width="110" span="2" />
-            <col width="150" span="1" />
+            <col width="155" span="1" />
           </colgroup>
           <thead className="table-dark">
             <tr>
               <th>STT</th>
-              <th onClick={() => handleSort("id")}>
-                ID
-                {get("field") === "id" && (
-                  <>
-                    {get("type_sort") === "asc" && (
-                      <BsSortNumericUpAlt
-                        size={15}
-                        style={{ marginLeft: "2px" }}
-                      />
-                    )}
-                    {get("type_sort") === "desc" && (
-                      <BsSortNumericDownAlt
-                        size={15}
-                        style={{ marginLeft: "2px" }}
-                      />
-                    )}
-                  </>
-                )}
-              </th>
-              <th onClick={() => handleSort("title")}>
-                Title
-                {get("field") === "title" && (
-                  <>
-                    {get("type_sort") === "asc" && (
-                      <BsSortAlphaUpAlt
-                        size={15}
-                        style={{ marginLeft: "2px" }}
-                      />
-                    )}
-                    {get("type_sort") === "desc" && (
-                      <BsSortAlphaDownAlt
-                        size={15}
-                        style={{ marginLeft: "2px" }}
-                      />
-                    )}
-                  </>
-                )}
-              </th>
-              <th onClick={() => handleSort("genre")}>
-                Genre
-                {get("field") === "genre" && (
-                  <>
-                    {get("type_sort") === "asc" && (
-                      <BsSortAlphaUpAlt
-                        size={15}
-                        style={{ marginLeft: "2px" }}
-                      />
-                    )}
-                    {get("type_sort") === "desc" && (
-                      <BsSortAlphaDownAlt
-                        size={15}
-                        style={{ marginLeft: "2px" }}
-                      />
-                    )}
-                  </>
-                )}
-              </th>
-              <th onClick={() => handleSort("musician")}>
-                Musician
-                {get("field") === "musician" && (
-                  <>
-                    {get("type_sort") === "asc" && (
-                      <BsSortAlphaUpAlt
-                        size={15}
-                        style={{ marginLeft: "2px" }}
-                      />
-                    )}
-                    {get("type_sort") === "desc" && (
-                      <BsSortAlphaDownAlt
-                        size={15}
-                        style={{ marginLeft: "2px" }}
-                      />
-                    )}
-                  </>
-                )}
-              </th>
+              {["ID", "Title", "Genre", "Musician"].map((field) => {
+                const lowerCaseField = field.toLowerCase();
+                return (
+                  <th
+                    key={lowerCaseField}
+                    onClick={() => handleSort(lowerCaseField)}
+                  >
+                    {field}
+                    {get("field") === lowerCaseField &&
+                      (get("type_sort") === "asc" ? (
+                        <BsSortNumericUpAlt
+                          size={15}
+                          style={{ marginLeft: "2px" }}
+                        />
+                      ) : (
+                        <BsSortNumericDownAlt
+                          size={15}
+                          style={{ marginLeft: "2px" }}
+                        />
+                      ))}
+                  </th>
+                );
+              })}
               <th className="column-">Actions</th>
             </tr>
           </thead>
@@ -518,38 +337,27 @@ function Songs() {
               <tr key={song.id}>
                 <td>{index + 1}</td>
                 <td>{song.id}</td>
-                <td>{song.title}</td>
+                <td style={{ textAlign: "left" }}>{song.title}</td>
                 <td>{song.genre}</td>
                 <td>{song.musician}</td>
                 <td>
                   <div>
-                    <div
-                      style={{ display: "inline" }}
-                      onClick={() => handlePlaySong(song.id, song.url)}
-                      className="mr-15"
-                      onMouseOver={(e) => {
-                        e.target.style.color = "rgb(40, 144, 144)";
-                        e.target.style.cursor = "pointer";
-                      }}
-                      onMouseOut={(e) => (e.target.style.color = "black")}
-                    >
-                      {(get("currentSongPlay") !== song.id ||
-                        !get("playing")) && (
-                        <BsPlayCircleFill
-                          size={30}
-                          color="black"
-                          variant="primary"
-                        />
-                      )}
-                      {get("currentSongPlay") === song.id && get("playing") && (
-                        <BsPauseCircleFill
-                          size={30}
-                          color="black"
-                          variant="primary"
-                        />
-                      )}
-                    </div>
-                    <Link
+                    {get("currentSongPlay") !== song.id || !get("playing")
+                      ? customButton(
+                          song.id,
+                          BsPlayCircleFill,
+                          30,
+                          handlePlaySong,
+                          "Play"
+                        )
+                      : customButton(
+                          song.id,
+                          BsPauseCircleFill,
+                          30,
+                          handlePlaySong,
+                          "Pause"
+                        )}
+                    {/* <Link
                       to={`/songs/${song.id}`}
                       className="mr-15"
                       onMouseOver={(e) => {
@@ -559,10 +367,18 @@ function Songs() {
                       onMouseOut={(e) => (e.target.style.color = "black")}
                     >
                       <AiFillEdit size={30} color="black" variant="primary" />
-                    </Link>
-                    <div
+                    </Link> */}
+                    {customButton(
+                      song.id,
+                      AiFillEdit,
+                      30,
+                      handleUpdateSong,
+                      "Edit Song"
+                    )}
+
+                    {/* <div
                       style={{ display: "inline" }}
-                      onClick={() => handleDelete(song.id)}
+                      onClick={() => handleDeleteSong(song.id)}
                       onMouseOver={(e) => {
                         e.target.style.color = "red";
                         e.target.style.cursor = "pointer";
@@ -570,7 +386,14 @@ function Songs() {
                       onMouseOut={(e) => (e.target.style.color = "black")}
                     >
                       <AiFillDelete size={30} color="black" variant="danger" />
-                    </div>
+                    </div> */}
+                    {customButton(
+                      song.id,
+                      AiFillDelete,
+                      30,
+                      handleDeleteSong,
+                      "Delete Song"
+                    )}
                   </div>
                 </td>
               </tr>
@@ -579,7 +402,7 @@ function Songs() {
         </Table>
         <Row>
           <PaginationComponent
-            currentPage={get("_page")}
+            currentPage={get("page")}
             totalPages={get("totalPages")}
             songsPerPage={get("limit")}
           />

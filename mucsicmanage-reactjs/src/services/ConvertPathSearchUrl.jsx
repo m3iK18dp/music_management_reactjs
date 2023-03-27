@@ -10,7 +10,7 @@ const convertPathSearchUrl = (property_value) => {
       if (
         value === "" ||
         !value ||
-        (property === "id" && isNaN(parseInt(value)))
+        (property === "id" && (isNaN(value) || value < 1))
       ) {
         if (searchParams.has(property)) {
           searchParams.delete(property);

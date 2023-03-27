@@ -1,6 +1,7 @@
 package com.dev.music_manager_backend.repositories;
 
 
+import com.dev.music_manager_backend.models.Song;
 import com.dev.music_manager_backend.models.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +18,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
 
-//    @Query(value = """
+    //    @Query(value = """
 //            DELETE FROM musicmanager.users_roles WHERE user_id = :id;
 //            DELETE FROM musicmanager.users WHERE id = :id;
 //            """, nativeQuery = true)
@@ -30,12 +31,32 @@ public interface UserRepository extends JpaRepository<User, Long> {
 //            DELETE FROM musicmanager.users WHERE email != 'admin@gmail.com';
 //            """, nativeQuery = true)
 //    void deleteAllUsersExceptAdmin();
-
     @Query(value = """
-            SELECT u.* FROM musicmanager.users u, musicmanager.roles r, musicmanager.users_roles ur
-            WHERE u.id=ur.USER_ID AND r.id=ur.ROLE_ID AND r.id= :roleId
+              SELECT s.* FROM songs s WHERE
+                       (:id = -1 OR s.id = :id) AND
+                       LOWER(s.title) LIKE LOWER(CONCAT('%', :title, '%')) AND
+                       (LOWER(s.genre) LIKE LOWER(CONCAT('%', :genre, '%')) OR s.genre IS NULL) AND
+                       (LOWER(s.musician) LIKE LOWER(CONCAT('%', :musician, '%')) OR s.musician IS NULL)
+            """, countQuery = """
+              SELECT COUNT(s.id) FROM songs s WHERE
+                       (:id = -1 OR s.id = :id) AND
+                       LOWER(s.title) LIKE LOWER(CONCAT('%', :title, '%')) AND
+                       (LOWER(s.genre) LIKE LOWER(CONCAT('%', :genre, '%')) OR s.genre IS NULL) AND
+                       (LOWER(s.musician) LIKE LOWER(CONCAT('%', :musician, '%')) OR s.musician IS NULL)
             """, nativeQuery = true)
-    Page<User> findUsersByRoleName(int roleId, Pageable pageable);
+    Page<Song> findUsersWithPaginationAndSort(
+            @Param("id") Long id,
+            @Param("title") String title,
+            @Param("genre") String genre,
+            @Param("musician") String musician,
+            Pageable pageable
+    );
+
+//    @Query(value = """
+//            SELECT u.* FROM musicmanager.users u, musicmanager.roles r, musicmanager.users_roles ur
+//            WHERE u.id=ur.USER_ID AND r.id=ur.ROLE_ID AND r.id= :roleId
+//            """, nativeQuery = true)
+//    Page<User> findUsersByRoleName(int roleId, Pageable pageable);
 
 
     @Query(value = """
