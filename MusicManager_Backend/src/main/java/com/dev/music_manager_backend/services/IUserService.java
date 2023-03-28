@@ -11,7 +11,7 @@ import java.util.Optional;
 @Service
 public interface IUserService {
 
-    Page<User> findUsersWithPaginationAndSort(Long id, String email, String name, List<Integer> roleIds, int page, int limit, String field, String typeSort);
+    Page<User> findUsersWithPaginationAndSort(Long id, String email, String name, List<Long> roleIds, int page, int limit, String field, String typeSort);
 
     Page<User> findAllUsers(int page, int limit, String field, String typeSort);
 

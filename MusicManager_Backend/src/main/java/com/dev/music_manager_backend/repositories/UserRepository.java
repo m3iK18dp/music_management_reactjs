@@ -33,38 +33,41 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query(value = """
                 SELECT u.* FROM users u WHERE
                        (:id = -1 OR u.id = :id) AND
-                       LOWER(u.email) LIKE LOWER(CONCAT('%', :email, '%')) AND
+                       (SUBSTRING_INDEX(LOWER(u.email),'@', 1) LIKE LOWER(CONCAT('%', :email, '%'))) AND
                        (CONCAT(LOWER(u.firstName),' ',LOWER(u.lastName)) LIKE LOWER(CONCAT('%', :name, '%'))) AND
-                       u.id EXISTS (
+                       (:countRoleIds = 0 OR u.id IN
+                            (
                                     SELECT u.id
                                     FROM users u
                                     INNER JOIN users_roles ur ON u.id = ur.user_id
                                     INNER JOIN roles r ON ur.role_id = r.id
                                     WHERE r.id IN :roleIds
                                     GROUP BY u.id
-                                    HAVING COUNT(DISTINCT r.id) = :countRoleNames
+                                    HAVING COUNT(DISTINCT r.id) = :countRoleIds
+                            )
                        )
             """, countQuery = """
                 SELECT COUNT(u.id) FROM users u WHERE
-                       (:id = -1 OR u.id = :id) AND
-                       LOWER(u.email) LIKE LOWER(CONCAT('%', :email, '%')) AND
+                       (SUBSTRING_INDEX(LOWER(u.email),'@', 1) LIKE LOWER(CONCAT('%', :email, '%'))) AND
                        (CONCAT(LOWER(u.firstName),' ',LOWER(u.lastName)) LIKE LOWER(CONCAT('%', :name, '%'))) AND
-                       u.id EXISTS (
+                       (:countRoleIds = 0 OR u.id IN
+                            (
                                     SELECT u.id
                                     FROM users u
                                     INNER JOIN users_roles ur ON u.id = ur.user_id
                                     INNER JOIN roles r ON ur.role_id = r.id
                                     WHERE r.id IN :roleIds
                                     GROUP BY u.id
-                                    HAVING COUNT(DISTINCT r.id) = :countRoleNames
+                                    HAVING COUNT(DISTINCT r.id) = :countRoleIds
+                            )
                        )
             """, nativeQuery = true)
     Page<User> findUsersWithPaginationAndSort(
             @Param("id") Long id,
             @Param("email") String email,
             @Param("name") String name,
-            @Param("roleIds") List<Integer> roleIds,
-            @Param("countRoleNames") int countRoleNames,
+            @Param("roleIds") List<Long> roleIds,
+            @Param("countRoleIds") int countRoleIds,
             Pageable pageable
     );
 

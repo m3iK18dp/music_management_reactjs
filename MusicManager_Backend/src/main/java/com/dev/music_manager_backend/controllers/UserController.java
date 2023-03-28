@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -25,23 +24,46 @@ public class UserController {
 
     @GetMapping("/users")
     public ResponseObject<Page<User>> getUser(@RequestParam(value = "_id", defaultValue = "-1") Long id,
-                                              @RequestParam(value = "_email", defaultValue = "%") String email,
-                                              @RequestParam(value = "_name", defaultValue = "%") String name,
-                                              @RequestParam(value = "_get_by_role_ids", defaultValue = "%") String roleIds,
+                                              @RequestParam(value = "_email", defaultValue = "") String email,
+                                              @RequestParam(value = "_name", defaultValue = "") String name,
+                                              @RequestParam(value = "_role_ids", defaultValue = "") List<Long> roleIds,
                                               @RequestParam(value = "_page", defaultValue = "0") int page,
                                               @RequestParam(value = "_limit", defaultValue = "10") int limit,
                                               @RequestParam(value = "_field", defaultValue = "id") String field,
                                               @RequestParam(value = "_type_sort", defaultValue = "asc") String typeSort) {
-        if (id != -1) {
-            return getUserById(id);
+//        if (id != -1) {
+//            return getUserById(id);
+//        }
+//        if (!Objects.equals(email, "%")) {
+//            return getUserByEmail(email);
+//        }
+//        if (!Objects.equals(roleIds, "%")) {
+//            return getUsersByRoleIds(roleIds, page, limit, field, typeSort);
+//        }
+//        return getAllUsers(page, limit, field, typeSort);
+        Page<User> users = new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 0);
+        try {
+            users = userService.findUsersWithPaginationAndSort(id, email, name, roleIds, page, limit, field, typeSort);
+            if (users.isEmpty()) {
+                return new ResponseObject<>(
+                        "failed",
+                        "Not found Users",
+                        users
+                );
+            } else {
+                return new ResponseObject<>(
+                        "ok",
+                        "Get All Success",
+                        users
+                );
+            }
+        } catch (Exception exception) {
+            return new ResponseObject<>(
+                    "failed",
+                    "Can't get all Users ====" + exception.getMessage(),
+                    users
+            );
         }
-        if (!Objects.equals(email, "%")) {
-            return getUserByEmail(email);
-        }
-        if (!Objects.equals(roleIds, "%")) {
-            return getUsersByRoleIds(roleIds, page, limit, field, typeSort);
-        }
-        return getAllUsers(page, limit, field, typeSort);
     }
 
     //admin

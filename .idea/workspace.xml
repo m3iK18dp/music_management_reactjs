@@ -4,13 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="35eb1f67-c063-4eb4-9195-99fe53a5385b" name="Changes" comment="">
+    <list default="true" id="eb5bef5e-358a-4ef0-a421-4f59a523677a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/controllers/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/controllers/UserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/repositories/SongRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/repositories/SongRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/repositories/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/repositories/UserRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/services/IUserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/services/IUserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/services/impl/SongServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/services/impl/SongServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/services/impl/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/services/impl/UserServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/controllers/SongController.class" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/controllers/SongController.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/controllers/UserController.class" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/controllers/UserController.class" afterDir="false" />
@@ -20,23 +18,8 @@
       <change beforePath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/services/IUserService.class" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/services/IUserService.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/services/impl/SongServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/services/impl/SongServiceImpl.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/services/impl/UserServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/services/impl/UserServiceImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/NavbarComponent.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/NavbarComponent.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/PaginationComponent.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/PaginationComponent.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/svg/HeartIcon.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/svg/NextIcon.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/svg/PauseIcon.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/svg/PlayIcon.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/svg/PreviousIcon.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/svg/RepeatIcon.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/svg/ShareIcon.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/svg/SpeakerIcon.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/css/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/css/index.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/css/songs.css" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/css/songs.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/Songs.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/Songs.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/UpdateSong.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/UpdateSong.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/Users.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/Users.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/services/ConvertPathSearchUrl.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/services/ConvertPathSearchUrl.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/services/UserController.jsx" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

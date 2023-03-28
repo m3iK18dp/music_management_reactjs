@@ -223,18 +223,25 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public Page<User> findUsersWithPaginationAndSort(Long id, String email, String name, List<Integer> roleIds, int page, int limit, String field, String typeSort) {
+    public Page<User> findUsersWithPaginationAndSort(Long id, String email, String name, List<Long> roleIds, int page, int limit, String field, String typeSort) {
+
+        List<Long> listRoleIds = roleIds;
+//                roleIds.length() == 0 ? new ArrayList<>() : Arrays.stream(roleIds.split("-"))
+//                .map(Long::parseLong)
+//                .collect(Collectors.toList()
+//                );
         LinkedHashMap<String, Object> filter = new LinkedHashMap<String, Object>();
         filter.put("id", id);
         filter.put("email", email);
         filter.put("name", name);
-        filter.put("roleIds", roleIds);
+        filter.put("roleIds", listRoleIds);
         filter.put("page", page);
         filter.put("limit", limit);
         filter.put("field", field);
         filter.put("typeSort", typeSort);
         log.info("Finding users with " + filter);
-        return userRepository.findUsersWithPaginationAndSort(id, email, name, roleIds, roleIds.size(), PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
+
+        return userRepository.findUsersWithPaginationAndSort(id, email, name, listRoleIds, listRoleIds.size(), PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
     }
 
     @Override
