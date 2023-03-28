@@ -9,7 +9,7 @@ audio::-webkit-media-controls {
 	width: auto !important;
 }
 audio {
-	width: 50%;
+	width: 70%;
 	height: 20px;
 	display: block;
 	margin: 20px auto 10px auto;

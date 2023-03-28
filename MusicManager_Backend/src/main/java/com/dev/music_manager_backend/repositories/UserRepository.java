@@ -1,7 +1,6 @@
 package com.dev.music_manager_backend.repositories;
 
 
-import com.dev.music_manager_backend.models.Song;
 import com.dev.music_manager_backend.models.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,23 +31,40 @@ public interface UserRepository extends JpaRepository<User, Long> {
 //            """, nativeQuery = true)
 //    void deleteAllUsersExceptAdmin();
     @Query(value = """
-              SELECT s.* FROM songs s WHERE
-                       (:id = -1 OR s.id = :id) AND
-                       LOWER(s.title) LIKE LOWER(CONCAT('%', :title, '%')) AND
-                       (LOWER(s.genre) LIKE LOWER(CONCAT('%', :genre, '%')) OR s.genre IS NULL) AND
-                       (LOWER(s.musician) LIKE LOWER(CONCAT('%', :musician, '%')) OR s.musician IS NULL)
+                SELECT u.* FROM users u WHERE
+                       (:id = -1 OR u.id = :id) AND
+                       LOWER(u.email) LIKE LOWER(CONCAT('%', :email, '%')) AND
+                       (CONCAT(LOWER(u.firstName),' ',LOWER(u.lastName)) LIKE LOWER(CONCAT('%', :name, '%'))) AND
+                       u.id EXISTS (
+                                    SELECT u.id
+                                    FROM users u
+                                    INNER JOIN users_roles ur ON u.id = ur.user_id
+                                    INNER JOIN roles r ON ur.role_id = r.id
+                                    WHERE r.id IN :roleIds
+                                    GROUP BY u.id
+                                    HAVING COUNT(DISTINCT r.id) = :countRoleNames
+                       )
             """, countQuery = """
-              SELECT COUNT(s.id) FROM songs s WHERE
-                       (:id = -1 OR s.id = :id) AND
-                       LOWER(s.title) LIKE LOWER(CONCAT('%', :title, '%')) AND
-                       (LOWER(s.genre) LIKE LOWER(CONCAT('%', :genre, '%')) OR s.genre IS NULL) AND
-                       (LOWER(s.musician) LIKE LOWER(CONCAT('%', :musician, '%')) OR s.musician IS NULL)
+                SELECT COUNT(u.id) FROM users u WHERE
+                       (:id = -1 OR u.id = :id) AND
+                       LOWER(u.email) LIKE LOWER(CONCAT('%', :email, '%')) AND
+                       (CONCAT(LOWER(u.firstName),' ',LOWER(u.lastName)) LIKE LOWER(CONCAT('%', :name, '%'))) AND
+                       u.id EXISTS (
+                                    SELECT u.id
+                                    FROM users u
+                                    INNER JOIN users_roles ur ON u.id = ur.user_id
+                                    INNER JOIN roles r ON ur.role_id = r.id
+                                    WHERE r.id IN :roleIds
+                                    GROUP BY u.id
+                                    HAVING COUNT(DISTINCT r.id) = :countRoleNames
+                       )
             """, nativeQuery = true)
-    Page<Song> findUsersWithPaginationAndSort(
+    Page<User> findUsersWithPaginationAndSort(
             @Param("id") Long id,
-            @Param("title") String title,
-            @Param("genre") String genre,
-            @Param("musician") String musician,
+            @Param("email") String email,
+            @Param("name") String name,
+            @Param("roleIds") List<Integer> roleIds,
+            @Param("countRoleNames") int countRoleNames,
             Pageable pageable
     );
 
@@ -68,7 +84,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
             GROUP BY u.id
             HAVING COUNT(DISTINCT r.id) = :countRoleNames
             """, nativeQuery = true)
-    Page<User> findUsersByRoles(@Param("roleIds") List<Integer> roleIds, @Param("countRoleNames") int countRoleNames, Pageable pageable);
+    Page<User> findUsersByRoles(@Param("roleIds") List<Long> roleIds, @Param("countRoleNames") int countRoleNames, Pageable pageable);
 
 
 }

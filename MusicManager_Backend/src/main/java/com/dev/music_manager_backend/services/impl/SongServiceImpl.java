@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @Service
@@ -35,6 +36,16 @@ public class SongServiceImpl implements ISongService {
 //    }
     @Override
     public Page<Song> findSongsWithPaginationAndSort(Long id, String title, String genre, String musician, int page, int limit, String field, String typeSort) {
+        LinkedHashMap<String, Object> filter = new LinkedHashMap<String, Object>();
+        filter.put("id", id);
+        filter.put("title", title);
+        filter.put("genre", genre);
+        filter.put("musician", musician);
+        filter.put("page", page);
+        filter.put("limit", limit);
+        filter.put("field", field);
+        filter.put("typeSort", typeSort);
+        log.info("findSongsWithPaginationAndSort with " + filter);
         return songRepository.findSongsWithPaginationAndSort(id, title, genre, musician, PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
     }
 

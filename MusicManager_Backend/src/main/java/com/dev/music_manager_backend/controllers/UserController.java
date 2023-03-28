@@ -23,9 +23,10 @@ import java.util.stream.Collectors;
 public class UserController {
     private final IUserService userService;
 
-    @GetMapping("")
+    @GetMapping("/users")
     public ResponseObject<Page<User>> getUser(@RequestParam(value = "_id", defaultValue = "-1") Long id,
                                               @RequestParam(value = "_email", defaultValue = "%") String email,
+                                              @RequestParam(value = "_name", defaultValue = "%") String name,
                                               @RequestParam(value = "_get_by_role_ids", defaultValue = "%") String roleIds,
                                               @RequestParam(value = "_page", defaultValue = "0") int page,
                                               @RequestParam(value = "_limit", defaultValue = "10") int limit,
@@ -181,7 +182,7 @@ public class UserController {
         try {
             users = userService.findUsersByRoleIds(
                     Arrays.stream(roleIds.split("-"))
-                            .map(Integer::parseInt)
+                            .map(Long::parseLong)
                             .collect(Collectors.toList()
                             ),
                     page,
@@ -354,13 +355,13 @@ public class UserController {
         try {
             return new ResponseObject<>(
                     "ok",
-                    "Enable user with id = " + id + " successfully",
+                    "Change Status user with id = " + id + " successfully",
                     userService.changeStatusUser(id)
             );
         } catch (Exception exception) {
             return new ResponseObject<>(
                     "failed",
-                    "Cannot change status User with id = " + id + " to delete\n" + exception.getMessage(),
+                    "Cannot change status User with id = " + id + "===" + exception.getMessage(),
                     new User()
             );
         }
@@ -428,14 +429,18 @@ public class UserController {
 
     @GetMapping("/roles/load_roles_by_list_role_id")
     public ResponseObject<List<Role>> getRolesByListRoleId(
-            @RequestBody List<Long> listRoleId
+            @RequestParam("role_ids") String roleIds
     ) {
         try {
-            List<Role> roles = userService.findRolesByListRoleId(listRoleId);
+            List<Role> roles = userService.findRolesByListRoleId(
+                    Arrays.stream(roleIds.split("-"))
+                            .map(Long::parseLong)
+                            .collect(Collectors.toList()
+                            ));
             if (roles.isEmpty()) {
                 return new ResponseObject<>(
                         "failed",
-                        "Not found Roles with id in listRoleId = " + listRoleId,
+                        "Not found Roles with id in listRoleId = " + roleIds,
                         roles
                 );
             } else {
@@ -448,7 +453,7 @@ public class UserController {
         } catch (Exception exception) {
             return new ResponseObject<>(
                     "failed",
-                    "Can't get Roles with id in listRoleId = " + listRoleId,
+                    "Can't get Roles with id in listRoleId = " + roleIds,
                     new ArrayList<>()
             );
         }

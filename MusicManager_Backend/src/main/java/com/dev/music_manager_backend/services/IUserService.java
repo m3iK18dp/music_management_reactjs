@@ -10,6 +10,9 @@ import java.util.Optional;
 
 @Service
 public interface IUserService {
+
+    Page<User> findUsersWithPaginationAndSort(Long id, String email, String name, List<Integer> roleIds, int page, int limit, String field, String typeSort);
+
     Page<User> findAllUsers(int page, int limit, String field, String typeSort);
 
     Optional<User> findUserById(Long id);
@@ -18,7 +21,7 @@ public interface IUserService {
 
 //    Page<User> findUsersByRoleId(int roleId, int page, int limit, String field);
 
-    Page<User> findUsersByRoleIds(List<Integer> roleIds, int page, int limit, String field, String typeSort);
+    Page<User> findUsersByRoleIds(List<Long> roleIds, int page, int limit, String field, String typeSort);
 
     User saveUser(User user);
 

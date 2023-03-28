@@ -18,10 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -220,9 +217,24 @@ public class UserServiceImpl implements IUserService {
 //    }
 
     @Override
-    public Page<User> findUsersByRoleIds(List<Integer> roleIds, int page, int limit, String field, String typeSort) {
+    public Page<User> findUsersByRoleIds(List<Long> roleIds, int page, int limit, String field, String typeSort) {
         log.info("Finding users by role names: {}", roleIds);
         return userRepository.findUsersByRoles(roleIds, roleIds.size(), PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
+    }
+
+    @Override
+    public Page<User> findUsersWithPaginationAndSort(Long id, String email, String name, List<Integer> roleIds, int page, int limit, String field, String typeSort) {
+        LinkedHashMap<String, Object> filter = new LinkedHashMap<String, Object>();
+        filter.put("id", id);
+        filter.put("email", email);
+        filter.put("name", name);
+        filter.put("roleIds", roleIds);
+        filter.put("page", page);
+        filter.put("limit", limit);
+        filter.put("field", field);
+        filter.put("typeSort", typeSort);
+        log.info("Finding users with " + filter);
+        return userRepository.findUsersWithPaginationAndSort(id, email, name, roleIds, roleIds.size(), PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
     }
 
     @Override

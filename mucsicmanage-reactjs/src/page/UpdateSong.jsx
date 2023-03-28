@@ -18,7 +18,8 @@ function UpdateSong() {
 	const [check, setCheck] = useState(true);
 	useEffect(() => {
 		songService.get({ _id: id._id }).then((data) => {
-			setSong(data.data);
+			console.log(data.data);
+			setSong(data.data.content[0]);
 		});
 	}, [id]);
 	function handleSubmit() {

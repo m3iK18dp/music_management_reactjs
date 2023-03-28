@@ -1,415 +1,423 @@
-import "../css/songs.css";
-import React, { useEffect, useState, useRef } from "react";
-import { useNavigate, useLocation, Link } from "react-router-dom";
-import { Container, Row, Col, Form, Table } from "react-bootstrap";
-import { AiFillEdit, AiFillDelete } from "react-icons/ai";
+import '../css/songs.css';
+import React, { useEffect, useState, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Container, Row, Col, Form, Table } from 'react-bootstrap';
+import { AiFillEdit, AiFillDelete } from 'react-icons/ai';
 import {
-  BsPlayCircleFill,
-  BsFillSearchHeartFill,
-  BsPauseCircleFill,
-  BsSortNumericUpAlt,
-  BsSortAlphaUpAlt,
-  BsSortNumericDownAlt,
-  BsSortAlphaDownAlt,
-  BsSkipEndCircleFill,
-  BsSkipStartCircleFill,
-} from "react-icons/bs";
-import { RiHeartAddFill } from "react-icons/ri";
-import { MdCancel } from "react-icons/md";
-import { ImCancelCircle } from "react-icons/im";
-import PaginationComponent from "../components/PaginationComponent";
-import NavbarComponent from "../components/NavbarComponent";
-import songService from "../services/SongService";
-import convertPathSearchUrl from "../services/ConvertPathSearchUrl";
+	BsPlayCircleFill,
+	BsFillSearchHeartFill,
+	BsPauseCircleFill,
+	BsSortNumericUpAlt,
+	BsSortAlphaUpAlt,
+	BsSortNumericDownAlt,
+	BsSortAlphaDownAlt,
+	BsSkipEndCircleFill,
+	BsSkipStartCircleFill,
+} from 'react-icons/bs';
+import { RiHeartAddFill } from 'react-icons/ri';
+import { MdCancel } from 'react-icons/md';
+import { ImCancelCircle } from 'react-icons/im';
+import PaginationComponent from '../components/PaginationComponent';
+import NavbarComponent from '../components/NavbarComponent';
+import songService from '../services/SongService';
+import convertPathSearchUrl from '../services/ConvertPathSearchUrl';
+import CustomInput from '../components/CustomInput';
+import CustomButton from '../components/CustomButton';
+import CustomTableHeaderWithSort from '../components/CustomTableHeaderWithSort';
 function Songs() {
-  const navigate = useNavigate();
-  const audio = useRef(new Audio());
-  const path = useLocation().search;
-  const [search, setSearch] = useState({
-    id: Number,
-    title: "",
-    genre: "",
-    musician: "",
-    page: 0,
-    limit: 10,
-    field: "id",
-    type_sort: "asc",
-    totalPages: 0,
-    currentSongs: [],
-    currentSongPlay: 0,
-    currentSongPlayUrl: "",
-    currentSongIndex: 0,
-    playing: false,
-  });
-  const get = (field) => {
-    return search[field];
-  };
-  const set = (field, value) => {
-    setSearch((prevState) => ({
-      ...prevState,
-      [field]: value,
-    }));
-  };
-  useEffect(() => {
-    if (path !== "")
-      path
-        .slice(1)
-        .split("&")
-        .forEach((pathParam) => {
-          const param = pathParam.split("=");
-          search[param[0]] =
-            param[0] === "page" ? parseInt(param[1]) - 1 : param[1];
-        });
-    const params = {};
-    [
-      "id",
-      "title",
-      "genre",
-      "musician",
-      "page",
-      "limit",
-      "field",
-      "type_sort",
-    ].forEach(
-      (prop) =>
-        (params[`_${prop}`] =
-          prop === "id" ? (get(prop) > 0 ? get(prop) : -1) : get(prop))
-    );
-    songService.get(params).then((data) => {
-      set("totalPages", data.data.totalPages);
-      set("currentSongs", data.data.content);
-      set("currentSongPlay", data.data.content[0].id);
-      set("currentSongPlayUrl", data.data.content[0].url);
-      console.log("==========================");
-      console.log(params);
-      console.log(search);
-      console.log(data.data);
-      console.log(get("totalPages"));
-      console.log(get("currentSongs"));
-      console.log(get("currentSongPlay"));
-      console.log(get("currentSongPlayUrl"));
-      console.log("==========================");
-    });
-  }, [path]);
-  const handlePlaySong = (id) => {
-    if (get("currentSongPlay") !== id) {
-      set("currentSongPlay", id);
-      set(
-        "currentSongPlayUrl",
-        get("currentSongs").find((s) => s.id === id).url
-      );
-      handlePlay(true);
-    } else {
-      set("currentSongPlay", -1);
-      handlePause();
-    }
-  };
-  const handleSearch = () => {
-    const search = [];
+	const navigate = useNavigate();
+	const audio = useRef(new Audio());
+	const path = useLocation().search;
+	const [search, setSearch] = useState({
+		id: Number,
+		title: '',
+		genre: '',
+		musician: '',
+		page: 0,
+		limit: 10,
+		field: 'id',
+		type_sort: 'asc',
+		totalPages: 0,
+		currentSongs: [],
+		currentSongPlay: 0,
+		currentSongPlayUrl: '',
+		playing: false,
+	});
+	const get = (field) => {
+		return search[field];
+	};
+	const set = (field, value) => {
+		setSearch((prevState) => ({
+			...prevState,
+			[field]: value,
+		}));
+	};
+	useEffect(() => {
+		const searchParams = new URLSearchParams(window.location.search);
+		const params = {};
+		[
+			'id',
+			'title',
+			'genre',
+			'musician',
+			'page',
+			'limit',
+			'field',
+			'type_sort',
+		].forEach((prop) => {
+			const value = searchParams.get(prop);
+			if (value !== null)
+				search[prop] = prop === 'page' ? parseInt(value) - 1 : value;
+			params[`_${prop}`] =
+				prop === 'id' ? (get(prop) > 0 ? get(prop) : -1) : get(prop);
+		});
 
-    ["id", "title", "genre", "musician"].forEach((field) => {
-      search.push({
-        property: field,
-        value: get(field),
-      });
-    });
-    navigate(convertPathSearchUrl(search));
-  };
-  const handleCancelSearch = (searchField) => {
-    const search = [];
-    (searchField === "all"
-      ? ["id", "title", "genre", "musician"]
-      : [searchField]
-    ).forEach((field) => {
-      set(field, "");
-      search.push({ property: field, value: "" });
-    });
-    navigate(convertPathSearchUrl(search));
-  };
-  const handleNewSong = () => {
-    navigate("/songs/new");
-  };
-  const handleUpdateSong = (id) => {
-    navigate(`/songs/${id}`);
-  };
-  const handleDeleteSong = (id) => {
-    if (window.confirm("Do you want to delete this song?")) {
-      songService.deleteSong(id);
-      set(
-        "currentSongs",
-        get("currentSongs").filter((song) => song.id !== id)
-      );
-    }
-  };
-  const handlePlay = () => {
-    set("playing", true);
-    audio.current.play();
-  };
-  const handlePause = () => {
-    set("playing", false);
-    audio.current.pause();
-  };
-  const previousSong = () => {
-    const newIndex =
-      (get("currentSongIndex") + get("currentSongs").length - 1) %
-      get("currentSongs").length;
-    set("currentSongIndex", newIndex);
-    set("currentSongPlayUrl", get("currentSongs")[newIndex].url);
-    set("currentSongPlay", get("currentSongs")[newIndex].id);
-  };
-  const nextSong = () => {
-    const newIndex = (get("currentSongIndex") + 1) % get("currentSongs").length;
-    set("currentSongIndex", newIndex);
-    set("currentSongPlayUrl", get("currentSongs")[newIndex].url);
-    set("currentSongPlay", get("currentSongs")[newIndex].id);
-  };
-  const handleSort = (field) => {
-    navigate(
-      convertPathSearchUrl([
-        { property: "field", value: field },
-        {
-          property: "type_sort",
-          value:
-            get("field") !== field
-              ? "asc"
-              : get("type_sort") === "asc"
-              ? "desc"
-              : "asc",
-        },
-      ])
-    );
-  };
-  const searchInput = (field, type, min) => {
-    const lowerCaseField = field.toLowerCase();
-    return (
-      <>
-        <Col className="col" xl={1}>
-          <Form.Label>
-            <strong>{field}</strong>
-          </Form.Label>
-        </Col>
-        <Col className="col" xl={4}>
-          <Form.Control
-            type={type}
-            min={min ? min : "none"}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                event.preventDefault();
-                handleSearch();
-              }
-            }}
-            placeholder={`Enter Search with ${field}`}
-            value={get(lowerCaseField)}
-            onChange={(event) => set(lowerCaseField, event.target.value)}
-          />
-        </Col>
-        <Col className="col" xl={1}>
-          {customButton(
-            field,
-            MdCancel,
-            40,
-            handleCancelSearch,
-            `Cancel Search with ${field}`
-          )}
-        </Col>
-      </>
-    );
-  };
-  const customButton = (field, IconButton, size, func, title) => {
-    return (
-      <div
-        className="mr-15"
-        style={{ display: "inline" }}
-        onClick={() => func(!isNaN(field) ? field : field.toLowerCase())}
-        onMouseOver={(e) => {
-          e.target.style.color = "rgb(40, 144, 144)";
-          e.target.style.cursor = "pointer";
-        }}
-        onMouseOut={(e) => (e.target.style.color = "black")}
-        title={title}
-      >
-        <IconButton size={size} color="black"></IconButton>
-      </div>
-    );
-  };
-  return (
-    <>
-      <NavbarComponent />
-      <Container fluid style={{ marginTop: 80 }}>
-        <Form>
-          <Row>
-            {searchInput("ID", "number", 1)}
-            {searchInput("Title", "text")}
-          </Row>
-          <Row>
-            {searchInput("Genre", "text")}
-            {searchInput("Musician", "text")}
-          </Row>
-          <Row>
-            <Col />
-            <Col>
-              {customButton(
-                "",
-                BsFillSearchHeartFill,
-                40,
-                handleSearch,
-                "Search Song"
-              )}
-            </Col>
-            <Col>
-              {customButton(
-                "all",
-                ImCancelCircle,
-                40,
-                handleCancelSearch,
-                "Cancel Search All filter"
-              )}
-            </Col>
-            <Col>
-              {customButton(
-                "",
-                RiHeartAddFill,
-                40,
-                handleNewSong,
-                "Add new Song"
-              )}
-            </Col>
-            <Col />
-          </Row>
-        </Form>
-        <audio
-          src={get("currentSongPlayUrl")}
-          controls={["volume", "seekbar", "duration"]}
-          autoPlay={get("playing")}
-          ref={audio}
-        />
-        <div className="controls-audio">
-          {customButton(
-            "",
-            BsSkipStartCircleFill,
-            35,
-            previousSong,
-            "Prev Song"
-          )}
-          {!get("playing")
-            ? customButton("", BsPlayCircleFill, 50, handlePlay, "Play")
-            : customButton("", BsPauseCircleFill, 50, handlePause, "Pause")}
-          {customButton("", BsSkipEndCircleFill, 35, nextSong, "Prev Song")}
-        </div>
-        <Table striped bordered>
-          <colgroup>
-            <col width="50" span="2" />
-            <col width="auto" span="1" />
-            <col width="110" span="2" />
-            <col width="155" span="1" />
-          </colgroup>
-          <thead className="table-dark">
-            <tr>
-              <th>STT</th>
-              {["ID", "Title", "Genre", "Musician"].map((field) => {
-                const lowerCaseField = field.toLowerCase();
-                return (
-                  <th
-                    key={lowerCaseField}
-                    onClick={() => handleSort(lowerCaseField)}
-                  >
-                    {field}
-                    {get("field") === lowerCaseField &&
-                      (get("type_sort") === "asc" ? (
-                        <BsSortNumericUpAlt
-                          size={15}
-                          style={{ marginLeft: "2px" }}
-                        />
-                      ) : (
-                        <BsSortNumericDownAlt
-                          size={15}
-                          style={{ marginLeft: "2px" }}
-                        />
-                      ))}
-                  </th>
-                );
-              })}
-              <th className="column-">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {get("currentSongs").map((song, index) => (
-              <tr key={song.id}>
-                <td>{index + 1}</td>
-                <td>{song.id}</td>
-                <td style={{ textAlign: "left" }}>{song.title}</td>
-                <td>{song.genre}</td>
-                <td>{song.musician}</td>
-                <td>
-                  <div>
-                    {get("currentSongPlay") !== song.id || !get("playing")
-                      ? customButton(
-                          song.id,
-                          BsPlayCircleFill,
-                          30,
-                          handlePlaySong,
-                          "Play"
-                        )
-                      : customButton(
-                          song.id,
-                          BsPauseCircleFill,
-                          30,
-                          handlePlaySong,
-                          "Pause"
-                        )}
-                    {/* <Link
-                      to={`/songs/${song.id}`}
-                      className="mr-15"
-                      onMouseOver={(e) => {
-                        e.target.style.color = "rgb(40, 144, 144)";
-                        e.target.style.cursor = "pointer";
-                      }}
-                      onMouseOut={(e) => (e.target.style.color = "black")}
-                    >
-                      <AiFillEdit size={30} color="black" variant="primary" />
-                    </Link> */}
-                    {customButton(
-                      song.id,
-                      AiFillEdit,
-                      30,
-                      handleUpdateSong,
-                      "Edit Song"
-                    )}
+		songService.get(params).then((data) => {
+			set('totalPages', data.data.totalPages);
+			set('currentSongs', data.data.content);
+			set('currentSongPlay', data.data.content[0].id);
+			set('currentSongPlayUrl', data.data.content[0].url);
+		});
+	}, [path]);
+	const handlePlaySong = (id) => {
+		if (get('currentSongPlay') !== id) {
+			set('currentSongPlay', id);
+			set(
+				'currentSongPlayUrl',
+				get('currentSongs').find((s) => s.id === id).url,
+			);
+			handlePlay(true);
+		} else {
+			set('currentSongPlay', -1);
+			handlePause();
+		}
+	};
+	const handleSearch = () => {
+		const search = [];
 
-                    {/* <div
-                      style={{ display: "inline" }}
-                      onClick={() => handleDeleteSong(song.id)}
-                      onMouseOver={(e) => {
-                        e.target.style.color = "red";
-                        e.target.style.cursor = "pointer";
-                      }}
-                      onMouseOut={(e) => (e.target.style.color = "black")}
-                    >
-                      <AiFillDelete size={30} color="black" variant="danger" />
-                    </div> */}
-                    {customButton(
-                      song.id,
-                      AiFillDelete,
-                      30,
-                      handleDeleteSong,
-                      "Delete Song"
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-        <Row>
-          <PaginationComponent
-            currentPage={get("page")}
-            totalPages={get("totalPages")}
-            songsPerPage={get("limit")}
-          />
-        </Row>
-      </Container>
-    </>
-  );
+		['id', 'title', 'genre', 'musician'].forEach((field) => {
+			search.push({
+				property: field,
+				value: get(field),
+			});
+		});
+		navigate(convertPathSearchUrl(search));
+	};
+	const handleCancelSearch = (searchField) => {
+		const search = [];
+		(searchField === 'all'
+			? ['id', 'title', 'genre', 'musician']
+			: [searchField]
+		).forEach((field) => {
+			set(field, '');
+			search.push({ property: field, value: '' });
+		});
+		navigate(convertPathSearchUrl(search));
+	};
+	const handleNewSong = () => {
+		navigate('/songs/new');
+	};
+	const handleUpdateSong = (id) => {
+		navigate(`/songs/${id}`);
+	};
+	const handleDeleteSong = (id) => {
+		if (window.confirm('Do you want to delete this song?')) {
+			songService.deleteSong(id);
+			set(
+				'currentSongs',
+				get('currentSongs').filter((song) => song.id !== id),
+			);
+		}
+	};
+	const handlePlay = () => {
+		set('playing', true);
+		audio.current.play();
+	};
+	const handlePause = () => {
+		set('playing', false);
+		audio.current.pause();
+	};
+	const previousSong = () => {
+		const newIndex =
+			(get('currentSongs').findIndex(
+				(song) => song.id === get('currentSongPlay'),
+			) +
+				get('currentSongs').length -
+				1) %
+			get('currentSongs').length;
+		set('currentSongPlayUrl', get('currentSongs')[newIndex].url);
+		set('currentSongPlay', get('currentSongs')[newIndex].id);
+	};
+	const nextSong = () => {
+		const newIndex =
+			(get('currentSongs').findIndex(
+				(song) => song.id === get('currentSongPlay'),
+			) +
+				get('currentSongs').length +
+				1) %
+			get('currentSongs').length;
+		set('currentSongPlayUrl', get('currentSongs')[newIndex].url);
+		set('currentSongPlay', get('currentSongs')[newIndex].id);
+	};
+	const handleSort = (field) => {
+		navigate(
+			convertPathSearchUrl([
+				{ property: 'field', value: field },
+				{
+					property: 'type_sort',
+					value:
+						get('field') !== field
+							? 'asc'
+							: get('type_sort') === 'asc'
+							? 'desc'
+							: 'asc',
+				},
+			]),
+		);
+	};
+	return (
+		<div style={{ overflow: 'hidden' }}>
+			<NavbarComponent />
+			<Container
+				fluid
+				style={{
+					position: 'fixed',
+					top: 55,
+					left: 0,
+					right: 0,
+					zIndex: 9,
+					padding: 5,
+					backgroundColor: '#f8f9fa',
+				}}
+			>
+				<Form>
+					<Row>
+						{['Id', 'Title'].map((field) => (
+							<React.Fragment key={field}>
+								<CustomInput
+									set={set}
+									get={get}
+									field={field}
+									type={field === 'Id' ? 'number' : 'text'}
+									min={field === 'Id' ? 1 : 'none'}
+									func={handleSearch}
+									size={4}
+								/>
+								<Col className='col' xl={1}>
+									<CustomButton
+										field={field}
+										IconButton={MdCancel}
+										func={handleCancelSearch}
+										title={`Cancel Search with ${field}`}
+									/>
+								</Col>
+							</React.Fragment>
+						))}
+					</Row>
+					<Row>
+						{['Genre', 'Musician'].map((field) => (
+							<React.Fragment key={field}>
+								<CustomInput
+									set={set}
+									get={get}
+									field={field}
+									func={handleSearch}
+									size={4}
+								/>
+								<Col className='col' xl={1}>
+									<CustomButton
+										field={field}
+										IconButton={MdCancel}
+										func={handleCancelSearch}
+										title={`Cancel Search with ${field}`}
+									/>
+								</Col>
+							</React.Fragment>
+						))}
+					</Row>
+					<Row />
+					<Row>
+						<Col />
+						<Col />
+						<Col>
+							<CustomButton
+								IconButton={BsFillSearchHeartFill}
+								func={handleSearch}
+								title={'Search Song'}
+							/>
+						</Col>
+						<Col>
+							<CustomButton
+								field='all'
+								IconButton={ImCancelCircle}
+								func={handleCancelSearch}
+								title={'Cancel Search All filter'}
+							/>
+						</Col>
+						<Col>
+							<CustomButton
+								IconButton={RiHeartAddFill}
+								func={handleNewSong}
+								title={'Add new Song'}
+							/>
+						</Col>
+						<Col />
+						<Col />
+					</Row>
+				</Form>
+				<Row></Row>
+				<audio
+					src={get('currentSongPlayUrl')}
+					controls={['volume', 'seekbar', 'duration']}
+					autoPlay={get('playing')}
+					ref={audio}
+				/>
+				<Row className='controls-audio'>
+					<Col />
+					<Col className='control'>
+						<CustomButton
+							IconButton={BsSkipStartCircleFill}
+							size={35}
+							func={previousSong}
+							title={'Prev Song'}
+						/>
+					</Col>
+					<Col className='control'>
+						<CustomButton
+							IconButton={
+								!get('playing') ? BsPlayCircleFill : BsPauseCircleFill
+							}
+							size={35}
+							func={!get('playing') ? handlePlay : handlePause}
+							title={!get('playing') ? 'Play' : 'Pause'}
+						/>
+					</Col>
+					<Col className='control'>
+						<CustomButton
+							IconButton={BsSkipEndCircleFill}
+							size={35}
+							func={nextSong}
+							title={'Next Song'}
+						/>
+					</Col>
+					<Col />{' '}
+				</Row>
+			</Container>
+			<Container
+				style={{
+					marginTop: 320,
+					// position: 'fixed',
+					// top: 280,
+					// left: 10,
+					// right: 10,
+					// zIndex: 10,
+					// padding: 5,
+					// overflow: 'hidden',
+					// overflowY: 'scroll',
+				}}
+			>
+				<Table
+					striped
+					bordered
+					style={{
+						borderWidth: '0px 0',
+					}}
+				>
+					<colgroup>
+						<col width='auto' span='5' />
+						<col width='110' span='1' />
+					</colgroup>
+					<thead className='table-dark'>
+						<tr>
+							<th>STT</th>
+							{[
+								{
+									field: 'ID',
+									icon: [BsSortNumericUpAlt, BsSortNumericDownAlt],
+								},
+								{
+									field: 'Title',
+									icon: [BsSortAlphaUpAlt, BsSortAlphaDownAlt],
+								},
+								{
+									field: 'Genre',
+									icon: [BsSortAlphaUpAlt, BsSortAlphaDownAlt],
+								},
+								{
+									field: 'Musician',
+									icon: [BsSortAlphaUpAlt, BsSortAlphaDownAlt],
+								},
+							].map((row) => {
+								return (
+									<CustomTableHeaderWithSort
+										get={get}
+										field={row.field}
+										func={handleSort}
+										IconAsc={row.icon[0]}
+										IconDesc={row.icon[1]}
+									/>
+								);
+							})}
+							<th className='column-'>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						{get('currentSongs').map((song, index) => (
+							<tr key={song.id}>
+								<td>{index + 1}</td>
+								<td>{song.id}</td>
+								<td style={{ textAlign: 'left' }}>{song.title}</td>
+								<td>{song.genre}</td>
+								<td>{song.musician}</td>
+								<td>
+									<div>
+										<CustomButton
+											field={song.id}
+											IconButton={
+												get('currentSongPlay') !== song.id || !get('playing')
+													? BsPlayCircleFill
+													: BsPauseCircleFill
+											}
+											size={30}
+											func={handlePlaySong}
+											title={
+												get('currentSongPlay') !== song.id || !get('playing')
+													? 'Play'
+													: 'Pause'
+											}
+										/>
+										<CustomButton
+											field={song.id}
+											IconButton={AiFillEdit}
+											size={30}
+											func={handleUpdateSong}
+											title={'Edit Song'}
+										/>
+										<CustomButton
+											field={song.id}
+											IconButton={AiFillDelete}
+											size={30}
+											func={handleDeleteSong}
+											title={'Delete Song'}
+										/>
+									</div>
+								</td>
+							</tr>
+						))}
+					</tbody>
+					<div style={{ visibility: 'hidden', height: 40 }} />
+				</Table>
+			</Container>
+
+			<Row>
+				<PaginationComponent
+					currentPage={get('page')}
+					totalPages={get('totalPages')}
+					songsPerPage={get('limit')}
+				/>
+			</Row>
+		</div>
+	);
 }
 
 export default Songs;
