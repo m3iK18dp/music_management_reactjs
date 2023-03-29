@@ -112,7 +112,7 @@ public class UserServiceImpl implements IUserService {
         }).orElseThrow(() -> new RuntimeException("Update Password to User with id: " + id + " failed"));
     }
 
-//    @Override
+    //    @Override
 //    public User deleteUser(Long id) {
 //        log.info("Deleting user: {}", id);
 //        return userRepository.findById(id).map(user -> {
@@ -131,6 +131,20 @@ public class UserServiceImpl implements IUserService {
 //            return Boolean.TRUE;
 //        }
 //    }
+    @Override
+    public Page<Role> findRolesWithPaginationAndSort(Long id, String name, List<Long> roleIds, Long userId, int page, int limit, String field, String typeSort) {
+        LinkedHashMap<String, Object> filter = new LinkedHashMap<String, Object>();
+        filter.put("id", id);
+        filter.put("name", name);
+        filter.put("roleIds", roleIds);
+        filter.put("userId", userId);
+        filter.put("page", page);
+        filter.put("limit", limit);
+        filter.put("field", field);
+        filter.put("typeSort", typeSort);
+        log.info("Find Roles with pagination and sort " + filter);
+        return roleRepository.findRolesWithPaginationAndSort(id, name, roleIds, roleIds.size(), userId, PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
+    }
 
     @Override
     public List<Role> findAllRoles() {
@@ -223,7 +237,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public Page<User> findUsersWithPaginationAndSort(Long id, String email, String name, List<Long> roleIds, int page, int limit, String field, String typeSort) {
+    public Page<User> findUsersWithPaginationAndSort(Long id, String email, String name, List<Long> roleIds, int status, int page, int limit, String field, String typeSort) {
 
         List<Long> listRoleIds = roleIds;
 //                roleIds.length() == 0 ? new ArrayList<>() : Arrays.stream(roleIds.split("-"))
@@ -235,13 +249,15 @@ public class UserServiceImpl implements IUserService {
         filter.put("email", email);
         filter.put("name", name);
         filter.put("roleIds", listRoleIds);
+        filter.put("status", status);
         filter.put("page", page);
         filter.put("limit", limit);
         filter.put("field", field);
         filter.put("typeSort", typeSort);
-        log.info("Finding users with " + filter);
 
-        return userRepository.findUsersWithPaginationAndSort(id, email, name, listRoleIds, listRoleIds.size(), PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
+        log.info("Finding users with pagination and sort " + filter);
+
+        return userRepository.findUsersWithPaginationAndSort(id, email, name, listRoleIds, listRoleIds.size(), status, PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
     }
 
     @Override

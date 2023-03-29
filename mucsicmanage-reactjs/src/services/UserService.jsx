@@ -18,11 +18,11 @@ const userService = {
 	resetPasswordUser: async (id) => {
 		return await callApi(`users/${id}/reset_password`, 'put');
 	},
-	getRoles: async () => {
-		return await callApi(`roles`, 'get');
+	getRoles: async (params) => {
+		return await callApi(`roles`, 'get', null, params);
 	},
-	getRolesByListRoleId: async (params) => {
-		return await callApi(`roles/load_roles_by_list_role_id`, 'get', params);
-	},
+	// getRolesByListRoleId: async (params) => {
+	// 	return await callApi(`roles/load_roles_by_list_role_id`, 'get', params);
+	// },
 };
 export default userService;

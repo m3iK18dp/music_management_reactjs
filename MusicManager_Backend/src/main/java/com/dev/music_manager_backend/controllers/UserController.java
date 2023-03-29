@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +28,7 @@ public class UserController {
                                               @RequestParam(value = "_email", defaultValue = "") String email,
                                               @RequestParam(value = "_name", defaultValue = "") String name,
                                               @RequestParam(value = "_role_ids", defaultValue = "") List<Long> roleIds,
+                                              @RequestParam(value = "_status", defaultValue = "-1") int status,
                                               @RequestParam(value = "_page", defaultValue = "0") int page,
                                               @RequestParam(value = "_limit", defaultValue = "10") int limit,
                                               @RequestParam(value = "_field", defaultValue = "id") String field,
@@ -41,26 +43,36 @@ public class UserController {
 //            return getUsersByRoleIds(roleIds, page, limit, field, typeSort);
 //        }
 //        return getAllUsers(page, limit, field, typeSort);
+        LinkedHashMap<String, Object> filter = new LinkedHashMap<String, Object>();
+        filter.put("id", id);
+        filter.put("email", email);
+        filter.put("name", name);
+        filter.put("roleIds", roleIds);
+        filter.put("status", status);
+        filter.put("page", page);
+        filter.put("limit", limit);
+        filter.put("field", field);
+        filter.put("typeSort", typeSort);
         Page<User> users = new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 0);
         try {
-            users = userService.findUsersWithPaginationAndSort(id, email, name, roleIds, page, limit, field, typeSort);
+            users = userService.findUsersWithPaginationAndSort(id, email, name, roleIds, status, page, limit, field, typeSort);
             if (users.isEmpty()) {
                 return new ResponseObject<>(
                         "failed",
-                        "Not found Users",
+                        "Not found Users with " + filter,
                         users
                 );
             } else {
                 return new ResponseObject<>(
                         "ok",
-                        "Get All Success",
+                        "Get All Success with " + filter,
                         users
                 );
             }
         } catch (Exception exception) {
             return new ResponseObject<>(
                     "failed",
-                    "Can't get all Users ====" + exception.getMessage(),
+                    "Can't get all Users with " + filter + " ====" + exception.getMessage(),
                     users
             );
         }
@@ -389,7 +401,7 @@ public class UserController {
         }
     }
 
-//    @PostMapping("/users/{id}/delete")
+    //    @PostMapping("/users/{id}/delete")
 //    public ResponseObject<User> deleteUser(@PathVariable Long id) {
 //        try {
 //            return new ResponseObject<>(
@@ -422,32 +434,75 @@ public class UserController {
 //            );
 //        }
 //    }
-
     @GetMapping("/roles")
-    public ResponseObject<List<Role>> getAllRoles() {
+    public ResponseObject<Page<Role>> getRoles(
+            @RequestParam(value = "_id", defaultValue = "-1") Long id,
+            @RequestParam(value = "_name", defaultValue = "") String name,
+            @RequestParam(value = "_role_ids", defaultValue = "") List<Long> roleIds,
+            @RequestParam(value = "_userId", defaultValue = "-1") Long userId,
+            @RequestParam(value = "_page", defaultValue = "0") int page,
+            @RequestParam(value = "_limit", defaultValue = "10") int limit,
+            @RequestParam(value = "_field", defaultValue = "id") String field,
+            @RequestParam(value = "_type_sort", defaultValue = "asc") String typeSort
+    ) {
+        LinkedHashMap<String, Object> filter = new LinkedHashMap<String, Object>();
+        filter.put("id", id);
+        filter.put("name", name);
+        filter.put("roleIds", roleIds);
+        filter.put("userId", userId);
+        filter.put("page", page);
+        filter.put("limit", limit);
+        filter.put("field", field);
+        filter.put("typeSort", typeSort);
+        Page<Role> roles = new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 0);
         try {
-            List<Role> roles = userService.findAllRoles();
+            roles = userService.findRolesWithPaginationAndSort(id, name, roleIds, userId, page, limit, field, typeSort);
             if (roles.isEmpty()) {
                 return new ResponseObject<>(
                         "failed",
-                        "Not found Roles",
+                        "Not found Roles with " + filter,
                         roles
                 );
             } else {
                 return new ResponseObject<>(
                         "ok",
-                        "Get All Roles Success",
+                        "Get Roles Success with " + filter,
                         roles
                 );
             }
         } catch (Exception exception) {
             return new ResponseObject<>(
                     "failed",
-                    "Can't get all Roles",
-                    new ArrayList<>()
+                    "Can't get Roles with " + filter + " ===" + exception.getMessage(),
+                    roles
             );
         }
     }
+//    @GetMapping("/roles")
+//    public ResponseObject<List<Role>> getAllRoles() {
+//        try {
+//            List<Role> roles = userService.findAllRoles();
+//            if (roles.isEmpty()) {
+//                return new ResponseObject<>(
+//                        "failed",
+//                        "Not found Roles",
+//                        roles
+//                );
+//            } else {
+//                return new ResponseObject<>(
+//                        "ok",
+//                        "Get All Roles Success",
+//                        roles
+//                );
+//            }
+//        } catch (Exception exception) {
+//            return new ResponseObject<>(
+//                    "failed",
+//                    "Can't get all Roles",
+//                    new ArrayList<>()
+//            );
+//        }
+//    }
 
     @GetMapping("/roles/load_roles_by_list_role_id")
     public ResponseObject<List<Role>> getRolesByListRoleId(

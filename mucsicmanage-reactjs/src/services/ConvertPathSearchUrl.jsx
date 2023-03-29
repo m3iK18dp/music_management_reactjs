@@ -5,8 +5,9 @@ const convertPathSearchUrl = (property_value) => {
 	if (Array.isArray(property_value))
 		for (const propertyValue of property_value) {
 			const property = propertyValue.property;
-			const value =
+			let value =
 				property === 'id' ? parseInt(propertyValue.value) : propertyValue.value;
+			if (Array.isArray(Array.from(value))) if (value.length === 0) value = '';
 			if (
 				value === '' ||
 				!value ||

@@ -8,7 +8,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import convertPathSearchUrl from '../services/ConvertPathSearchUrl';
 
-function PaginationComponent({ currentPage, totalPages, songsPerPage }) {
+function PaginationComponent({ currentPage, totalPages, objectsPerPage }) {
 	currentPage += 1;
 	const navigate = useNavigate();
 	return (
@@ -88,7 +88,7 @@ function PaginationComponent({ currentPage, totalPages, songsPerPage }) {
 				<Form>
 					<Form.Control
 						as='select'
-						value={songsPerPage}
+						value={objectsPerPage}
 						onChange={(event) => {
 							navigate(
 								convertPathSearchUrl([

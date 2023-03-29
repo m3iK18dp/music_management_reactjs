@@ -14,6 +14,7 @@ import Users from "./page/Users";
 import UpdateUser from "./page/UpdateUser";
 import ErrorPage from "./page/ErrorPage";
 import NewSong from "./page/NewSong";
+import NewUser from "./page/NewUser";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <BrowserRouter>
@@ -28,6 +29,7 @@ root.render(
       <Route path="/songs/:_id" element={<UpdateSong />} />
       <Route path="/account/:username" element={<MyAccount />} />
       <Route path="/users" element={<Users />} />
+      <Route path="/users/new" element={<NewUser />} />
       <Route path="/users/id" element={<UpdateUser />} />
       <Route path="*" element={<ErrorPage />} />
     </Routes>

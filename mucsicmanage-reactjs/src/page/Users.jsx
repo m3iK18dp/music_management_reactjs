@@ -1,21 +1,17 @@
 import "../css/users.css";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Container, Row, Col, Form, Table, FormSelect } from "react-bootstrap";
-import { AiFillEdit, AiFillDelete } from "react-icons/ai";
+import { Container, Row, Col, Form, Table } from "react-bootstrap";
+import { AiFillEdit } from "react-icons/ai";
 import {
-  BsPlayCircleFill,
-  BsPauseCircleFill,
   BsSortNumericUpAlt,
   BsSortAlphaUpAlt,
   BsSortNumericDownAlt,
   BsSortAlphaDownAlt,
-  BsSkipEndCircleFill,
-  BsSkipStartCircleFill,
   BsPersonFillLock,
+  BsPersonFillAdd,
   BsPersonFillCheck,
 } from "react-icons/bs";
-import { RiHeartAddFill } from "react-icons/ri";
 import { MdCancel, MdPersonSearch, MdLockReset } from "react-icons/md";
 import { ImCancelCircle } from "react-icons/im";
 import PaginationComponent from "../components/PaginationComponent";
@@ -33,6 +29,7 @@ function Users() {
     email: "",
     name: "",
     role_ids: [],
+    status: "-1",
     page: 0,
     limit: 10,
     field: "id",
@@ -40,6 +37,7 @@ function Users() {
     totalPages: 0,
     currentUsers: [],
     roles: [],
+    rolesOfUser: {},
   });
   const get = (field) => {
     return search[field];
@@ -58,39 +56,57 @@ function Users() {
       "email",
       "name",
       "role_ids",
+      "status",
       "page",
       "limit",
       "field",
       "type_sort",
     ].forEach((prop) => {
       const value = searchParams.get(prop);
-      if (value !== null)
-        search[prop] = prop === "page" ? parseInt(value) - 1 : value;
+      if (value !== null) {
+        if (!(prop === "id" && value < 1))
+          search[prop] = prop === "page" ? parseInt(value) - 1 : value;
+      }
       params[`_${prop}`] =
         prop === "id" ? (get(prop) > 0 ? get(prop) : -1) : get(prop);
     });
-    userService.getRoles().then((data) => {
-      set("roles", data.data);
-      console.log(data.data);
+
+    userService.getRoles({}).then((data) => {
+      set("roles", data.data.content);
     });
+
     userService.get(params).then((data) => {
       set("totalPages", data.data.totalPages);
       set("currentUsers", data.data.content);
+      Array.from(data.data.content).forEach((user) => {
+        userService.getRoles({ _userId: user.id }).then((data) => {
+          get("rolesOfUser")[user.id] = data.data.content;
+          console.log(get("rolesOfUser"));
+        });
+      });
+      console.log(search);
     });
   }, [path]);
-  const getStatus = (id) => {
-    return get("currentUsers").find((user) => user.id === id).status;
+  const covertArrayObjectToString = (roles) => {
+    if (roles) return roles.map((role) => (role ? role.name : null)).join(", ");
   };
   const changeStatus = (id) => {
-    userService.changeStatusUser(id);
+    const user = get("currentUsers").find((user) => user.id === id);
+    // console.log(user);
+    userService.changeStatusUser(id).then((res) => {
+      if (res.status === "ok") {
+        user.status = !user.status;
+        console.log(get("currentUsers").find((user) => user.id === id));
+        navigate(convertPathSearchUrl());
+      }
+    });
   };
   const handleResetPassword = (id) => {
     userService.resetPasswordUser(id);
   };
   const handleSearch = () => {
     const search = [];
-
-    ["id", "email", "name", "role_ids"].forEach((field) => {
+    ["id", "email", "name", "role_ids", "status"].forEach((field) => {
       search.push({
         property: field,
         value: get(field),
@@ -101,7 +117,7 @@ function Users() {
   const handleCancelSearch = (searchField) => {
     const search = [];
     (searchField === "all"
-      ? ["id", "email", "name", "role_ids"]
+      ? ["id", "email", "name", "role_ids", "status"]
       : [searchField]
     ).forEach((field) => {
       set(field, "");
@@ -141,19 +157,18 @@ function Users() {
     );
   };
   function handleRoleChange(event, role) {
-    // Kiểm tra xem role đã được chọn hay chưa
     const isChecked = event.target.checked;
-
-    // Nếu đã được chọn, thêm role vào state
     if (isChecked) {
       set("role_ids", [...get("role_ids"), role.id]);
     } else {
-      // Nếu không được chọn, xóa role khỏi state
       set(
         "role_ids",
         Array.from(get("role_ids")).filter((id) => id !== role.id)
       );
     }
+    navigate(
+      convertPathSearchUrl({ property: "role_ids", value: get("role_ids") })
+    );
   }
   return (
     <div style={{ overflow: "hidden" }}>
@@ -195,50 +210,61 @@ function Users() {
             ))}
           </Row>
           <Row>
-            {/* {" "}
-            <FormSelect
-              multiple
-              value={get("role_ids")}
-              onChange={(event) => {
-                set(
-                  "role_ids",
-                  Array.from(
-                    event.target.selectedOptions,
-                    (option) => option.value
-                  )
-                );
-                console.log(
-                  Array.from(
-                    event.target.selectedOptions,
-                    (option) => option.value
-                  )
-                );
-              }}
-            >
-              {get("roles").forEach((role) => {
-                return (
-                  <option key={role.id} value={role.id}>
-                    {role.name}
-                  </option>
-                );
-              })}
-              <option value="value1">Option 1</option>
-              <option value="value2">Option 2</option>
-              <option value="value3">Option 3</option>
-            </FormSelect> */}
+            <Col sm={1}></Col>
 
-            {get("roles").map((role) => (
-              <div key={role.id}>
-                <Form.Check
-                  type="checkbox"
-                  label={role.name}
-                  name="roles"
-                  value={role.id}
-                  checked={get("role_ids").includes(role.id)}
-                  onChange={(event) => handleRoleChange(event, role)}
-                />
-              </div>
-            ))}
+            <Col sm={1}>
+              <Form.Label>Role</Form.Label>
+            </Col>
+            <Col sm={4}>
+              {Array.from(get("roles")).map((role) => (
+                <div key={role.id}>
+                  <Form.Check
+                    type="checkbox"
+                    label={role.name}
+                    name={role.name}
+                    value={role.id}
+                    checked={get("role_ids").includes(role.id)}
+                    onChange={(event) => handleRoleChange(event, role)}
+                  />
+                </div>
+              ))}
+            </Col>
+            <Col sm={1}></Col>
+            <Col sm={1}>
+              <Form.Label>Role</Form.Label>
+            </Col>
+            <Col sm={4}>
+              {[1, 0, -1].map((status) => (
+                <div key={`status_${status}`}>
+                  <Form.Check
+                    type="radio"
+                    label={
+                      status === 1
+                        ? "Enabled"
+                        : status === 0
+                        ? "Disabled"
+                        : "None"
+                    }
+                    name="status"
+                    value={status}
+                    checked={status == get("status")}
+                    onChange={(event) => {
+                      console.log(event.target.checked);
+                      console.log(event.target.value);
+                      if (event.target.checked)
+                        navigate(
+                          convertPathSearchUrl([
+                            {
+                              property: "status",
+                              value: event.target.value,
+                            },
+                          ])
+                        );
+                    }}
+                  />
+                </div>
+              ))}
+            </Col>
           </Row>
           <Row />
           <Row>
@@ -261,7 +287,7 @@ function Users() {
             </Col>
             <Col>
               <CustomButton
-                IconButton={RiHeartAddFill}
+                IconButton={BsPersonFillAdd}
                 func={handleNewUser}
                 title={"Add new User"}
               />
@@ -273,28 +299,12 @@ function Users() {
       </Container>
       <Container
         style={{
-          marginTop: 320,
-          // position: 'fixed',
-          // top: 280,
-          // left: 10,
-          // right: 10,
-          // zIndex: 10,
-          // padding: 5,
-          // overflow: 'hidden',
-          // overflowY: 'scroll',
+          marginTop: "220px",
+          overflow: "hidden",
+          overflowX: "scroll",
         }}
       >
-        <Table
-          striped
-          bordered
-          style={{
-            borderWidth: "0px 0",
-          }}
-        >
-          <colgroup>
-            <col width="auto" span="5" />
-            <col width="110" span="1" />
-          </colgroup>
+        <Table striped bordered>
           <thead className="table-dark">
             <tr>
               <th>STT</th>
@@ -308,7 +318,11 @@ function Users() {
                   icon: [BsSortAlphaUpAlt, BsSortAlphaDownAlt],
                 },
                 {
-                  field: "Name",
+                  field: "FirstName",
+                  icon: [BsSortAlphaUpAlt, BsSortAlphaDownAlt],
+                },
+                {
+                  field: "LastName",
                   icon: [BsSortAlphaUpAlt, BsSortAlphaDownAlt],
                 },
               ].map((row) => {
@@ -334,13 +348,13 @@ function Users() {
                 <td>{index + 1}</td>
                 <td>{user.id}</td>
                 <td style={{ textAlign: "left" }}>{user.email}</td>
-                <td style={{ textAlign: "left" }}>
-                  {user.firstName} {user.lastName}
-                </td>
-                <td>{get("role_names")}</td>
-                {/* ////////////////////////////////////////////////////////// */}
+                <td style={{ textAlign: "left" }}>{user.firstName}</td>
+                <td style={{ textAlign: "left" }}>{user.lastName}</td>
                 <td>
-                  {getStatus(user.id) ? (
+                  {covertArrayObjectToString(get("rolesOfUser")[user.id])}
+                </td>
+                <td>
+                  {user.status ? (
                     <CustomButton
                       field={user.id}
                       IconButton={BsPersonFillCheck}
@@ -377,15 +391,14 @@ function Users() {
               </tr>
             ))}
           </tbody>
-          {/* <div style={{ visibility: "hidden", height: 40 }} /> */}
         </Table>
       </Container>
-
+      <div style={{ visibility: "hidden", height: 50 }} />
       <Row>
         <PaginationComponent
           currentPage={get("page")}
           totalPages={get("totalPages")}
-          usersPerPage={get("limit")}
+          objectsPerPage={get("limit")}
         />
       </Row>
     </div>

@@ -35,6 +35,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
                        (:id = -1 OR u.id = :id) AND
                        (SUBSTRING_INDEX(LOWER(u.email),'@', 1) LIKE LOWER(CONCAT('%', :email, '%'))) AND
                        (CONCAT(LOWER(u.firstName),' ',LOWER(u.lastName)) LIKE LOWER(CONCAT('%', :name, '%'))) AND
+                       (:status = -1 OR u.status = :status) AND
                        (:countRoleIds = 0 OR u.id IN
                             (
                                     SELECT u.id
@@ -50,6 +51,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
                 SELECT COUNT(u.id) FROM users u WHERE
                        (SUBSTRING_INDEX(LOWER(u.email),'@', 1) LIKE LOWER(CONCAT('%', :email, '%'))) AND
                        (CONCAT(LOWER(u.firstName),' ',LOWER(u.lastName)) LIKE LOWER(CONCAT('%', :name, '%'))) AND
+                       (:status = -1 OR u.status = :status) AND
                        (:countRoleIds = 0 OR u.id IN
                             (
                                     SELECT u.id
@@ -68,6 +70,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
             @Param("name") String name,
             @Param("roleIds") List<Long> roleIds,
             @Param("countRoleIds") int countRoleIds,
+            @Param("status") int status,
             Pageable pageable
     );
 
