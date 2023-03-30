@@ -35,6 +35,7 @@ const Login = () => {
   return (
     <div>
       <AuthNavbarComponent />
+      <div className="background-container" />
       <div
         fluid
         style={{
@@ -52,7 +53,16 @@ const Login = () => {
           }}
         >
           <div className="card-header">
-            <h2 className="text-center">Login</h2>
+            <h1
+              className="text-center"
+              style={{
+                borderBottom: "2px solid purple",
+                padding: "20px",
+                marginBottom: "0",
+              }}
+            >
+              Login
+            </h1>
           </div>
           <div
             className="card-body"

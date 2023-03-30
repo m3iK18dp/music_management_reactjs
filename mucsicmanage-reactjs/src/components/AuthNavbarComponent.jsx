@@ -16,21 +16,19 @@ function AuthNavbarComponent() {
   const isAdmin = roles !== null ? roles.includes("ROLE_ADMIN") : false;
   return (
     <Navbar
-      expanded={expanded}
-      expand="lg"
       style={{
-        position: "absolute",
+        position: "fixed",
         top: 0,
         left: 0,
         right: 0,
         zIndex: 10,
         padding: 10,
-        backgroundColor: "rgba(255, 255, 255, 0.1)",
         color: "white",
       }}
+      className="background-color"
     >
       <Nav.Link href="/" disabled={location.pathname === "/"}>
-        <SiApplemusic size={50} color={"white"}></SiApplemusic>
+        <SiApplemusic size={50} color={"black"}></SiApplemusic>
       </Nav.Link>
       <Navbar.Toggle
         onClick={handleToggle}

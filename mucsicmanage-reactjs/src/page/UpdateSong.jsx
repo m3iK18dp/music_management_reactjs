@@ -58,14 +58,16 @@ function UpdateSong() {
   return (
     <>
       <NavbarComponent />
+      <div className="background-container" />
       <Container>
         <Row
           className="col-md-8 offset-md-2"
           style={{
-            margin: "50px auto",
+            margin: "15px auto",
             border: "3px solid purple",
             backgroundColor: "white",
             maxWidth: 500,
+            borderRadius: 10,
           }}
         >
           <div className="card">
@@ -94,7 +96,14 @@ function UpdateSong() {
                     readOnly
                   />
                   <div style={{ height: 5 }}>
-                    <p style={{ fontStyle: "italic", color: "red" }}></p>
+                    <p
+                      style={{
+                        fontStyle: "italic",
+                        color: "red",
+                        margin: 0,
+                        fontSize: 12,
+                      }}
+                    ></p>
                   </div>
                 </Form.Group>
                 <Form.Group>
@@ -110,7 +119,14 @@ function UpdateSong() {
                     required
                   />
                   <div style={{ height: 5 }}>
-                    <p style={{ fontStyle: "italic", color: "red" }}>
+                    <p
+                      style={{
+                        fontStyle: "italic",
+                        color: "red",
+                        margin: 0,
+                        fontSize: 12,
+                      }}
+                    >
                       {titleIsFilled}
                     </p>
                   </div>
@@ -127,7 +143,14 @@ function UpdateSong() {
                     value={song.genre}
                   />
                   <div style={{ height: 5 }}>
-                    <p style={{ fontStyle: "italic", color: "red" }}></p>
+                    <p
+                      style={{
+                        fontStyle: "italic",
+                        color: "red",
+                        margin: 0,
+                        fontSize: 12,
+                      }}
+                    ></p>
                   </div>
                 </Form.Group>
                 <Form.Group>
@@ -142,7 +165,14 @@ function UpdateSong() {
                     value={song.musician}
                   />
                   <div style={{ height: 5 }}>
-                    <p style={{ fontStyle: "italic", color: "red" }}></p>
+                    <p
+                      style={{
+                        fontStyle: "italic",
+                        color: "red",
+                        margin: 0,
+                        fontSize: 12,
+                      }}
+                    ></p>
                   </div>
                 </Form.Group>
                 <Form.Group>
@@ -151,7 +181,14 @@ function UpdateSong() {
                   </Form.Label>
                   <Form.Control type="file" name="audioFile" ref={file} />
                   <div style={{ height: 5 }}>
-                    <p style={{ fontStyle: "italic", color: "red" }}></p>
+                    <p
+                      style={{
+                        fontStyle: "italic",
+                        color: "red",
+                        margin: 0,
+                        fontSize: 12,
+                      }}
+                    ></p>
                   </div>
                 </Form.Group>
                 <div className="box-footer">
@@ -161,7 +198,6 @@ function UpdateSong() {
                       backgroundColor: "#e9ecef",
                       border: "none",
                       color: "black",
-                      marginTop: 20,
                     }}
                     title="Save"
                   >
@@ -174,7 +210,6 @@ function UpdateSong() {
                       backgroundColor: "#e9ecef",
                       border: "none",
                       color: "black",
-                      marginTop: 20,
                       marginLeft: 20,
                     }}
                   >

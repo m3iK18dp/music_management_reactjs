@@ -24,6 +24,7 @@ const convertPathSearchUrl = (property_value) => {
 				}
 			}
 		}
+	console.log('---------' + searchParams.toString());
 	return `${url.pathname}?${searchParams.toString()}`;
 };
 

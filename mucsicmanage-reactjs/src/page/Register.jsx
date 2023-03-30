@@ -35,6 +35,7 @@ function Register() {
   return (
     <div>
       <AuthNavbarComponent />
+      <div className="background-container" />
       <div
         fluid
         style={{
@@ -52,7 +53,16 @@ function Register() {
           }}
         >
           <div className="card-header">
-            <h2 className="text-center">Registration</h2>
+            <h1
+              className="text-center"
+              style={{
+                borderBottom: "2px solid purple",
+                padding: "20px",
+                marginBottom: "0",
+              }}
+            >
+              Registration
+            </h1>
           </div>
           <div
             className="card-body"

@@ -14,11 +14,11 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
             """, nativeQuery = true)
     List<Token> findAllValidTokenByUserEmail(String userEmail);
 
-    @Query(value = """
-                SELECT t.* FROM musicmanager.tokens t INNER JOIN musicmanager.users u ON t.USER_ID = u.ID
-                WHERE u.EMAIL = :userId AND t.REVOKED = false
-            """, nativeQuery = true)
-    List<Token> findAllValidTokenByUser(Long userId);
+//    @Query(value = """
+//                SELECT t.* FROM musicmanager.tokens t INNER JOIN musicmanager.users u ON t.USER_ID = u.ID
+//                WHERE u.EMAIL = :userId AND t.REVOKED = false
+//            """, nativeQuery = true)
+//    List<Token> findAllValidTokenByUser(Long userId);
 
     Optional<Token> findByToken(String token);
 

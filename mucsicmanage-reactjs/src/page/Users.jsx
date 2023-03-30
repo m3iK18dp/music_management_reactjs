@@ -37,7 +37,6 @@ function Users() {
     totalPages: 0,
     currentUsers: [],
     roles: [],
-    rolesOfUser: {},
   });
   const get = (field) => {
     return search[field];
@@ -65,7 +64,12 @@ function Users() {
       const value = searchParams.get(prop);
       if (value !== null) {
         if (!(prop === "id" && value < 1))
-          search[prop] = prop === "page" ? parseInt(value) - 1 : value;
+          search[prop] =
+            prop === "page"
+              ? parseInt(value) - 1
+              : prop === "role_ids"
+              ? value.split(",").map(Number)
+              : value;
       }
       params[`_${prop}`] =
         prop === "id" ? (get(prop) > 0 ? get(prop) : -1) : get(prop);
@@ -78,31 +82,36 @@ function Users() {
     userService.get(params).then((data) => {
       set("totalPages", data.data.totalPages);
       set("currentUsers", data.data.content);
-      Array.from(data.data.content).forEach((user) => {
-        userService.getRoles({ _userId: user.id }).then((data) => {
-          get("rolesOfUser")[user.id] = data.data.content;
-          console.log(get("rolesOfUser"));
-        });
-      });
-      console.log(search);
     });
   }, [path]);
+  useEffect(() => {
+    console.log(search);
+    // navigate(
+    // 	convertPathSearchUrl({
+    // 		property: 'role_ids',
+    // 		value: get('role_ids'),
+    // 	}),
+    // );
+    handleSearch();
+  }, [search.role_ids]);
   const covertArrayObjectToString = (roles) => {
     if (roles) return roles.map((role) => (role ? role.name : null)).join(", ");
   };
   const changeStatus = (id) => {
     const user = get("currentUsers").find((user) => user.id === id);
-    // console.log(user);
     userService.changeStatusUser(id).then((res) => {
       if (res.status === "ok") {
         user.status = !user.status;
-        console.log(get("currentUsers").find((user) => user.id === id));
         navigate(convertPathSearchUrl());
       }
     });
   };
   const handleResetPassword = (id) => {
-    userService.resetPasswordUser(id);
+    userService.resetPasswordUser(id).then((res) => {
+      if (res.status === "ok") {
+        alert("Reset Password for user " + id + "success");
+      } else alert("Reset Password for user " + id + "failed");
+    });
   };
   const handleSearch = () => {
     const search = [];
@@ -120,7 +129,16 @@ function Users() {
       ? ["id", "email", "name", "role_ids", "status"]
       : [searchField]
     ).forEach((field) => {
-      set(field, "");
+      set(
+        field,
+        {
+          id: Number,
+          email: "",
+          name: "",
+          role_ids: [],
+          status: "-1",
+        }[field]
+      );
       search.push({ property: field, value: "" });
     });
     navigate(convertPathSearchUrl(search));
@@ -131,15 +149,6 @@ function Users() {
   const handleUpdateUser = (id) => {
     navigate(`/users/${id}`);
   };
-  // const handleDeleteUser = (id) => {
-  // 	if (window.confirm('Do you want to delete this User?')) {
-  // 		UserService.deleteUser(id);
-  // 		set(
-  // 			'currentUsers',
-  // 			get('currentUsers').filter((User) => User.id !== id),
-  // 		);
-  // 	}
-  // };
   const handleSort = (field) => {
     navigate(
       convertPathSearchUrl([
@@ -156,23 +165,10 @@ function Users() {
       ])
     );
   };
-  function handleRoleChange(event, role) {
-    const isChecked = event.target.checked;
-    if (isChecked) {
-      set("role_ids", [...get("role_ids"), role.id]);
-    } else {
-      set(
-        "role_ids",
-        Array.from(get("role_ids")).filter((id) => id !== role.id)
-      );
-    }
-    navigate(
-      convertPathSearchUrl({ property: "role_ids", value: get("role_ids") })
-    );
-  }
   return (
     <div style={{ overflow: "hidden" }}>
       <NavbarComponent />
+      <div className="background-container " />
       <Container
         fluid
         style={{
@@ -184,6 +180,7 @@ function Users() {
           padding: 5,
           backgroundColor: "#f8f9fa",
         }}
+        className="background-color"
       >
         <Form>
           <Row>
@@ -216,15 +213,32 @@ function Users() {
               <Form.Label>Role</Form.Label>
             </Col>
             <Col sm={4}>
-              {Array.from(get("roles")).map((role) => (
+              {Array.from(get("roles") ? get("roles") : []).map((role) => (
                 <div key={role.id}>
                   <Form.Check
                     type="checkbox"
                     label={role.name}
                     name={role.name}
                     value={role.id}
-                    checked={get("role_ids").includes(role.id)}
-                    onChange={(event) => handleRoleChange(event, role)}
+                    checked={Array.from(
+                      get("role_ids") ? get("role_ids") : []
+                    ).find((roleId) => roleId == role.id)}
+                    onChange={(event) => {
+                      const isChecked = event.target.checked;
+                      if (isChecked) {
+                        set("role_ids", [
+                          ...Array.from(get("role_ids") ? get("role_ids") : []),
+                          role.id,
+                        ]);
+                      } else {
+                        set(
+                          "role_ids",
+                          Array.from(get("role_ids")).filter(
+                            (roleId) => roleId != role.id
+                          )
+                        );
+                      }
+                    }}
                   />
                 </div>
               ))}
@@ -234,23 +248,21 @@ function Users() {
               <Form.Label>Role</Form.Label>
             </Col>
             <Col sm={4}>
-              {[1, 0, -1].map((status) => (
+              {["1", "0", "-1"].map((status) => (
                 <div key={`status_${status}`}>
                   <Form.Check
                     type="radio"
                     label={
-                      status === 1
+                      status === "1"
                         ? "Enabled"
-                        : status === 0
+                        : status === "0"
                         ? "Disabled"
                         : "None"
                     }
                     name="status"
                     value={status}
-                    checked={status == get("status")}
+                    checked={status === get("status")}
                     onChange={(event) => {
-                      console.log(event.target.checked);
-                      console.log(event.target.value);
                       if (event.target.checked)
                         navigate(
                           convertPathSearchUrl([
@@ -299,7 +311,7 @@ function Users() {
       </Container>
       <Container
         style={{
-          marginTop: "220px",
+          marginTop: "250px",
           overflow: "hidden",
           overflowX: "scroll",
         }}
@@ -350,9 +362,7 @@ function Users() {
                 <td style={{ textAlign: "left" }}>{user.email}</td>
                 <td style={{ textAlign: "left" }}>{user.firstName}</td>
                 <td style={{ textAlign: "left" }}>{user.lastName}</td>
-                <td>
-                  {covertArrayObjectToString(get("rolesOfUser")[user.id])}
-                </td>
+                <td>{covertArrayObjectToString(user.roles)}</td>
                 <td>
                   {user.status ? (
                     <CustomButton

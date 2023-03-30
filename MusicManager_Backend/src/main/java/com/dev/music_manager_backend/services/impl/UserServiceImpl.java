@@ -18,7 +18,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -95,6 +98,7 @@ public class UserServiceImpl implements IUserService {
         log.info("Updating email to user: {}", id);
         return userRepository.findById(id).map(user -> {
             user.setEmail(email);
+            user.setLastUpdate(LocalDateTime.now());
             return userRepository.save(user);
         }).orElseThrow(() -> new RuntimeException("Update Mail to User with id: " + id + " failed"));
     }
@@ -107,6 +111,7 @@ public class UserServiceImpl implements IUserService {
             if (encoder.matches(oldPassword, user.getPassword())) {
                 if (password.equals(confirmPassword)) {
                     user.setPassword(new BCryptPasswordEncoder().encode(password));
+                    user.setLastUpdate(LocalDateTime.now());
                     return userRepository.save(user);
                 } else {
                     throw new RuntimeException("Password and Confirm Password not match");
@@ -202,32 +207,35 @@ public class UserServiceImpl implements IUserService {
 //    }
 
 
-    @Override
-    public User addRoleToUser(Long userId, String roleName) {
-        log.info("Adding role {} to user {}", roleName, userId);
-        User user = userRepository.findById(userId).orElse(null);
-        Role role = roleRepository.findByName(roleName).orElse(null);
-        if (user != null && role != null) {
-            user.getRoles().add(role);
-            revokeAllUserTokens(user.getEmail());
-            return userRepository.save(user);
-        } else
-            throw new RuntimeException("Update Role with name: " + roleName + " to User with id: " + userId + " failed");
-    }
+//    @Override
+//    public User addRoleToUser(Long userId, String roleName) {
+//        log.info("Adding role {} to user {}", roleName, userId);
+//        User user = userRepository.findById(userId).orElse(null);
+//        Role role = roleRepository.findByName(roleName).orElse(null);
+//        if (user != null && role != null) {
+//            user.getRoles().add(role);
+//            revokeAllUserTokens(user.getEmail());
+//            return userRepository.save(user);
+//        } else
+//            throw new RuntimeException("Update Role with name: " + roleName + " to User with id: " + userId + " failed");
+//    }
 
     @Override
     public User changeStatusUser(Long userId) {
         return userRepository.findById(userId).map(user -> {
+            if (user.isStatus())
+                revokeAllUserTokens(user.getEmail());
             user.setStatus(!user.isStatus());
+            user.setLastUpdate(LocalDateTime.now());
             return userRepository.save(user);
         }).orElseThrow(() -> new RuntimeException("Change Status User with id: " + userId + " failed"));
     }
 
-    @Override
-    public Optional<User> findUserByEmail(String email) {
-        log.info("Finding user by email: {}", email);
-        return userRepository.findByEmail(email);
-    }
+//    @Override
+//    public Optional<User> findUserByEmail(String email) {
+//        log.info("Finding user by email: {}", email);
+//        return userRepository.findByEmail(email);
+//    }
 
 //    @Override
 //    public Page<User> findUsersByRoleId(int roleId, int page, int limit, String field) {
@@ -235,11 +243,11 @@ public class UserServiceImpl implements IUserService {
 //        return userRepository.findUsersByRoleName(roleId, PageRequest.of(page, limit).withSort(Sort.by(Sort.Direction.ASC, field)));
 //    }
 
-    @Override
-    public Page<User> findUsersByRoleIds(List<Long> roleIds, int page, int limit, String field, String typeSort) {
-        log.info("Finding users by role names: {}", roleIds);
-        return userRepository.findUsersByRoles(roleIds, roleIds.size(), PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
-    }
+//    @Override
+//    public Page<User> findUsersByRoleIds(List<Long> roleIds, int page, int limit, String field, String typeSort) {
+//        log.info("Finding users by role names: {}", roleIds);
+//        return userRepository.findUsersByRoles(roleIds, roleIds.size(), PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
+//    }
 
     @Override
     public Page<User> findUsersWithPaginationAndSort(Long id, String email, String name, List<Long> roleIds, int status, int page, int limit, String field, String typeSort) {
@@ -265,17 +273,17 @@ public class UserServiceImpl implements IUserService {
         return userRepository.findUsersWithPaginationAndSort(id, email, name, listRoleIds, listRoleIds.size(), status, PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
     }
 
-    @Override
-    public Page<User> findAllUsers(int page, int limit, String field, String typeSort) {
-        log.info("Finding all users");
-        return userRepository.findAll(PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
-    }
-
-    @Override
-    public Optional<User> findUserById(Long id) {
-        log.info("Finding user by id: {}", id);
-        return userRepository.findById(id);
-    }
+//    @Override
+//    public Page<User> findAllUsers(int page, int limit, String field, String typeSort) {
+//        log.info("Finding all users");
+//        return userRepository.findAll(PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
+//    }
+//
+//    @Override
+//    public Optional<User> findUserById(Long id) {
+//        log.info("Finding user by id: {}", id);
+//        return userRepository.findById(id);
+//    }
 
     @Override
     public void roleInitialization() {
@@ -290,7 +298,6 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public void userInitialization() {
-
         if (userRepository.findByEmail("admin@gmail.com").isEmpty()) {
             log.info("Initializing users");
             userRepository.save(
@@ -304,7 +311,6 @@ public class UserServiceImpl implements IUserService {
                             .build()
             );
         }
-
     }
 
     @Override
@@ -321,6 +327,7 @@ public class UserServiceImpl implements IUserService {
     public User resetUserPassword(Long id) {
         return userRepository.findById(id).map(user -> {
                     user.setPassword(new BCryptPasswordEncoder().encode("Abcd@1234"));
+                    user.setLastUpdate(LocalDateTime.now());
                     return userRepository.save(user);
                 }
         ).orElseThrow(() -> new RuntimeException("Reset User Password with id: " + id + " failed"));

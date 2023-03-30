@@ -44,14 +44,16 @@ function NewUser() {
   return (
     <>
       <NavbarComponent />
+      <div className="background-container" />
       <Container>
         <Row
           className="col-md-8 offset-md-2"
           style={{
-            margin: "50px auto",
+            margin: "15px auto",
             border: "3px solid purple",
             backgroundColor: "white",
             maxWidth: 500,
+            borderRadius: 10,
           }}
         >
           <div className="card">
@@ -81,7 +83,14 @@ function NewUser() {
                     required
                   />
                   <div style={{ height: 5 }}>
-                    <p style={{ fontStyle: "italic", color: "red" }}>
+                    <p
+                      style={{
+                        fontStyle: "italic",
+                        color: "red",
+                        margin: 0,
+                        fontSize: 12,
+                      }}
+                    >
                       {titleIsFilled}
                     </p>
                   </div>
@@ -97,7 +106,14 @@ function NewUser() {
                     onChange={(event) => set("genre", event.target.value)}
                   />
                   <div style={{ height: 5 }}>
-                    <p style={{ fontStyle: "italic", color: "red" }}></p>
+                    <p
+                      style={{
+                        fontStyle: "italic",
+                        color: "red",
+                        margin: 0,
+                        fontSize: 12,
+                      }}
+                    ></p>
                   </div>
                 </Form.Group>
                 <Form.Group>
@@ -111,7 +127,14 @@ function NewUser() {
                     onChange={(event) => set("musician", event.target.value)}
                   />
                   <div style={{ height: 5 }}>
-                    <p style={{ fontStyle: "italic", color: "red" }}></p>
+                    <p
+                      style={{
+                        fontStyle: "italic",
+                        color: "red",
+                        margin: 0,
+                        fontSize: 12,
+                      }}
+                    ></p>
                   </div>
                 </Form.Group>
                 <Form.Group>
@@ -125,7 +148,14 @@ function NewUser() {
                     required
                   />
                   <div style={{ height: 5 }}>
-                    <p style={{ fontStyle: "italic", color: "red" }}>
+                    <p
+                      style={{
+                        fontStyle: "italic",
+                        color: "red",
+                        margin: 0,
+                        fontSize: 12,
+                      }}
+                    >
                       {fileIsFilled}
                     </p>
                   </div>
@@ -137,7 +167,6 @@ function NewUser() {
                       backgroundColor: "#e9ecef",
                       border: "none",
                       color: "black",
-                      marginTop: 20,
                     }}
                     title="Save"
                   >
@@ -150,7 +179,6 @@ function NewUser() {
                       backgroundColor: "#e9ecef",
                       border: "none",
                       color: "black",
-                      marginTop: 20,
                       marginLeft: 20,
                     }}
                   >

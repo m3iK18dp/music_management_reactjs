@@ -6,22 +6,21 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public interface IUserService {
 
     Page<User> findUsersWithPaginationAndSort(Long id, String email, String name, List<Long> roleIds, int status, int page, int limit, String field, String typeSort);
 
-    Page<User> findAllUsers(int page, int limit, String field, String typeSort);
-
-    Optional<User> findUserById(Long id);
-
-    Optional<User> findUserByEmail(String email);
+//    Page<User> findAllUsers(int page, int limit, String field, String typeSort);
+//
+//    Optional<User> findUserById(Long id);
+//
+//    Optional<User> findUserByEmail(String email);
 
 //    Page<User> findUsersByRoleId(int roleId, int page, int limit, String field);
 
-    Page<User> findUsersByRoleIds(List<Long> roleIds, int page, int limit, String field, String typeSort);
+//    Page<User> findUsersByRoleIds(List<Long> roleIds, int page, int limit, String field, String typeSort);
 
     User saveUser(User user);
 
@@ -33,7 +32,7 @@ public interface IUserService {
 
     User updatePasswordToUser(Long id, String oldPassword, String password, String confirmPassword);
 
-    User addRoleToUser(Long userId, String roleName);
+//    User addRoleToUser(Long userId, String roleName);
 
     User changeStatusUser(Long userId);
 

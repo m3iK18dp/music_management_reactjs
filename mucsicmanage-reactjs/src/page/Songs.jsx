@@ -109,7 +109,7 @@ function Songs() {
       ? ["id", "title", "genre", "musician"]
       : [searchField]
     ).forEach((field) => {
-      set(field, "");
+      set(field, { id: Number, title: "", genre: "", musician: "" }[field]);
       search.push({ property: field, value: "" });
     });
     navigate(convertPathSearchUrl(search));
@@ -177,6 +177,7 @@ function Songs() {
   };
   return (
     <div style={{ overflow: "hidden" }}>
+      <div className="background-container" />
       <NavbarComponent />
       <Container
         fluid
@@ -189,6 +190,7 @@ function Songs() {
           padding: 5,
           backgroundColor: "#f8f9fa",
         }}
+        className="background-color"
       >
         <Form>
           <Row>
@@ -307,7 +309,7 @@ function Songs() {
         style={{
           marginTop: 320,
           overflow: "hidden",
-          overflowX: "scroll",
+          //   overflowX: "scroll",
         }}
       >
         <Table
@@ -318,7 +320,7 @@ function Songs() {
           }}
         >
           <colgroup>
-            <col width="50" span="2" />
+            <col width="60" span="2" />
             <col width="auto" span="3" />
             <col width="110" span="1" />
           </colgroup>

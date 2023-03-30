@@ -22,23 +22,27 @@ function NewUser() {
   };
   function handleSubmit() {
     setFirstNameIsFilled(
-      user.firstName === ""
+      !user.firstName || user.firstName === ""
         ? `The first name field cannot be blank, please enter first name`
         : ""
     );
 
     setLastNameIsFilled(
-      user.lastName === ""
+      !user.lastName || user.lastName === ""
         ? `The last name field cannot be blank, please enter last name`
         : ""
     );
 
     setEmailIsFilled(
-      user.email === "" ? "Vui lòng nhập email để tiếp tục" : ""
+      !user.lastName || user.email === ""
+        ? "Vui lòng nhập email để tiếp tục"
+        : ""
     );
 
     setRolesCheckIsFilled(
-      user.roles.length === 0 ? "Vui lòng chọn role cho user để tiếp tục" : ""
+      !user.roles || user.roles.length === 0
+        ? "Vui lòng chọn role cho user để tiếp tục"
+        : ""
     );
 
     if (
@@ -62,14 +66,16 @@ function NewUser() {
   return (
     <>
       <NavbarComponent />
+      <div className="background-container" />
       <Container>
         <Row
           className="col-md-8 offset-md-2"
           style={{
-            margin: "50px auto",
+            margin: "15px auto",
             border: "3px solid purple",
             backgroundColor: "white",
             maxWidth: 500,
+            borderRadius: 10,
           }}
         >
           <div className="card">
@@ -96,7 +102,14 @@ function NewUser() {
                     required
                   />
                   <div style={{ height: 5 }}>
-                    <p style={{ fontStyle: "italic", color: "red" }}>
+                    <p
+                      style={{
+                        fontStyle: "italic",
+                        color: "red",
+                        margin: 0,
+                        fontSize: 12,
+                      }}
+                    >
                       {firstNameIsFilled}
                     </p>
                   </div>
@@ -112,7 +125,14 @@ function NewUser() {
                     required
                   />
                   <div style={{ height: 5 }}>
-                    <p style={{ fontStyle: "italic", color: "red" }}>
+                    <p
+                      style={{
+                        fontStyle: "italic",
+                        color: "red",
+                        margin: 0,
+                        fontSize: 12,
+                      }}
+                    >
                       {lastNameIsFilled}
                     </p>
                   </div>
@@ -128,7 +148,14 @@ function NewUser() {
                     placeholder="Enter email address"
                   />
                   <div style={{ height: 5 }}>
-                    <p style={{ fontStyle: "italic", color: "red" }}>
+                    <p
+                      style={{
+                        fontStyle: "italic",
+                        color: "red",
+                        margin: 0,
+                        fontSize: 12,
+                      }}
+                    >
                       {emailIsFilled}
                     </p>
                   </div>
@@ -149,7 +176,7 @@ function NewUser() {
                     }}
                   />
                 </Form.Group>
-                <Form.Group className="mb-3" controlId="status">
+                <Form.Group className="mb-3" controlId="roles">
                   <Form.Label>
                     <strong>Roles</strong>
                   </Form.Label>
@@ -179,7 +206,14 @@ function NewUser() {
                     />
                   ))}
                   <div style={{ height: 5 }}>
-                    <p style={{ fontStyle: "italic", color: "red" }}>
+                    <p
+                      style={{
+                        fontStyle: "italic",
+                        color: "red",
+                        margin: 0,
+                        fontSize: 12,
+                      }}
+                    >
                       {rolesCheckIsFilled}
                     </p>
                   </div>
@@ -191,7 +225,6 @@ function NewUser() {
                       backgroundColor: "#e9ecef",
                       border: "none",
                       color: "black",
-                      marginTop: 20,
                     }}
                     title="Save"
                   >
@@ -204,7 +237,6 @@ function NewUser() {
                       backgroundColor: "#e9ecef",
                       border: "none",
                       color: "black",
-                      marginTop: 20,
                       marginLeft: 20,
                     }}
                   >

@@ -6,6 +6,7 @@ import AuthNavbarComponent from "../components/AuthNavbarComponent";
 function App() {
   return (
     <>
+      <div className="background-container" />
       <AuthNavbarComponent />
       <Container fluid style={{ marginTop: 80 }}>
         <h1 className="text-center">Welcome to the Login System</h1>

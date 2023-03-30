@@ -71,6 +71,7 @@ function UpdateUser() {
   return (
     <>
       <NavbarComponent />
+      <div className="background-container" />
       <Container>
         <Row
           className="col-md-8 offset-md-2"
@@ -79,6 +80,7 @@ function UpdateUser() {
             border: "3px solid purple",
             backgroundColor: "white",
             maxWidth: 500,
+            borderRadius: 10,
           }}
         >
           <div className="card">
@@ -118,7 +120,14 @@ function UpdateUser() {
                     value={user.firstName}
                   />
                   <div style={{ height: 5 }}>
-                    <p style={{ fontStyle: "italic", color: "red" }}>
+                    <p
+                      style={{
+                        fontStyle: "italic",
+                        color: "red",
+                        margin: 0,
+                        fontSize: 12,
+                      }}
+                    >
                       {firstNameIsFilled}
                     </p>
                   </div>
@@ -135,7 +144,14 @@ function UpdateUser() {
                     value={user.lastName}
                   />
                   <div style={{ height: 5 }}>
-                    <p style={{ fontStyle: "italic", color: "red" }}>
+                    <p
+                      style={{
+                        fontStyle: "italic",
+                        color: "red",
+                        margin: 0,
+                        fontSize: 12,
+                      }}
+                    >
                       {lastNameIsFilled}
                     </p>
                   </div>
@@ -152,7 +168,14 @@ function UpdateUser() {
                     value={user.email}
                   />
                   <div style={{ height: 5 }}>
-                    <p style={{ fontStyle: "italic", color: "red" }}>
+                    <p
+                      style={{
+                        fontStyle: "italic",
+                        color: "red",
+                        margin: 0,
+                        fontSize: 12,
+                      }}
+                    >
                       {emailIsFilled}
                     </p>
                   </div>
@@ -206,7 +229,14 @@ function UpdateUser() {
                     />
                   ))}
                   <div style={{ height: 5 }}>
-                    <p style={{ fontStyle: "italic", color: "red" }}>
+                    <p
+                      style={{
+                        fontStyle: "italic",
+                        color: "red",
+                        margin: 0,
+                        fontSize: 12,
+                      }}
+                    >
                       {rolesCheckIsFilled}
                     </p>
                   </div>
@@ -218,7 +248,6 @@ function UpdateUser() {
                       backgroundColor: "#e9ecef",
                       border: "none",
                       color: "black",
-                      marginTop: 20,
                     }}
                     title="Save"
                   >
@@ -231,7 +260,6 @@ function UpdateUser() {
                       backgroundColor: "#e9ecef",
                       border: "none",
                       color: "black",
-                      marginTop: 20,
                       marginLeft: 20,
                     }}
                   >
