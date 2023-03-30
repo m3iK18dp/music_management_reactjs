@@ -26,11 +26,11 @@ root.render(
       <Route path="/register" element={<Register />} />
       <Route path="/songs" element={<Songs />} />
       <Route path="/songs/new" element={<NewSong />} />
-      <Route path="/songs/:_id" element={<UpdateSong />} />
+      <Route path="/songs/:id" element={<UpdateSong />} />
       <Route path="/account/:username" element={<MyAccount />} />
       <Route path="/users" element={<Users />} />
       <Route path="/users/new" element={<NewUser />} />
-      <Route path="/users/id" element={<UpdateUser />} />
+      <Route path="/users/:id" element={<UpdateUser />} />
       <Route path="*" element={<ErrorPage />} />
     </Routes>
   </BrowserRouter>

@@ -60,6 +60,11 @@ public class UserServiceImpl implements IUserService {
     @Override
     public User updateUser(Long id, User user) {
         log.info("Updating user by admin: {}", id);
+        List<Role> attachedRoles = new ArrayList<>();
+        for (Role role : user.getRoles()) {
+            attachedRoles.add(entityManager.merge(role));
+        }
+        user.setRoles(attachedRoles);
         return userRepository.findById(id).map(updateUser -> {
             return userRepository.save(
                     User.builder()

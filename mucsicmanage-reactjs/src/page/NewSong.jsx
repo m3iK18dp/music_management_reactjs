@@ -7,48 +7,38 @@ import { MdCancel } from "react-icons/md";
 import NavbarComponent from "../components/NavbarComponent";
 function NewUser() {
   const navigate = useNavigate();
-  const title = useRef();
-  const genre = useRef();
-  const musician = useRef();
+  // const title = useRef();
+  // const genre = useRef();
+  // const musician = useRef();
+  const [song, setSong] = useState();
   const file = useRef();
   const [titleIsFilled, setTitleIsFilled] = useState("");
   const [fileIsFilled, setFileIsFilled] = useState("");
   const [status, setStatus] = useState("");
-  const [check, setCheck] = useState(true);
+  const set = (prop, value) => {
+    setSong({ ...song, [prop]: value });
+  };
   function handleSubmit() {
-    if (!title.current.value) {
-      setTitleIsFilled(`The title field cannot be blank, please enter a title`);
-      setCheck(false);
-    } else {
-      setTitleIsFilled();
-      setCheck(true);
-    }
-    if (!file.current.files[0]) {
-      setFileIsFilled("Vui lòng nhập file để tiếp tục");
-      setCheck(false);
-    } else {
-      setFileIsFilled();
-      setCheck(true);
-    }
-    if (!check) setStatus();
+    setTitleIsFilled(
+      song.title === ""
+        ? `The title field cannot be blank, please enter a title`
+        : ""
+    );
+
+    setFileIsFilled(
+      !file.current.files[0] ? "Vui lòng nhập file để tiếp tục" : ""
+    );
+
+    if (song.title === "" || !file.current.files[0]) setStatus("");
     else {
-      songService
-        .insertSong(
-          {
-            title: title.current.value,
-            genre: genre.current.value,
-            musician: musician.current.value,
-          },
-          file.current.files[0]
-        )
-        .then((res) => {
-          if (res.status === "ok") {
-            alert("Add new Song successful!");
-            navigate("/songs");
-          } else {
-            setStatus("Create new Song failed, try again.");
-          }
-        });
+      songService.insertSong(song, file.current.files[0]).then((res) => {
+        if (res.status === "ok") {
+          alert("Add new Song successful!");
+          navigate("/songs");
+        } else {
+          setStatus("Create new Song failed, try again.");
+        }
+      });
     }
   }
   return (
@@ -65,7 +55,16 @@ function NewUser() {
           }}
         >
           <div className="card">
-            <h1 className="text-center">Add song</h1>
+            <h1
+              className="text-center"
+              style={{
+                borderBottom: "2px solid purple",
+                padding: "20px",
+                marginBottom: "0",
+              }}
+            >
+              Add song
+            </h1>
             <div className="card-body">
               <Form
                 action="/songs/new"
@@ -78,12 +77,14 @@ function NewUser() {
                     type="text"
                     name="title"
                     placeholder="Enter song name"
-                    ref={title}
+                    onChange={(event) => set("title", event.target.value)}
                     required
                   />
-                  {titleIsFilled && (
-                    <p style={{ marginBottom: "0px" }}>{titleIsFilled}</p>
-                  )}
+                  <div style={{ height: 5 }}>
+                    <p style={{ fontStyle: "italic", color: "red" }}>
+                      {titleIsFilled}
+                    </p>
+                  </div>
                 </Form.Group>
                 <Form.Group>
                   <Form.Label style={{ fontWeight: "bold", marginTop: 20 }}>
@@ -93,8 +94,11 @@ function NewUser() {
                     type="text"
                     name="genre"
                     placeholder="Enter genre"
-                    ref={genre}
+                    onChange={(event) => set("genre", event.target.value)}
                   />
+                  <div style={{ height: 5 }}>
+                    <p style={{ fontStyle: "italic", color: "red" }}></p>
+                  </div>
                 </Form.Group>
                 <Form.Group>
                   <Form.Label style={{ fontWeight: "bold", marginTop: 20 }}>
@@ -104,8 +108,11 @@ function NewUser() {
                     type="text"
                     name="musician"
                     placeholder="Enter musician"
-                    ref={musician}
+                    onChange={(event) => set("musician", event.target.value)}
                   />
+                  <div style={{ height: 5 }}>
+                    <p style={{ fontStyle: "italic", color: "red" }}></p>
+                  </div>
                 </Form.Group>
                 <Form.Group>
                   <Form.Label style={{ fontWeight: "bold", marginTop: 20 }}>
@@ -117,9 +124,11 @@ function NewUser() {
                     ref={file}
                     required
                   />
-                  {fileIsFilled && (
-                    <p style={{ marginBottom: "0px" }}>{fileIsFilled}</p>
-                  )}
+                  <div style={{ height: 5 }}>
+                    <p style={{ fontStyle: "italic", color: "red" }}>
+                      {fileIsFilled}
+                    </p>
+                  </div>
                 </Form.Group>
                 <div className="box-footer">
                   <Button
