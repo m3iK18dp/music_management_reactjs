@@ -4,6 +4,7 @@ import com.dev.music_manager_backend.models.ResponseObject;
 import com.dev.music_manager_backend.models.Role;
 import com.dev.music_manager_backend.models.User;
 import com.dev.music_manager_backend.services.IUserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -11,10 +12,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -79,96 +78,96 @@ public class UserController {
     }
 
     //admin
-    @GetMapping("/users/get_all")
-    public ResponseObject<Page<User>> getAllUsers(
-            int page,
-            int limit,
-            String field,
-            String typeSort
-    ) {
-        Page<User> users = new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 0);
-        try {
-            users = userService.findAllUsers(page, limit, field, typeSort);
-            if (users.isEmpty()) {
-                return new ResponseObject<>(
-                        "failed",
-                        "Not found Users",
-                        users
-                );
-            } else {
-                return new ResponseObject<>(
-                        "ok",
-                        "Get All Success",
-                        users
-                );
-            }
-        } catch (Exception exception) {
-            return new ResponseObject<>(
-                    "failed",
-                    "Can't get all Users",
-                    users
-            );
-        }
-    }
+//    @GetMapping("/users/get_all")
+//    public ResponseObject<Page<User>> getAllUsers(
+//            int page,
+//            int limit,
+//            String field,
+//            String typeSort
+//    ) {
+//        Page<User> users = new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 0);
+//        try {
+//            users = userService.findAllUsers(page, limit, field, typeSort);
+//            if (users.isEmpty()) {
+//                return new ResponseObject<>(
+//                        "failed",
+//                        "Not found Users",
+//                        users
+//                );
+//            } else {
+//                return new ResponseObject<>(
+//                        "ok",
+//                        "Get All Success",
+//                        users
+//                );
+//            }
+//        } catch (Exception exception) {
+//            return new ResponseObject<>(
+//                    "failed",
+//                    "Can't get all Users",
+//                    users
+//            );
+//        }
+//    }
 
     //admin //user
-    @GetMapping("/users/get_by_id/{id}")
-    public ResponseObject<Page<User>> getUserById(
-            Long id
-    ) {
-        try {
-            return userService.findUserById(id).map(user ->
-                    new ResponseObject<>(
-                            "ok",
-                            "Get user successfully",
-                            (Page<User>) new PageImpl<>(List.of(user), PageRequest.of(0, 10), 1)
-                    )
-            ).orElseGet(() ->
-                    new ResponseObject<>(
-                            "failed",
-                            "Not found user with id = " + id,
-                            new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 1)
-                    )
-            );
-        } catch (Exception e) {
-            return new ResponseObject<>(
-                    "failed",
-                    "Cannot get user with id = " + id + "\n" + e.getMessage(),
-                    new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 1)
-            );
-        }
-    }
+//    @GetMapping("/users/get_by_id/{id}")
+//    public ResponseObject<Page<User>> getUserById(
+//            Long id
+//    ) {
+//        try {
+//            return userService.findUserById(id).map(user ->
+//                    new ResponseObject<>(
+//                            "ok",
+//                            "Get user successfully",
+//                            (Page<User>) new PageImpl<>(List.of(user), PageRequest.of(0, 10), 1)
+//                    )
+//            ).orElseGet(() ->
+//                    new ResponseObject<>(
+//                            "failed",
+//                            "Not found user with id = " + id,
+//                            new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 1)
+//                    )
+//            );
+//        } catch (Exception e) {
+//            return new ResponseObject<>(
+//                    "failed",
+//                    "Cannot get user with id = " + id + "\n" + e.getMessage(),
+//                    new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 1)
+//            );
+//        }
+//    }
 
     //admin //user
-    @GetMapping("/users/get_by_email")
-    public ResponseObject<Page<User>> getUserByEmail(
-            String email
-    ) {
-        try {
-            Page<User> users = new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 0);
-            return userService.findUserByEmail(email).map(user ->
-                    new ResponseObject<>(
-                            "ok",
-                            "Get user successfully",
-                            (Page<User>) new PageImpl<>(List.of(user), PageRequest.of(0, 10), 1)
-
-                    )
-            ).orElseGet(() ->
-                    new ResponseObject<>(
-                            "failed",
-                            "Not found user with email = " + email,
-                            new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 1)
-
-                    )
-            );
-        } catch (Exception e) {
-            return new ResponseObject<>(
-                    "failed",
-                    "Cannot get user with email = " + email + "\n" + e.getMessage(),
-                    new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 1)
-            );
-        }
-    }
+//    @GetMapping("/users/get_by_email")
+//    public ResponseObject<Page<User>> getUserByEmail(
+//            String email
+//    ) {
+//        try {
+//            Page<User> users = new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 0);
+//            return userService.findUserByEmail(email).map(user ->
+//                    new ResponseObject<>(
+//                            "ok",
+//                            "Get user successfully",
+//                            (Page<User>) new PageImpl<>(List.of(user), PageRequest.of(0, 10), 1)
+//
+//                    )
+//            ).orElseGet(() ->
+//                    new ResponseObject<>(
+//                            "failed",
+//                            "Not found user with email = " + email,
+//                            new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 1)
+//
+//                    )
+//            );
+//        } catch (Exception e) {
+//            return new ResponseObject<>(
+//                    "failed",
+//                    "Cannot get user with email = " + email + "\n" + e.getMessage(),
+//                    new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 1)
+//            );
+//        }
+//    }
 
     //admin
 //    @GetMapping("/users/get_by_role_id")
@@ -204,47 +203,47 @@ public class UserController {
 //    }
 
     //admin
-    @GetMapping("/users/get_by_role_ids")
-    public ResponseObject<Page<User>> getUsersByRoleIds(
-            String roleIds,
-            int page,
-            int limit,
-            String field,
-            String typeSort
-    ) {
-        Page<User> users = new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 0);
-        try {
-            users = userService.findUsersByRoleIds(
-                    Arrays.stream(roleIds.split("-"))
-                            .map(Long::parseLong)
-                            .collect(Collectors.toList()
-                            ),
-                    page,
-                    limit,
-                    field,
-                    typeSort
-            );
-            if (users.isEmpty()) {
-                return new ResponseObject<>(
-                        "failed",
-                        "Not found Users with roles = " + roleIds,
-                        users
-                );
-            } else {
-                return new ResponseObject<>(
-                        "ok",
-                        "Get Users with roles = " + roleIds + " Success",
-                        users
-                );
-            }
-        } catch (Exception exception) {
-            return new ResponseObject<>(
-                    "failed",
-                    "Can't get Users with roles = " + roleIds,
-                    users
-            );
-        }
-    }
+//    @GetMapping("/users/get_by_role_ids")
+//    public ResponseObject<Page<User>> getUsersByRoleIds(
+//            String roleIds,
+//            int page,
+//            int limit,
+//            String field,
+//            String typeSort
+//    ) {
+//        Page<User> users = new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 0);
+//        try {
+//            users = userService.findUsersByRoleIds(
+//                    Arrays.stream(roleIds.split("-"))
+//                            .map(Long::parseLong)
+//                            .collect(Collectors.toList()
+//                            ),
+//                    page,
+//                    limit,
+//                    field,
+//                    typeSort
+//            );
+//            if (users.isEmpty()) {
+//                return new ResponseObject<>(
+//                        "failed",
+//                        "Not found Users with roles = " + roleIds,
+//                        users
+//                );
+//            } else {
+//                return new ResponseObject<>(
+//                        "ok",
+//                        "Get Users with roles = " + roleIds + " Success",
+//                        users
+//                );
+//            }
+//        } catch (Exception exception) {
+//            return new ResponseObject<>(
+//                    "failed",
+//                    "Can't get Users with roles = " + roleIds,
+//                    users
+//            );
+//        }
+//    }
 
     @PostMapping("/users")
     public ResponseObject<User> addUser(
@@ -269,13 +268,14 @@ public class UserController {
     @PutMapping("/users/{id}")
     public ResponseObject<User> updateUser(
             @PathVariable Long id,
-            @RequestBody User user
+            @RequestBody User user,
+            HttpServletRequest request
     ) {
         try {
             return new ResponseObject<>(
                     "ok",
                     "Update user with id: " + id,
-                    userService.updateUser(id, user)
+                    userService.updateUser(id, user, request)
             );
         } catch (Exception exception) {
             return new ResponseObject<>(
@@ -286,15 +286,16 @@ public class UserController {
         }
     }
 
-    @PutMapping("/users/{id}/reset_password")
+    @PutMapping("/users/reset_password/{id}")
     public ResponseObject<User> resetPassword(
-            @PathVariable Long id
+            @PathVariable Long id,
+            HttpServletRequest request
     ) {
         try {
             return new ResponseObject<>(
                     "ok",
                     "Reset password to user with id: " + id + " success",
-                    userService.resetUserPassword(id)
+                    userService.resetUserPassword(id, request)
             );
         } catch (Exception exception) {
             return new ResponseObject<>(
@@ -324,16 +325,17 @@ public class UserController {
 //    }
 
     //user
-    @PutMapping("/users/{id}/update_email")
+    @PutMapping("/users/update_email/{id}")
     public ResponseObject<User> updateEmailToUser(
             @PathVariable Long id,
-            @RequestBody String email
+            @RequestBody String email,
+            HttpServletRequest request
     ) {
         try {
             return new ResponseObject<>(
                     "ok",
                     "Update user email with id: " + id,
-                    userService.updateEmailToUser(id, email)
+                    userService.updateEmailToUser(id, email, request)
             );
         } catch (Exception exception) {
             return new ResponseObject<>(
@@ -345,16 +347,17 @@ public class UserController {
     }
 
     //user
-    @PutMapping("/users/{id}/update_password")
+    @PutMapping("/users/update_password/{id}")
     public ResponseObject<User> updatePasswordToUser(
             @PathVariable Long id,
-            @RequestBody List<String> listPassword
+            @RequestBody List<String> listPassword,
+            HttpServletRequest request
     ) {
         try {
             return new ResponseObject<>(
                     "ok",
                     "Update user email with id: " + id,
-                    userService.updatePasswordToUser(id, listPassword.get(0), listPassword.get(1), listPassword.get(2))
+                    userService.updatePasswordToUser(id, listPassword.get(0), listPassword.get(1), listPassword.get(2), request)
             );
         } catch (Exception exception) {
             return new ResponseObject<>(
@@ -382,15 +385,16 @@ public class UserController {
 //        }
 //    }
 
-    @PutMapping("/users/{id}/change_status")
+    @PutMapping("/users/change_status/{id}")
     public ResponseObject<User> changStatusUser(
-            @PathVariable Long id
+            @PathVariable Long id,
+            HttpServletRequest request
     ) {
         try {
             return new ResponseObject<>(
                     "ok",
                     "Change Status user with id = " + id + " successfully",
-                    userService.changeStatusUser(id)
+                    userService.changeStatusUser(id, request)
             );
         } catch (Exception exception) {
             return new ResponseObject<>(
@@ -504,37 +508,37 @@ public class UserController {
 //        }
 //    }
 
-    @GetMapping("/roles/load_roles_by_list_role_id")
-    public ResponseObject<List<Role>> getRolesByListRoleId(
-            @RequestParam("role_ids") String roleIds
-    ) {
-        try {
-            List<Role> roles = userService.findRolesByListRoleId(
-                    Arrays.stream(roleIds.split("-"))
-                            .map(Long::parseLong)
-                            .collect(Collectors.toList()
-                            ));
-            if (roles.isEmpty()) {
-                return new ResponseObject<>(
-                        "failed",
-                        "Not found Roles with id in listRoleId = " + roleIds,
-                        roles
-                );
-            } else {
-                return new ResponseObject<>(
-                        "ok",
-                        "Get All Roles Success",
-                        roles
-                );
-            }
-        } catch (Exception exception) {
-            return new ResponseObject<>(
-                    "failed",
-                    "Can't get Roles with id in listRoleId = " + roleIds,
-                    new ArrayList<>()
-            );
-        }
-    }
+//    @GetMapping("/roles/load_roles_by_list_role_id")
+//    public ResponseObject<List<Role>> getRolesByListRoleId(
+//            @RequestParam("role_ids") String roleIds
+//    ) {
+//        try {
+//            List<Role> roles = userService.findRolesByListRoleId(
+//                    Arrays.stream(roleIds.split("-"))
+//                            .map(Long::parseLong)
+//                            .collect(Collectors.toList()
+//                            ));
+//            if (roles.isEmpty()) {
+//                return new ResponseObject<>(
+//                        "failed",
+//                        "Not found Roles with id in listRoleId = " + roleIds,
+//                        roles
+//                );
+//            } else {
+//                return new ResponseObject<>(
+//                        "ok",
+//                        "Get All Roles Success",
+//                        roles
+//                );
+//            }
+//        } catch (Exception exception) {
+//            return new ResponseObject<>(
+//                    "failed",
+//                    "Can't get Roles with id in listRoleId = " + roleIds,
+//                    new ArrayList<>()
+//            );
+//        }
+//    }
 
 //    @PostMapping("/roles/{id}/update")
 //    public ResponseObject<Role> updateRole(@PathVariable Long id, @RequestParam("role") String role) {

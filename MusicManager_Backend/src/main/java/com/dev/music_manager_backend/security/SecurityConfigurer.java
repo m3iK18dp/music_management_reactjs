@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
@@ -75,12 +76,21 @@ public class SecurityConfigurer {
         http.csrf().disable()
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests((authorize) ->
-                                authorize
-                                        .requestMatchers("/api/auth", "/api/auth/**").permitAll()
-                                        .requestMatchers("/api/songs/**").authenticated()
-                                        .requestMatchers("/api/users", "/api/users/**").hasAnyAuthority("ROLE_ADMIN")
-                                        .anyRequest().authenticated()
-//                                .anyRequest().permitAll()
+                        authorize
+                                .requestMatchers("/api/auth", "/api/auth/**").permitAll()
+                                .requestMatchers("/api/songs/**").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/api/users", "/api/users/**").hasAnyAuthority("ROLE_ADMIN")
+                                .requestMatchers(HttpMethod.POST, "/api/users", "/api/users/**").hasAnyAuthority("ROLE_ADMIN")
+                                .requestMatchers(HttpMethod.DELETE, "/api/users", "/api/users/**").hasAnyAuthority("ROLE_ADMIN")
+                                .requestMatchers(
+                                        HttpMethod.PUT,
+                                        "/api/users",
+                                        "/users/change_status/**",
+                                        "/users/reset_password/**",
+                                        "/users/update_email/**",
+                                        "/users/update_password/**"
+                                ).authenticated()
+                                .anyRequest().authenticated()
                 ).sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()

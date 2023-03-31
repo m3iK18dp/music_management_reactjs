@@ -6,7 +6,9 @@ import com.dev.music_manager_backend.repositories.RoleRepository;
 import com.dev.music_manager_backend.repositories.TokenRepository;
 import com.dev.music_manager_backend.repositories.UserRepository;
 import com.dev.music_manager_backend.services.IUserService;
+import com.dev.music_manager_backend.util.JwtTokenUtil;
 import jakarta.persistence.EntityManager;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,10 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +36,7 @@ public class UserServiceImpl implements IUserService {
     private final TokenRepository tokenRepository;
     @Autowired
     private final EntityManager entityManager;
+    private final JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
 
     @Override
     public User saveUser(User user) {
@@ -60,27 +60,35 @@ public class UserServiceImpl implements IUserService {
         }
     }
 
+    private User extractUser(HttpServletRequest request) {
+        return userRepository.findByEmail(jwtTokenUtil.extractUserNameWithType(request.getHeader("Authorization"))).orElse(new User());
+    }
+
     @Override
-    public User updateUser(Long id, User user) {
-        log.info("Updating user by admin: {}", id);
-        List<Role> attachedRoles = new ArrayList<>();
-        for (Role role : user.getRoles()) {
-            attachedRoles.add(entityManager.merge(role));
-        }
-        user.setRoles(attachedRoles);
-        return userRepository.findById(id).map(updateUser -> {
-            return userRepository.save(
-                    User.builder()
-                            .id(id)
-                            .firstName(user.getFirstName())
-                            .lastName(user.getLastName())
-                            .email(user.getEmail())
-                            .status(user.isStatus())
-                            .roles(user.getRoles())
-                            .lastUpdate(LocalDateTime.now())
-                            .build()
-            );
-        }).orElseThrow(() -> new RuntimeException("Update User with id: " + id + " failed"));
+    public User updateUser(Long id, User user, HttpServletRequest request) {
+        User userFromAuth = extractUser(request);
+        if (userFromAuth.getRoles().contains(roleRepository.findByName("ROLE_ADMIN").orElse(new Role())) || Objects.equals(userFromAuth.getId(), id)) {
+            log.info("Updating user by admin: {}", id);
+            List<Role> attachedRoles = new ArrayList<>();
+            for (Role role : user.getRoles()) {
+                attachedRoles.add(entityManager.merge(role));
+            }
+            user.setRoles(attachedRoles);
+            return userRepository.findById(id).map(updateUser -> {
+                return userRepository.save(
+                        User.builder()
+                                .id(id)
+                                .firstName(user.getFirstName())
+                                .lastName(user.getLastName())
+                                .email(user.getEmail())
+                                .status(user.isStatus())
+                                .roles(user.getRoles())
+                                .lastUpdate(LocalDateTime.now())
+                                .build()
+                );
+            }).orElseThrow(() -> new RuntimeException("Update User with id: " + id + " failed"));
+        } else
+            throw new RuntimeException("You not admin, you can only update your user");
     }
 
 //    @Override
@@ -94,32 +102,40 @@ public class UserServiceImpl implements IUserService {
 //    }
 
     @Override
-    public User updateEmailToUser(Long id, String email) {
+    public User updateEmailToUser(Long id, String email, HttpServletRequest request) {
         log.info("Updating email to user: {}", id);
-        return userRepository.findById(id).map(user -> {
-            user.setEmail(email);
-            user.setLastUpdate(LocalDateTime.now());
-            return userRepository.save(user);
-        }).orElseThrow(() -> new RuntimeException("Update Mail to User with id: " + id + " failed"));
+        User userFromAuth = extractUser(request);
+        if (userFromAuth.getRoles().contains(roleRepository.findByName("ROLE_ADMIN").orElse(new Role())) || Objects.equals(userFromAuth.getId(), id)) {
+            return userRepository.findById(id).map(user -> {
+                user.setEmail(email);
+                user.setLastUpdate(LocalDateTime.now());
+                return userRepository.save(user);
+            }).orElseThrow(() -> new RuntimeException("Update Mail to User with id: " + id + " failed"));
+        } else
+            throw new RuntimeException("You not admin, you can only update your user");
     }
 
     @Override
-    public User updatePasswordToUser(Long id, String oldPassword, String password, String confirmPassword) {
+    public User updatePasswordToUser(Long id, String oldPassword, String password, String confirmPassword, HttpServletRequest request) {
         log.info("Updating password to user: {}", id);
-        return userRepository.findById(id).map(user -> {
-            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-            if (encoder.matches(oldPassword, user.getPassword())) {
-                if (password.equals(confirmPassword)) {
-                    user.setPassword(new BCryptPasswordEncoder().encode(password));
-                    user.setLastUpdate(LocalDateTime.now());
-                    return userRepository.save(user);
+        User userFromAuth = extractUser(request);
+        if (Objects.equals(userFromAuth.getId(), id)) {
+            return userRepository.findById(id).map(user -> {
+                BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+                if (encoder.matches(oldPassword, user.getPassword())) {
+                    if (password.equals(confirmPassword)) {
+                        user.setPassword(new BCryptPasswordEncoder().encode(password));
+                        user.setLastUpdate(LocalDateTime.now());
+                        return userRepository.save(user);
+                    } else {
+                        throw new RuntimeException("Password and Confirm Password not match");
+                    }
                 } else {
-                    throw new RuntimeException("Password and Confirm Password not match");
+                    throw new RuntimeException("Old Password not matched");
                 }
-            } else {
-                throw new RuntimeException("Old Password not matched");
-            }
-        }).orElseThrow(() -> new RuntimeException("Update Password to User with id: " + id + " failed"));
+            }).orElseThrow(() -> new RuntimeException("Update Password to User with id: " + id + " failed"));
+        } else
+            throw new RuntimeException("You not admin, you can only update your user");
     }
 
     //    @Override
@@ -156,22 +172,22 @@ public class UserServiceImpl implements IUserService {
         return roleRepository.findRolesWithPaginationAndSort(id, name, roleIds, roleIds.size(), userId, PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
     }
 
-    @Override
-    public List<Role> findAllRoles() {
-        return roleRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
-    }
-
-    @Override
-    public List<Role> findRolesByListRoleId(List<Long> roleIds) {
-        return roleRepository.findRolesByListRoleId(roleIds);
-//        return new ArrayList<>();
-    }
-
-    @Override
-    public Role saveRole(Role role) {
-        log.info("Saving role: {}", role);
-        return roleRepository.save(role);
-    }
+//    @Override
+//    public List<Role> findAllRoles() {
+//        return roleRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
+//    }
+//
+//    @Override
+//    public List<Role> findRolesByListRoleId(List<Long> roleIds) {
+//        return roleRepository.findRolesByListRoleId(roleIds);
+////        return new ArrayList<>();
+//    }
+//
+//    @Override
+//    public Role saveRole(Role role) {
+//        log.info("Saving role: {}", role);
+//        return roleRepository.save(role);
+//    }
 
 //    @Override
 //    public Role updateRole(Long id, Role role) {
@@ -221,21 +237,26 @@ public class UserServiceImpl implements IUserService {
 //    }
 
     @Override
-    public User changeStatusUser(Long userId) {
-        return userRepository.findById(userId).map(user -> {
-            if (user.isStatus())
-                revokeAllUserTokens(user.getEmail());
-            user.setStatus(!user.isStatus());
-            user.setLastUpdate(LocalDateTime.now());
-            return userRepository.save(user);
-        }).orElseThrow(() -> new RuntimeException("Change Status User with id: " + userId + " failed"));
+    public User changeStatusUser(Long userId, HttpServletRequest request) {
+        log.info("Change Status User " + userId);
+        User userFromAuth = extractUser(request);
+        if (userFromAuth.getRoles().contains(roleRepository.findByName("ROLE_ADMIN").orElse(new Role())) || Objects.equals(userFromAuth.getId(), userId)) {
+            return userRepository.findById(userId).map(user -> {
+                if (user.isStatus())
+                    revokeAllUserTokens(user.getEmail());
+                user.setStatus(!user.isStatus());
+                user.setLastUpdate(LocalDateTime.now());
+                return userRepository.save(user);
+            }).orElseThrow(() -> new RuntimeException("Change Status User with id: " + userId + " failed"));
+        } else
+            throw new RuntimeException("You not admin, you can only update your user");
     }
 
-//    @Override
-//    public Optional<User> findUserByEmail(String email) {
-//        log.info("Finding user by email: {}", email);
-//        return userRepository.findByEmail(email);
-//    }
+    @Override
+    public Optional<User> findUserByEmail(String email) {
+        log.info("Finding user by email: {}", email);
+        return userRepository.findByEmail(email);
+    }
 
 //    @Override
 //    public Page<User> findUsersByRoleId(int roleId, int page, int limit, String field) {
@@ -324,12 +345,16 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public User resetUserPassword(Long id) {
-        return userRepository.findById(id).map(user -> {
-                    user.setPassword(new BCryptPasswordEncoder().encode("Abcd@1234"));
-                    user.setLastUpdate(LocalDateTime.now());
-                    return userRepository.save(user);
-                }
-        ).orElseThrow(() -> new RuntimeException("Reset User Password with id: " + id + " failed"));
+    public User resetUserPassword(Long id, HttpServletRequest request) {
+        User userFromAuth = extractUser(request);
+        if (userFromAuth.getRoles().contains(roleRepository.findByName("ROLE_ADMIN").orElse(new Role())) || Objects.equals(userFromAuth.getId(), id)) {
+            return userRepository.findById(id).map(user -> {
+                        user.setPassword(new BCryptPasswordEncoder().encode("Abcd@1234"));
+                        user.setLastUpdate(LocalDateTime.now());
+                        return userRepository.save(user);
+                    }
+            ).orElseThrow(() -> new RuntimeException("Reset User Password with id: " + id + " failed"));
+        } else
+            throw new RuntimeException("You not admin, you can only update your user");
     }
 }

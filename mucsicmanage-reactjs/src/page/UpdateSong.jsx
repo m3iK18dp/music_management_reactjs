@@ -24,11 +24,7 @@ function UpdateSong() {
     setSong({ ...song, [prop]: value });
   };
   function handleSubmit() {
-    setTitleIsFilled(
-      song.title === ""
-        ? `The title field cannot be blank, please enter a title`
-        : ""
-    );
+    setTitleIsFilled(song.title === "" ? `Please enter a title` : "");
 
     if (song.title === "") setStatus("");
     else {

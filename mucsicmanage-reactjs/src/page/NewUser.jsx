@@ -22,27 +22,19 @@ function NewUser() {
   };
   function handleSubmit() {
     setFirstNameIsFilled(
-      !user.firstName || user.firstName === ""
-        ? `The first name field cannot be blank, please enter first name`
-        : ""
+      !user.firstName || user.firstName === "" ? `Please enter first name` : ""
     );
 
     setLastNameIsFilled(
-      !user.lastName || user.lastName === ""
-        ? `The last name field cannot be blank, please enter last name`
-        : ""
+      !user.lastName || user.lastName === "" ? `Please enter last name` : ""
     );
 
     setEmailIsFilled(
-      !user.lastName || user.email === ""
-        ? "Vui lòng nhập email để tiếp tục"
-        : ""
+      !user.lastName || user.email === "" ? "Please enter email" : ""
     );
 
     setRolesCheckIsFilled(
-      !user.roles || user.roles.length === 0
-        ? "Vui lòng chọn role cho user để tiếp tục"
-        : ""
+      !user.roles || user.roles.length === 0 ? "Please select roles" : ""
     );
 
     if (

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Container, Row, Col, Form, Table } from "react-bootstrap";
 import { AiFillEdit } from "react-icons/ai";
+import { FaUserEdit } from "react-icons/fa";
 import {
   BsSortNumericUpAlt,
   BsSortAlphaUpAlt,
@@ -96,6 +97,7 @@ function Users() {
   }, [search.role_ids]);
   const covertArrayObjectToString = (roles) => {
     if (roles) return roles.map((role) => (role ? role.name : null)).join(", ");
+    return "";
   };
   const changeStatus = (id) => {
     const user = get("currentUsers").find((user) => user.id === id);
@@ -109,8 +111,8 @@ function Users() {
   const handleResetPassword = (id) => {
     userService.resetPasswordUser(id).then((res) => {
       if (res.status === "ok") {
-        alert("Reset Password for user " + id + "success");
-      } else alert("Reset Password for user " + id + "failed");
+        alert("Reset Password for user have " + id + " success");
+      } else alert("Reset Password for user have " + id + " failed");
     });
   };
   const handleSearch = () => {
@@ -392,7 +394,7 @@ function Users() {
                   />
                   <CustomButton
                     field={user.id}
-                    IconButton={AiFillEdit}
+                    IconButton={FaUserEdit}
                     size={30}
                     func={handleUpdateUser}
                     title={"Edit User"}

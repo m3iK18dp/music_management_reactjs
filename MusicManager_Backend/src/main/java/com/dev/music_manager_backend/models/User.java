@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class User {
     @NotBlank
     @Column(nullable = false)
     @Builder.Default
-    private String password = "Abcd@1234";
+    private String password = new BCryptPasswordEncoder().encode("Abcd@1234");
 
     @Column(nullable = false)
     @Builder.Default

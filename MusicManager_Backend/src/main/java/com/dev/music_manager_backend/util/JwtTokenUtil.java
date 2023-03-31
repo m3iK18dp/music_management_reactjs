@@ -20,7 +20,11 @@ public class JwtTokenUtil {
     public static final String JWT_SECRET =
             "24432646294A404E635166546A576E5A7234753778214125442A472D4B6150645367566B58703273357638792F423F4528482B4D6251655468576D5A71337436";
     public static final int JWT_EXPIRATION_MS = 1209600000;
-//    private static final Logger log = Logger.getLogger(JwtTokenUtil.class);
+
+    //    private static final Logger log = Logger.getLogger(JwtTokenUtil.class);
+    public String extractUserNameWithType(String token) {
+        return extractClaim(token.substring(7), Claims::getSubject);
+    }
 
     public String extractUserName(String token) {
         return extractClaim(token, Claims::getSubject);

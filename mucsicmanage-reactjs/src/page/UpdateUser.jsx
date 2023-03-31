@@ -30,24 +30,14 @@ function UpdateUser() {
   };
   function handleSubmit() {
     setFirstNameIsFilled(
-      user.firstName === ""
-        ? `The first name field cannot be blank, please enter first name`
-        : ""
+      user.firstName === "" ? `Please enter first name` : ""
     );
 
-    setLastNameIsFilled(
-      user.lastName === ""
-        ? `The last name field cannot be blank, please enter last name`
-        : ""
-    );
+    setLastNameIsFilled(user.lastName === "" ? `Please enter last name` : "");
 
-    setEmailIsFilled(
-      user.email === "" ? "Vui lòng nhập email để tiếp tục" : ""
-    );
+    setEmailIsFilled(user.email === "" ? "Please enter email" : "");
 
-    setRolesCheckIsFilled(
-      user.roles.length === 0 ? "Vui lòng chọn role cho user để tiếp tục" : ""
-    );
+    setRolesCheckIsFilled(user.roles.length === 0 ? "Please select roles" : "");
 
     if (
       user.firstName === "" ||

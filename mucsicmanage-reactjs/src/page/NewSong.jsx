@@ -19,15 +19,9 @@ function NewUser() {
     setSong({ ...song, [prop]: value });
   };
   function handleSubmit() {
-    setTitleIsFilled(
-      song.title === ""
-        ? `The title field cannot be blank, please enter a title`
-        : ""
-    );
+    setTitleIsFilled(song.title === "" ? `Please enter a title` : "");
 
-    setFileIsFilled(
-      !file.current.files[0] ? "Vui lòng nhập file để tiếp tục" : ""
-    );
+    setFileIsFilled(!file.current.files[0] ? "Please select file" : "");
 
     if (song.title === "" || !file.current.files[0]) setStatus("");
     else {
