@@ -108,20 +108,16 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public User updatePasswordToUser(Long id, String oldPassword, String password, String confirmPassword, HttpServletRequest request) {
+    public User updatePasswordToUser(Long id, String oldPassword, String newPassword, HttpServletRequest request) {
         log.info("Updating password to user: {}", id);
         User userFromAuth = extractUser(request);
         if (Objects.equals(userFromAuth.getId(), id)) {
             return userRepository.findById(id).map(user -> {
                 BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
                 if (encoder.matches(oldPassword, user.getPassword())) {
-                    if (password.equals(confirmPassword)) {
-                        user.setPassword(new BCryptPasswordEncoder().encode(password));
-                        user.setLastUpdate(LocalDateTime.now());
-                        return userRepository.save(user);
-                    } else {
-                        throw new RuntimeException("Password and Confirm Password not match");
-                    }
+                    user.setPassword(new BCryptPasswordEncoder().encode(newPassword));
+                    user.setLastUpdate(LocalDateTime.now());
+                    return userRepository.save(user);
                 } else {
                     throw new RuntimeException("Old Password not matched");
                 }
@@ -196,7 +192,6 @@ public class UserServiceImpl implements IUserService {
             filter.put("field", field);
             filter.put("typeSort", typeSort);
             log.info("Finding users with pagination and sort " + filter);
-
             return userRepository.findUsersWithPaginationAndSort(id, email, name, roleIds, roleIds.size(), status, PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
         } else
             throw new RuntimeException("You not admin, you can only read for your user");

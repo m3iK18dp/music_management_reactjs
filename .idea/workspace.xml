@@ -6,31 +6,20 @@
   <component name="ChangeListManager">
     <list default="true" id="35eb1f67-c063-4eb4-9195-99fe53a5385b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.vscode/launch.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vscode/launch.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/controllers/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/controllers/UserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/repositories/RoleRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/repositories/RoleRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/repositories/TokenRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/repositories/TokenRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/security/SecurityConfigurer.java" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/security/SecurityConfigurer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/repositories/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/repositories/UserRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/services/IUserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/services/IUserService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/services/impl/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/services/impl/UserServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/src/main/resources/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/target/classes/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/target/classes/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/target/classes/application.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/controllers/UserController.class" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/controllers/UserController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/models/Role$RoleBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/models/Role$RoleBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/models/Role.class" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/models/Role.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/repositories/RoleRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/repositories/RoleRepository.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/repositories/TokenRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/repositories/TokenRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/repositories/UserRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/repositories/UserRepository.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/services/IUserService.class" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/services/IUserService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/services/authenticationService/LogoutService.class" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/services/authenticationService/LogoutService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/util/JwtTokenUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/util/JwtTokenUtil.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/CustomButton.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/CustomButton.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/css/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/css/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/services/impl/UserServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/services/impl/UserServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/CustomFormGroup.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/CustomFormGroup.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/Login.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/Login.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/NewSong.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/NewSong.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/MyAccount.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/MyAccount.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/NewUser.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/NewUser.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/Register.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/Register.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/UpdateSong.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/UpdateSong.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/UpdateUser.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/UpdateUser.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -70,17 +59,17 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "D:/GitHub/music_management_reactjs",
-    "settings.editor.selected.configurable": "project.propGUI"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/GitHub/music_management_reactjs&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;project.propGUI&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="MusicManagerBackEndApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.dev.music_manager_backend.MusicManagerBackEndApplication" />

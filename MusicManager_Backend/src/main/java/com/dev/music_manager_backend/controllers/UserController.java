@@ -164,7 +164,7 @@ public class UserController {
             return new ResponseObject<>(
                     "ok",
                     "Update user email with id: " + id,
-                    userService.updatePasswordToUser(id, listPassword.get(0), listPassword.get(1), listPassword.get(2), request)
+                    userService.updatePasswordToUser(id, listPassword.get(0), listPassword.get(1), request)
             );
         } catch (Exception exception) {
             return new ResponseObject<>(

@@ -33,7 +33,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query(value = """
                 SELECT u.* FROM users u WHERE
                        (:id = -1 OR u.id = :id) AND
-                       (SUBSTRING_INDEX(LOWER(u.email),'@', 1) LIKE LOWER(CONCAT('%', :email, '%'))) AND
+                       (LOWER(u.email) LIKE LOWER(CONCAT('%', :email, '%'))) AND
                        (CONCAT(LOWER(u.firstName),' ',LOWER(u.lastName)) LIKE LOWER(CONCAT('%', :name, '%'))) AND
                        (:status = -1 OR u.status = :status) AND
                        (:countRoleIds = 0 OR u.id IN
@@ -49,7 +49,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
                        )
             """, countQuery = """
                 SELECT COUNT(u.id) FROM users u WHERE
-                       (SUBSTRING_INDEX(LOWER(u.email),'@', 1) LIKE LOWER(CONCAT('%', :email, '%'))) AND
+                       (LOWER(u.email) LIKE LOWER(CONCAT('%', :email, '%'))) AND
                        (CONCAT(LOWER(u.firstName),' ',LOWER(u.lastName)) LIKE LOWER(CONCAT('%', :name, '%'))) AND
                        (:status = -1 OR u.status = :status) AND
                        (:countRoleIds = 0 OR u.id IN
