@@ -23,27 +23,29 @@ const Login = () => {
   const navigate = useNavigate();
   useEffect(() => {
     setUsernameIsFilled(
-      authLogin.username === "" && !isFirst ? "Please enter email" : ""
+      authLogin.username === "" && !isFirst ? "Please enter username" : ""
     );
     setPasswordIsFilled(
       authLogin.password === "" && !isFirst ? "Please enter Password" : ""
     );
     setStatus("");
-    setIsFirst(false);
   }, [authLogin]);
 
   const handleSubmit = () => {
-    if (!(authLogin.username === "" || authLogin.password === ""))
+    setIsFirst(false);
+    if (!(authLogin.username === "" || authLogin.password === "")) {
       setStatus("Please wait...Login in progress");
-    authenticationService.login(authLogin).then((data) => {
-      console.log(data);
-      if (data.status === "ok") {
-        alert("Login successful!");
-        navigate("/songs");
-      } else {
-        setStatus("Login failed. Username or Password incorrect.");
-      }
-    });
+      authenticationService.login(authLogin).then((data) => {
+        console.log(data);
+        if (data.status === "ok") {
+          alert("Login successful!");
+          navigate("/songs");
+        } else {
+          setStatus("Login failed. Username or Password incorrect.");
+        }
+      });
+    }
+    setStatus("Please enter username and password.");
   };
 
   return (
@@ -113,11 +115,6 @@ const Login = () => {
               >
                 Login
               </Button>{" "}
-              <div className="mt-4">
-                <p className="text-center">
-                  Don't have an account? <Link to="/register">Register</Link>
-                </p>
-              </div>
               <div style={{ height: 5 }}>
                 <p
                   style={{
@@ -128,6 +125,11 @@ const Login = () => {
                   }}
                 >
                   {status}
+                </p>
+              </div>
+              <div className="mt-4">
+                <p className="text-center">
+                  Don't have an account? <Link to="/register">Register</Link>
                 </p>
               </div>
             </Form>

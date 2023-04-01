@@ -1,214 +1,165 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { Container, Row, Button, Form } from 'react-bootstrap';
-import songService from '../services/SongService';
-import { useNavigate } from 'react-router-dom';
-import { AiFillSave } from 'react-icons/ai';
-import { MdCancel } from 'react-icons/md';
-import NavbarComponent from '../components/NavbarComponent';
-function NewUser() {
-	const navigate = useNavigate();
-	// const title = useRef();
-	// const genre = useRef();
-	// const musician = useRef();
-	const [song, setSong] = useState({ title: '' });
-	const file = useRef();
-	const [titleIsFilled, setTitleIsFilled] = useState('');
-	const [fileIsFilled, setFileIsFilled] = useState('');
-	const [status, setStatus] = useState('');
-	const [isFirst, setIsFirst] = useState(true);
+// import React, { useRef, useState, useEffect } from "react";
+// import { Container, Row, Button, Form } from "react-bootstrap";
+// import songService from "../services/SongService";
+// import { useNavigate } from "react-router-dom";
+// import { AiFillSave } from "react-icons/ai";
+// import { MdCancel } from "react-icons/md";
+// import NavbarComponent from "../components/NavbarComponent";
+// import CustomFormGroup from "../components/CustomFormGroup";
+// function NewUser() {
+//   const navigate = useNavigate();
+//   const [song, setSong] = useState({ title: "" });
+//   const [changeFile, setChangeFile] = useState(true);
+//   const file = useRef(null);
+//   const [titleIsFilled, setTitleIsFilled] = useState("");
+//   const [fileIsFilled, setFileIsFilled] = useState("");
+//   const [status, setStatus] = useState("");
+//   const [isFirst, setIsFirst] = useState(true);
 
-	const set = (prop, value) => {
-		setSong({ ...song, [prop]: value });
-	};
-	useEffect(() => {
-		setTitleIsFilled(
-			song.title === '' && !isFirst ? `Please enter a title` : '',
-		);
-		setFileIsFilled(
-			!(file.current.files[0] || isFirst) ? 'Please select file' : '',
-		);
-		setStatus('');
-		setIsFirst(false);
-	}, [song]);
+//   const set = (prop, value) => {
+//     if (prop === "file") setChangeFile(!changeFile);
+//     else setSong({ ...song, [prop]: value });
+//   };
+//   useEffect(() => {
+//     if (!isFirst) {
+//       setTitleIsFilled(song.title === "" ? `Please enter a title` : "");
+//       setFileIsFilled(
+//         file.current.files.length === 0 ? "Please select file" : ""
+//       );
+//     }
+//   }, [isFirst, song, status, changeFile]);
+//   useEffect(() => {
+//     setStatus("");
+//   }, [song, changeFile]);
+//   function handleSubmit() {
+//     setIsFirst(false);
+//     if (!(song.title === "" || file.current.files.length === 0)) {
+//       setStatus("Please wait...Saving song is in progress");
 
-	function handleSubmit() {
-		if (!(song.title === '' || !file.current.files[0])) {
-			setStatus('Please wait...Saving song is in progress');
-			songService.insertSong(song, file.current.files[0]).then((res) => {
-				if (res.status === 'ok') {
-					alert('Add new Song successful!');
-					navigate('/songs');
-				} else {
-					setStatus('Create new Song failed, try again.');
-				}
-			});
-		}
-	}
-	return (
-		<>
-			<NavbarComponent />
-			<div className='background-container' />
-			<Container>
-				<Row
-					className='col-md-8 offset-md-2'
-					style={{
-						margin: '15px auto',
-						border: '3px solid purple',
-						backgroundColor: 'white',
-						maxWidth: 500,
-						borderRadius: 10,
-					}}
-				>
-					<div className='card'>
-						<h1
-							className='text-center'
-							style={{
-								borderBottom: '2px solid purple',
-								padding: '20px',
-								marginBottom: '0',
-							}}
-						>
-							Add song
-						</h1>
-						<div className='card-body'>
-							<Form
-								action='/songs/new'
-								method='POST'
-								encType='multipart/form-data'
-							>
-								<Form.Group>
-									<Form.Label style={{ fontWeight: 'bold' }}>Title</Form.Label>
-									<Form.Control
-										type='text'
-										name='title'
-										placeholder='Enter song name'
-										onChange={(event) => set('title', event.target.value)}
-										required
-									/>
-									<div style={{ height: 5 }}>
-										<p
-											style={{
-												fontStyle: 'italic',
-												color: 'red',
-												margin: 0,
-												fontSize: 12,
-											}}
-										>
-											{titleIsFilled}
-										</p>
-									</div>
-								</Form.Group>
-								<Form.Group>
-									<Form.Label style={{ fontWeight: 'bold', marginTop: 20 }}>
-										Genre
-									</Form.Label>
-									<Form.Control
-										type='text'
-										name='genre'
-										placeholder='Enter genre'
-										onChange={(event) => set('genre', event.target.value)}
-									/>
-									<div style={{ height: 5 }}>
-										<p
-											style={{
-												fontStyle: 'italic',
-												color: 'red',
-												margin: 0,
-												fontSize: 12,
-											}}
-										></p>
-									</div>
-								</Form.Group>
-								<Form.Group>
-									<Form.Label style={{ fontWeight: 'bold', marginTop: 20 }}>
-										Musician
-									</Form.Label>
-									<Form.Control
-										type='text'
-										name='musician'
-										placeholder='Enter musician'
-										onChange={(event) => set('musician', event.target.value)}
-									/>
-									<div style={{ height: 5 }}>
-										<p
-											style={{
-												fontStyle: 'italic',
-												color: 'red',
-												margin: 0,
-												fontSize: 12,
-											}}
-										></p>
-									</div>
-								</Form.Group>
-								<Form.Group>
-									<Form.Label style={{ fontWeight: 'bold', marginTop: 20 }}>
-										File song
-									</Form.Label>
-									<Form.Control
-										type='file'
-										name='audioFile'
-										ref={file}
-										required
-									/>
-									<div style={{ height: 5 }}>
-										<p
-											style={{
-												fontStyle: 'italic',
-												color: 'red',
-												margin: 0,
-												fontSize: 12,
-											}}
-										>
-											{fileIsFilled}
-										</p>
-									</div>
-								</Form.Group>
-								<div className='box-footer'>
-									<Button
-										onClick={handleSubmit}
-										style={{
-											backgroundColor: '#e9ecef',
-											border: 'none',
-											color: 'black',
-											marginTop: 40,
-										}}
-										title='Save'
-									>
-										<AiFillSave size={30}></AiFillSave>Save
-									</Button>
-									<Button
-										variant='danger'
-										href='/songs'
-										style={{
-											backgroundColor: '#e9ecef',
-											border: 'none',
-											color: 'black',
-											marginLeft: 20,
-											marginTop: 40,
-										}}
-									>
-										<MdCancel size={30}></MdCancel>Cancel
-									</Button>
-								</div>{' '}
-								<div style={{ height: 5 }}>
-									<p
-										style={{
-											fontStyle: 'italic',
-											color: 'red',
-											margin: 0,
-											fontSize: 12,
-										}}
-									>
-										{status}
-									</p>
-								</div>
-							</Form>
-						</div>
-					</div>
-				</Row>
-			</Container>
-		</>
-	);
-}
+//       songService.insertSong(song, file.current.files[0]).then((res) => {
+//         if (res.status === "ok") {
+//           setStatus("");
+//           alert("Add new Song successful!");
+//           navigate("/songs");
+//         } else if (res.status === "failed") {
+//           setStatus("Create new Song failed, try again.");
+//         } else if (res.status === "error") {
+//           setStatus("An error occurred during the update, please try again");
+//         }
+//       });
+//     } else setStatus("Please enter full information.");
+//   }
+//   return (
+//     <>
+//       <NavbarComponent />
+//       <div className="background-container" />
+//       <Container>
+//         <Row
+//           className="col-md-8 offset-md-2"
+//           style={{
+//             margin: "15px auto",
+//             border: "3px solid purple",
+//             backgroundColor: "white",
+//             maxWidth: 500,
+//             borderRadius: 10,
+//           }}
+//         >
+//           <div className="card">
+//             <h1
+//               className="text-center"
+//               style={{
+//                 borderBottom: "2px solid purple",
+//                 padding: "20px",
+//                 marginBottom: "0",
+//               }}
+//             >
+//               Add song
+//             </h1>
+//             <div className="card-body">
+//               <Form>
+//                 <CustomFormGroup
+//                   funcEnter={handleSubmit}
+//                   controlId="title"
+//                   func={set}
+//                   placeholder="Enter song title"
+//                   label="Title"
+//                   value={song.title}
+//                   type="text"
+//                   warning={titleIsFilled}
+//                 />
+//                 <CustomFormGroup
+//                   funcEnter={handleSubmit}
+//                   controlId="genre"
+//                   func={set}
+//                   placeholder="Enter genre"
+//                   label="Genre"
+//                   value={song.genre}
+//                   type="text"
+//                 />
+//                 <CustomFormGroup
+//                   funcEnter={handleSubmit}
+//                   controlId="musician"
+//                   func={set}
+//                   placeholder="Enter musician"
+//                   label="Musician"
+//                   value={song.musician}
+//                   type="text"
+//                 />
+//                 <CustomFormGroup
+//                   funcEnter={handleSubmit}
+//                   func={set}
+//                   controlId="file"
+//                   label="File Song"
+//                   type="file"
+//                   warning={fileIsFilled}
+//                   ref={file}
+//                 />
+//                 <div className="box-footer">
+//                   <Button
+//                     onClick={handleSubmit}
+//                     style={{
+//                       backgroundColor: "#e9ecef",
+//                       border: "none",
+//                       color: "black",
+//                       marginTop: 40,
+//                     }}
+//                     title="Save"
+//                   >
+//                     <AiFillSave size={30}></AiFillSave>Save
+//                   </Button>
+//                   <Button
+//                     variant="danger"
+//                     href="/songs"
+//                     style={{
+//                       backgroundColor: "#e9ecef",
+//                       border: "none",
+//                       color: "black",
+//                       marginLeft: 20,
+//                       marginTop: 40,
+//                     }}
+//                   >
+//                     <MdCancel size={30}></MdCancel>Cancel
+//                   </Button>
+//                 </div>{" "}
+//                 <div style={{ height: 5 }}>
+//                   <p
+//                     style={{
+//                       fontStyle: "italic",
+//                       color: "red",
+//                       margin: 0,
+//                       fontSize: 12,
+//                     }}
+//                   >
+//                     {status}
+//                   </p>
+//                 </div>
+//               </Form>
+//             </div>
+//           </div>
+//         </Row>
+//       </Container>
+//     </>
+//   );
+// }
 
-export default NewUser;
+// export default NewUser;

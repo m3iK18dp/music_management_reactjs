@@ -39,15 +39,15 @@ function Register() {
     setConfirmPasswordIsFilled(
       user.confirmPassword === "" && !isFirst
         ? "Please enter Confirm Password"
-        : user.password !== user.confirmPassword
+        : user.password !== user.confirmPassword && !isFirst
         ? "Password and Confirm password do not match"
         : ""
     );
     setStatus("");
-    setIsFirst(false);
   }, [user]);
 
   function handleSubmit() {
+    setIsFirst(false);
     if (
       !(
         user.firstName === "" ||
@@ -75,6 +75,7 @@ function Register() {
       } catch (error) {
         console.log(error);
       }
+    else setStatus("Register failed. Please enter full information.");
   }
   return (
     <div>
@@ -165,14 +166,10 @@ function Register() {
                 type="password"
                 warning={confirmPasswordIsFilled}
               />
+
               <Button onClick={handleSubmit} variant="primary">
                 Register
               </Button>
-              <div className="mt-4">
-                <p className="text-center">
-                  You have account? <a href="/login">Login here</a>
-                </p>
-              </div>
               <div style={{ height: 5 }}>
                 <p
                   style={{
@@ -183,6 +180,11 @@ function Register() {
                   }}
                 >
                   {status}
+                </p>
+              </div>
+              <div className="mt-4">
+                <p className="text-center">
+                  You have account? <a href="/login">Login here</a>
                 </p>
               </div>
             </Form>

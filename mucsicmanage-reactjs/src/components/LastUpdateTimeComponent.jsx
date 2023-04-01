@@ -18,6 +18,7 @@ function LastUpdateTimeComponent(date) {
         fontWeight: "bold",
         marginTop: "15px",
         color: "green",
+        fontSize: 12,
       }}
     >
       Last update: {lastUpdate}
