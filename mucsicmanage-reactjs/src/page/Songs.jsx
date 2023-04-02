@@ -39,7 +39,7 @@ function Songs() {
     type_sort: "asc",
     totalPages: 0,
     currentSongs: [],
-    currentSongPlay: 0,
+    currentSongPlay: -1,
     currentSongPlayUrl: "",
     playing: false,
   });
@@ -75,8 +75,10 @@ function Songs() {
     songService.get(params).then((data) => {
       set("totalPages", data.data.totalPages);
       set("currentSongs", data.data.content);
-      set("currentSongPlay", data.data.content[0].id);
-      set("currentSongPlayUrl", data.data.content[0].url);
+      if (get("currentSongPlay") === -1) {
+        set("currentSongPlay", data.data.content[0].id);
+        set("currentSongPlayUrl", data.data.content[0].url);
+      }
     });
   }, [path]);
   const handlePlaySong = (id) => {
@@ -106,7 +108,7 @@ function Songs() {
   const handleCancelSearch = (searchField) => {
     const search = [];
     (searchField === "all"
-      ? ["id", "title", "genre", "musician"]
+      ? ["id", "title", "genre", "musician", "field", "type_sort"]
       : [searchField]
     ).forEach((field) => {
       set(field, { id: Number, title: "", genre: "", musician: "" }[field]);
@@ -145,8 +147,10 @@ function Songs() {
         get("currentSongs").length -
         1) %
       get("currentSongs").length;
-    set("currentSongPlayUrl", get("currentSongs")[newIndex].url);
-    set("currentSongPlay", get("currentSongs")[newIndex].id);
+    if ((newIndex >= 0) & (newIndex < get("currentSongs").length)) {
+      set("currentSongPlayUrl", get("currentSongs")[newIndex].url);
+      set("currentSongPlay", get("currentSongs")[newIndex].id);
+    }
   };
   const nextSong = () => {
     const newIndex =
@@ -156,8 +160,10 @@ function Songs() {
         get("currentSongs").length +
         1) %
       get("currentSongs").length;
-    set("currentSongPlayUrl", get("currentSongs")[newIndex].url);
-    set("currentSongPlay", get("currentSongs")[newIndex].id);
+    if ((newIndex >= 0) & (newIndex < get("currentSongs").length)) {
+      set("currentSongPlayUrl", get("currentSongs")[newIndex].url);
+      set("currentSongPlay", get("currentSongs")[newIndex].id);
+    }
   };
   const handleSort = (field) => {
     navigate(
@@ -361,7 +367,15 @@ function Songs() {
           </thead>
           <tbody>
             {get("currentSongs").map((song, index) => (
-              <tr key={song.id}>
+              <tr
+                style={{
+                  backgroundColor:
+                    get("currentSongPlay") === song.id
+                      ? "rgba(180, 200, 180, 0.5)"
+                      : "transparent",
+                }}
+                key={song.id}
+              >
                 <td>{index + 1}</td>
                 <td>{song.id}</td>
                 <td style={{ textAlign: "left" }}>{song.title}</td>

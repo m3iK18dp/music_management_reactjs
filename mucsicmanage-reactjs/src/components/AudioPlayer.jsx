@@ -1,215 +1,359 @@
-import React from 'react';
-import ReactHowler from 'react-howler';
-import raf from 'raf'; // requestAnimationFrame polyfill
-import { Button } from 'react-bootstrap';
+import React, { Component } from "react";
+import {
+  FaStepBackward,
+  FaStepForward,
+  FaPlay,
+  FaPause,
+  FaVolumeMute,
+  FaVolumeUp,
+  FaRandom,
+  FaRetweet,
+  FaSync,
+  FaAngleDoubleLeft,
+  FaAngleDoubleRight,
+} from "react-icons/fa";
 
-class FullControl extends React.Component {
-	constructor(props) {
-		super(props);
+class AudioPlayer extends Component {
+  constructor(props) {
+    super(props);
+    this.audioRef = React.createRef();
+    this.state = {
+      playlist: props.songs,
+      currentTrackIndex: 0,
+      isPlaying: false,
+      isLoopAll: false,
+      isLoopOne: false,
+      isShuffle: false,
+      volume: 1,
+      playbackRate: 1,
+      currentTime: 0,
+      duration: 0,
+      isMuted: false,
+      isDraggingTime: false,
+      timerId: null,
+    };
+  }
 
-		this.state = {
-			playing: false,
-			loaded: false,
-			loop: false,
-			mute: false,
-			volume: 1.0,
-			seek: 0.0,
-			rate: 1,
-			isSeeking: false,
-		};
-		this.handleToggle = this.handleToggle.bind(this);
-		this.handleOnLoad = this.handleOnLoad.bind(this);
-		this.handleOnEnd = this.handleOnEnd.bind(this);
-		this.handleOnPlay = this.handleOnPlay.bind(this);
-		this.handleStop = this.handleStop.bind(this);
-		this.renderSeekPos = this.renderSeekPos.bind(this);
-		this.handleLoopToggle = this.handleLoopToggle.bind(this);
-		this.handleMuteToggle = this.handleMuteToggle.bind(this);
-		this.handleMouseDownSeek = this.handleMouseDownSeek.bind(this);
-		this.handleMouseUpSeek = this.handleMouseUpSeek.bind(this);
-		this.handleSeekingChange = this.handleSeekingChange.bind(this);
-		this.handleRate = this.handleRate.bind(this);
-	}
+  componentDidMount() {
+    this.audioRef.current.addEventListener("canplay", this.handleCanPlay);
+    this.audioRef.current.addEventListener("play", this.handlePlay);
+    this.audioRef.current.addEventListener("pause", this.handlePause);
+    this.audioRef.current.addEventListener("ended", this.handleEnded);
+    this.audioRef.current.addEventListener("timeupdate", this.handleTimeUpdate);
+    this.audioRef.current.addEventListener(
+      "durationchange",
+      this.handleDurationChange
+    );
+  }
 
-	componentWillUnmount() {
-		this.clearRAF();
-	}
+  componentWillUnmount() {
+    this.audioRef.current.removeEventListener("canplay", this.handleCanPlay);
+    this.audioRef.current.removeEventListener("play", this.handlePlay);
+    this.audioRef.current.removeEventListener("pause", this.handlePause);
+    this.audioRef.current.removeEventListener("ended", this.handleEnded);
+    this.audioRef.current.removeEventListener(
+      "timeupdate",
+      this.handleTimeUpdate
+    );
+    this.audioRef.current.removeEventListener(
+      "durationchange",
+      this.handleDurationChange
+    );
+  }
 
-	handleToggle() {
-		this.setState({
-			playing: !this.state.playing,
-		});
-	}
+  handleCanPlay = () => {
+    this.setState({ duration: this.audioRef.current.duration });
+  };
 
-	handleOnLoad() {
-		this.setState({
-			loaded: true,
-			duration: this.player.duration(),
-		});
-	}
+  handlePlay = () => {
+    this.setState({ isPlaying: true });
+    this.startTimer();
+  };
 
-	handleOnPlay() {
-		this.setState({
-			playing: true,
-		});
-		this.renderSeekPos();
-	}
+  handlePause = () => {
+    this.setState({ isPlaying: false });
+    this.stopTimer();
+  };
 
-	handleOnEnd() {
-		this.setState({
-			playing: false,
-		});
-		this.clearRAF();
-	}
+  handleEnded = () => {
+    if (this.state.isLoopOne) {
+      this.audioRef.current.currentTime = 0;
+      this.audioRef.current.play();
+    } else {
+      this.playNextTrack();
+    }
+  };
 
-	handleStop() {
-		this.player.stop();
-		this.setState({
-			playing: false, // Need to update our local state so we don't immediately invoke autoplay
-		});
-		this.renderSeekPos();
-	}
+  handleTimeUpdate = () => {
+    if (!this.state.isDraggingTime) {
+      this.setState({ currentTime: this.audioRef.current.currentTime });
+    }
+  };
 
-	handleLoopToggle() {
-		this.setState({
-			loop: !this.state.loop,
-		});
-	}
+  handleDurationChange = () => {
+    this.setState({ duration: this.audioRef.current.duration });
+  };
 
-	handleMuteToggle() {
-		this.setState({
-			mute: !this.state.mute,
-		});
-	}
+  startTimer = () => {
+    this.setState({
+      timerId: setInterval(() => {
+        this.setState((prevState) => ({
+          currentTime: prevState.currentTime + 1,
+        }));
+      }, 1000),
+    });
+  };
 
-	handleMouseDownSeek() {
-		this.setState({
-			isSeeking: true,
-		});
-	}
+  stopTimer = () => {
+    clearInterval(this.state.timerId);
+    this.setState({ timerId: null });
+  };
 
-	handleMouseUpSeek(e) {
-		this.setState({
-			isSeeking: false,
-		});
+  playNextTrack = () => {
+    const { playlist, currentTrackIndex, isLoopAll, isShuffle } = this.state;
 
-		this.player.seek(e.target.value);
-	}
+    if (isShuffle) {
+      const nextIndex = Math.floor(Math.random() * playlist.length);
+      this.setState({ currentTrackIndex: nextIndex });
+    } else if (isLoopAll) {
+      const nextIndex = (currentTrackIndex + 1) % playlist.length;
+      this.setState({ currentTrackIndex: nextIndex });
+    } else if (currentTrackIndex < playlist.length - 1) {
+      const nextIndex = currentTrackIndex + 1;
+      this.setState({ currentTrackIndex: nextIndex });
+    } else {
+      this.audioRef.current.pause();
+      this.setState({ currentTrackIndex: 0 });
+    }
+  };
+  playPrevTrack = () => {
+    const { playlist, currentTrackIndex } = this.state;
+    if (currentTrackIndex > 0) {
+      const prevIndex = currentTrackIndex - 1;
+      this.setState({ currentTrackIndex: prevIndex });
+    } else {
+      this.audioRef.current.pause();
+      this.setState({ currentTrackIndex: playlist.length - 1 });
+    }
+  };
 
-	handleSeekingChange(e) {
-		this.setState({
-			seek: parseFloat(e.target.value),
-		});
-	}
+  playFirstTrack = () => {
+    this.audioRef.current.currentTime = 0;
+    this.setState({ currentTrackIndex: 0 });
+    this.audioRef.current.play();
+  };
 
-	renderSeekPos() {
-		if (!this.state.isSeeking) {
-			this.setState({
-				seek: this.player.seek(),
-			});
-		}
-		if (this.state.playing) {
-			this._raf = raf(this.renderSeekPos);
-		}
-	}
+  playLastTrack = () => {
+    const { playlist } = this.state;
+    this.audioRef.current.currentTime = 0;
+    this.setState({ currentTrackIndex: playlist.length - 1 });
+    this.audioRef.current.play();
+  };
 
-	handleRate(e) {
-		const rate = parseFloat(e.target.value);
-		this.player.rate(rate);
-		this.setState({ rate });
-	}
+  handlePlayPauseClick = () => {
+    const { isPlaying } = this.state;
+    if (isPlaying) {
+      this.audioRef.current.pause();
+    } else {
+      this.audioRef.current.play();
+    }
+  };
 
-	clearRAF() {
-		raf.cancel(this._raf);
-	}
+  handleVolumeChange = (e) => {
+    const { value } = e.target;
+    this.audioRef.current.volume = value;
+    this.setState({ volume: value });
+  };
 
-	render() {
-		return (
-			<div className='full-control'>
-				<ReactHowler
-					src={[
-						'https://res.cloudinary.com/dx2nrp7at/video/upload/v1678953974/MusicManager/4107ac7b-e201-4564-9a94-e9504bd5c54c.mp3',
-						'https://res.cloudinary.com/dx2nrp7at/video/upload/v1678863522/MusicManager/cd7135a3-d220-4245-89c1-ed638ca1504e.mp3',
-					]}
-					playing={this.state.playing}
-					onLoad={this.handleOnLoad}
-					onPlay={this.handleOnPlay}
-					onEnd={this.handleOnEnd}
-					loop={this.state.loop}
-					mute={this.state.mute}
-					volume={this.state.volume}
-					ref={(ref) => (this.player = ref)}
-				/>
+  handlePlaybackRateChange = (e) => {
+    const { value } = e.target;
+    this.audioRef.current.playbackRate = value;
+    this.setState({ playbackRate: value });
+  };
 
-				<p>{this.state.loaded ? 'Loaded' : 'Loading'}</p>
+  handleTimeChange = (e) => {
+    const { value } = e.target;
+    this.audioRef.current.currentTime = value;
+    this.setState({ currentTime: value });
+  };
 
-				<div className='toggles'>
-					<label>
-						Loop:
-						<input
-							type='checkbox'
-							checked={this.state.loop}
-							onChange={this.handleLoopToggle}
-						/>
-					</label>
-					<label>
-						Mute:
-						<input
-							type='checkbox'
-							checked={this.state.mute}
-							onChange={this.handleMuteToggle}
-						/>
-					</label>
-				</div>
+  handleTimeDragStart = () => {
+    this.setState({ isDraggingTime: true });
+  };
 
-				<div className='volume'>
-					<label>
-						Volume:
-						<span className='slider-container'>
-							<input
-								type='range'
-								min='0'
-								max='1'
-								step='.05'
-								value={this.state.volume}
-								onChange={(e) =>
-									this.setState({ volume: parseFloat(e.target.value) })
-								}
-							/>
-						</span>
-						{this.state.volume.toFixed(2)}
-					</label>
-				</div>
+  handleTimeDragEnd = () => {
+    this.setState({ isDraggingTime: false });
+  };
 
-				<div className='seek'>
-					<label>
-						Seek:
-						<span className='slider-container'>
-							<input
-								type='range'
-								min='0'
-								max={this.state.duration ? this.state.duration.toFixed(2) : 0}
-								step='.01'
-								value={this.state.seek}
-								onChange={this.handleSeekingChange}
-								onMouseDown={this.handleMouseDownSeek}
-								onMouseUp={this.handleMouseUpSeek}
-							/>
-						</span>
-					</label>
-					{'Status: '}
-					{this.state.seek.toFixed(2)}
-					{' / '}
-					{this.state.duration ? this.state.duration.toFixed(2) : 'NaN'}
-				</div>
+  handleMuteClick = () => {
+    const { isMuted, volume } = this.state;
+    if (isMuted) {
+      this.audioRef.current.volume = volume;
+      this.setState({ isMuted: false });
+    } else {
+      this.audioRef.current.volume = 0;
+      this.setState({ isMuted: true });
+    }
+  };
 
-				<Button onClick={this.handleToggle}>
-					{this.state.playing ? 'Pause' : 'Play'}
-				</Button>
-				<Button onClick={this.handleStop}>Stop</Button>
-			</div>
-		);
-	}
+  handleShuffleClick = () => {
+    this.setState((prevState) => ({ isShuffle: !prevState.isShuffle }));
+  };
+
+  handleLoopAllClick = () => {
+    this.setState((prevState) => ({
+      isLoopAll: !prevState.isLoopAll,
+      isLoopOne: false,
+    }));
+  };
+
+  handleLoopOneClick = () => {
+    this.setState((prevState) => ({
+      isLoopOne: !prevState.isLoopOne,
+      isLoopAll: false,
+    }));
+  };
+
+  formatTime = (timeInSeconds) => {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = Math.floor(timeInSeconds % 60);
+    const formattedSeconds = seconds < 10 ? `0${seconds}` : seconds;
+    return `${minutes}:${formattedSeconds}`;
+  };
+
+  render() {
+    const {
+      playlist,
+      currentTrackIndex,
+      isPlaying,
+      volume,
+      playbackRate,
+      currentTime,
+      duration,
+      isMuted,
+      isDraggingTime,
+    } = this.state;
+    const currentTrack = playlist[currentTrackIndex];
+
+    return (
+      <>
+        <div className="audio-player">
+          <div className="audio-player__info">
+            <div className="audio-player__info__title">
+              {currentTrack.title}
+            </div>
+            <div className="audio-player__info__artist">
+              {currentTrack.musician}
+            </div>
+          </div>
+          <div className="audio-player__controls">
+            <button
+              className="audio-player__button"
+              onClick={this.playPrevTrack}
+            >
+              <FaStepBackward />
+            </button>
+            <button
+              className="audio-player__button"
+              onClick={this.handlePlayPauseClick}
+            >
+              {isPlaying ? <FaPause /> : <FaPlay />}
+            </button>
+            <button
+              className="audio-player__button"
+              onClick={this.playNextTrack}
+            >
+              <FaStepForward />
+            </button>
+            <button
+              className="audio-player__button"
+              onClick={this.handleMuteClick}
+            >
+              {isMuted || volume === 0 ? <FaVolumeMute /> : <FaVolumeUp />}
+            </button>
+            <button
+              className="audio-player__button"
+              onClick={this.handleShuffleClick}
+            >
+              <FaRandom className={this.state.isShuffle ? "active" : ""} />
+            </button>
+            <button
+              className="audio-player__button"
+              onClick={this.handleLoopAllClick}
+            >
+              <FaRetweet className={this.state.isLoopAll ? "active" : ""} />
+            </button>
+            <button
+              className="audio-player__button"
+              onClick={this.handleLoopOneClick}
+            >
+              <FaSync className={this.state.isLoopOne ? "active" : ""} />
+            </button>
+            <button
+              className="audio-player__button"
+              onClick={this.playFirstTrack}
+            >
+              <FaAngleDoubleLeft />
+            </button>
+            <button
+              className="audio-player__button"
+              onClick={this.playLastTrack}
+            >
+              <FaAngleDoubleRight />
+            </button>
+            <span className="audio-player__playback-rate">{playbackRate}x</span>
+            <input
+              type="range"
+              className="audio-player__playback-rate-slider"
+              min="0.5"
+              max="2"
+              step="0.1"
+              value={playbackRate}
+              onChange={this.handlePlaybackRateChange}
+            />
+            <div className="audio-player__time">
+              <span className="audio-player__time__current">
+                {this.formatTime(currentTime)}
+              </span>
+              <input
+                type="range"
+                className="audio-player__time__slider"
+                min="0"
+                max={duration || 0}
+                step="1"
+                value={isDraggingTime ? currentTime : duration || 0}
+                onChange={this.handleTimeChange}
+                onMouseDown={this.handleTimeDragStart}
+                onMouseUp={this.handleTimeDragEnd}
+              />
+              <span className="audio-player__time__duration">
+                {duration ? this.formatTime(duration) : "0:00"}
+              </span>
+            </div>
+            <button
+              className="audio-player__button"
+              onClick={this.playFirstTrack}
+            >
+              <FaAngleDoubleLeft />
+            </button>
+            <button
+              className="audio-player__button"
+              onClick={this.playLastTrack}
+            >
+              <FaAngleDoubleRight />
+            </button>
+          </div>
+          <audio
+            src={currentTrack.url}
+            ref={this.audioRef}
+            onEnded={this.handleAudioEnded}
+            onTimeUpdate={this.handleAudioTimeUpdate}
+            onLoadedMetadata={this.handleAudioLoadedMetadata}
+          />
+        </div>
+      </>
+    );
+  }
 }
 
-export default FullControl;
+export default AudioPlayer;

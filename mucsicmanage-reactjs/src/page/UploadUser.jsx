@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Button, Form } from "react-bootstrap";
 import userService from "../services/UserService";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { AiFillSave } from "react-icons/ai";
 import { MdCancel } from "react-icons/md";
 import NavbarComponent from "../components/NavbarComponent";

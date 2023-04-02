@@ -3,10 +3,21 @@ import { SiApplemusic } from "react-icons/si";
 import React, { useState } from "react";
 import { TbLogout } from "react-icons/tb";
 import { FaUserCircle } from "react-icons/fa";
+import authenticationService from "../services/AuthenticationService";
+import { useNavigate } from "react-router-dom";
 function NavbarComponent() {
+  const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
   const handleToggle = () => {
     setExpanded(!expanded);
+  };
+  const handleLogout = () => {
+    authenticationService.logout().then((data) => {
+      console.log(data);
+      if (data.status === "ok") {
+        navigate("/");
+      } else alert("Logout Failed");
+    });
   };
   return (
     <Navbar
@@ -56,7 +67,7 @@ function NavbarComponent() {
         <FaUserCircle size={40}></FaUserCircle>
       </Nav.Link>
       <Nav.Link
-        href="/logout"
+        onClick={() => handleLogout()}
         title="Logout"
         style={{ border: "sold 1 black", marginLeft: 20 }}
       >

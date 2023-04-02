@@ -30,7 +30,7 @@ function Users() {
     email: "",
     name: "",
     role_ids: [],
-    status: "-1",
+    status: "",
     page: 0,
     limit: 10,
     field: "id",
@@ -86,15 +86,8 @@ function Users() {
     });
   }, [path]);
   useEffect(() => {
-    console.log(search);
-    // navigate(
-    // 	convertPathSearchUrl({
-    // 		property: 'role_ids',
-    // 		value: get('role_ids'),
-    // 	}),
-    // );
     handleSearch();
-  }, [search.role_ids]);
+  }, [search.role_ids, search.status]);
   const covertArrayObjectToString = (roles) => {
     if (roles) return roles.map((role) => (role ? role.name : null)).join(", ");
     return "";
@@ -128,7 +121,7 @@ function Users() {
   const handleCancelSearch = (searchField) => {
     const search = [];
     (searchField === "all"
-      ? ["id", "email", "name", "role_ids", "status"]
+      ? ["id", "email", "name", "role_ids", "status", "field", "type_sort"]
       : [searchField]
     ).forEach((field) => {
       set(
@@ -138,7 +131,7 @@ function Users() {
           email: "",
           name: "",
           role_ids: [],
-          status: "-1",
+          status: "",
         }[field]
       );
       search.push({ property: field, value: "" });
@@ -250,7 +243,7 @@ function Users() {
               <Form.Label>Role</Form.Label>
             </Col>
             <Col sm={4}>
-              {["1", "0", "-1"].map((status) => (
+              {["1", "0", ""].map((status) => (
                 <div key={`status_${status}`}>
                   <Form.Check
                     type="radio"
@@ -264,17 +257,11 @@ function Users() {
                     name="status"
                     value={status}
                     checked={status === get("status")}
-                    onChange={(event) => {
-                      if (event.target.checked)
-                        navigate(
-                          convertPathSearchUrl([
-                            {
-                              property: "status",
-                              value: event.target.value,
-                            },
-                          ])
-                        );
-                    }}
+                    onChange={(event) =>
+                      event.target.checked
+                        ? set("status", event.target.value)
+                        : ""
+                    }
                   />
                 </div>
               ))}
