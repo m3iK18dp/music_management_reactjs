@@ -5,21 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="35eb1f67-c063-4eb4-9195-99fe53a5385b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/AudioPlayer.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/AudioPlayer.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/NavbarComponent.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/NavbarComponent.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/css/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/css/index.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/css/songs.css" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/css/songs.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/Logout.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/NewSong.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/NewUser.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/Songs.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/Songs.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/UpdateSong.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/UpdateUser.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/UploadUser.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/UploadUser.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/Users.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/Users.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/services/ConvertPathSearchUrl.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/services/ConvertPathSearchUrl.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,6 +33,13 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="useMavenConfig" value="true" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
   <component name="OptimizeOnSaveOptions">
     <option name="myRunOnSave" value="true" />
   </component>
@@ -58,17 +51,20 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/GitHub/music_management_reactjs&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;project.propGUI&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "D:/GitHub/music_management_reactjs/MusicManager_Backend",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "project.propGUI"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="MusicManagerBackEndApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.dev.music_manager_backend.MusicManagerBackEndApplication" />

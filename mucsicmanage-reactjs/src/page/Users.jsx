@@ -161,7 +161,7 @@ function Users() {
     );
   };
   return (
-    <div style={{ overflow: "hidden" }}>
+    <div style={{ overflow: "hidden", width: "90%" }}>
       <NavbarComponent />
       <div className="background-container " />
       <Container
@@ -177,7 +177,9 @@ function Users() {
         }}
         className="background-color"
       >
-        <Form>
+        <Form
+          style={{ overflow: "hidden", maxWidth: "1200px", margin: "0 auto" }}
+        >
           <Row>
             {["Id", "Email", "Name"].map((field) => (
               <React.Fragment key={field}>

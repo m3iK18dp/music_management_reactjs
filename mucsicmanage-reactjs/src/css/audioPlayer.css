@@ -1,0 +1,16 @@
+audio::-webkit-media-controls-play-button,
+audio::-webkit-media-controls-pause-button,
+audio::-webkit-media-controls-start-playback-button {
+  display: none !important;
+}
+
+audio {
+  width: 50%;
+  max-width: 900px;
+  height: 20px;
+  display: block;
+  margin: 20px auto 10px auto;
+}
+audio {
+  background: transparent;
+}
