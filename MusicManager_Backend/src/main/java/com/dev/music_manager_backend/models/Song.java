@@ -31,14 +31,17 @@ public class Song {
     private LocalDateTime lastUpdate = LocalDateTime.now();
     @Column(nullable = false)
     private String url;
-//    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    //    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 //    @JoinTable(
 //            name = "songs_musicians",
 //            joinColumns = {@JoinColumn(name = "SONG_ID", referencedColumnName = "id")},
 //            inverseJoinColumns = {@JoinColumn(name = "MUSICIAN_ID", referencedColumnName = "id")})
 ////    @JsonManagedReference
 //    private List<Musician> musicians = new ArrayList<>();
-
+//    @ManyToOne(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "USER_ID", referencedColumnName = "id")
+//    @JsonManagedReference
+//    private User user;
 
     @Override
     public boolean equals(Object o) {

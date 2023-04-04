@@ -68,7 +68,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public User updateUser(Long id, User user, HttpServletRequest request) {
         User userFromAuth = extractUser(request);
-        if (userFromAuth.getRoles().contains(roleRepository.findByName("ROLE_ADMIN").orElse(new Role())) || Objects.equals(userFromAuth.getId(), id)) {
+        if ((id != 1 || userFromAuth.getId() == 1) && (userFromAuth.getRoles().contains(roleRepository.findByName("ROLE_ADMIN").orElse(new Role())) || Objects.equals(userFromAuth.getId(), id))) {
             log.info("Updating user by admin: {}", id);
             List<Role> attachedRoles = new ArrayList<>();
             for (Role role : user.getRoles()) {
@@ -97,7 +97,7 @@ public class UserServiceImpl implements IUserService {
     public User updateEmailToUser(Long id, String email, HttpServletRequest request) {
         log.info("Updating email to user: {}", id);
         User userFromAuth = extractUser(request);
-        if (userFromAuth.getRoles().contains(roleRepository.findByName("ROLE_ADMIN").orElse(new Role())) || Objects.equals(userFromAuth.getId(), id)) {
+        if (userFromAuth.getId() == 1 || (id != 1 && (userFromAuth.getRoles().contains(roleRepository.findByName("ROLE_ADMIN").orElse(new Role())) || Objects.equals(userFromAuth.getId(), id)))) {
             return userRepository.findById(id).map(user -> {
                 user.setEmail(email);
                 user.setLastUpdate(LocalDateTime.now());
@@ -149,16 +149,18 @@ public class UserServiceImpl implements IUserService {
     public User changeStatusUser(Long userId, HttpServletRequest request) {
         log.info("Change Status User " + userId);
         User userFromAuth = extractUser(request);
-        if (userFromAuth.getRoles().contains(roleRepository.findByName("ROLE_ADMIN").orElse(new Role())) || Objects.equals(userFromAuth.getId(), userId)) {
+        if (userFromAuth.getId() == 1 || (userId != 1 && (userFromAuth.getRoles().contains(roleRepository.findByName("ROLE_ADMIN").orElse(new Role())) || Objects.equals(userFromAuth.getId(), userId)))) {
             return userRepository.findById(userId).map(user -> {
                 try {
                     if (user.isStatus())
                         revokeAllUserTokens(user.getEmail());
                     else {
                         List<Token> lstToken = tokenRepository.findAllTokenByUserEmail(user.getEmail());
-                        Token lastestToken = lstToken.get(lstToken.size() - 1);
-                        lastestToken.setRevoked(false);
-                        tokenRepository.save(lastestToken);
+                        if (lstToken.size() > 0) {
+                            Token lastestToken = lstToken.get(lstToken.size() - 1);
+                            lastestToken.setRevoked(false);
+                            tokenRepository.save(lastestToken);
+                        }
                     }
                     user.setStatus(!user.isStatus());
                     user.setLastUpdate(LocalDateTime.now());
@@ -238,7 +240,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public User resetUserPassword(Long id, HttpServletRequest request) {
         User userFromAuth = extractUser(request);
-        if (userFromAuth.getRoles().contains(roleRepository.findByName("ROLE_ADMIN").orElse(new Role())) || Objects.equals(userFromAuth.getId(), id)) {
+        if (userFromAuth.getId() == 1 || (id != 1 && (userFromAuth.getRoles().contains(roleRepository.findByName("ROLE_ADMIN").orElse(new Role())) || Objects.equals(userFromAuth.getId(), id)))) {
             return userRepository.findById(id).map(user -> {
                         user.setPassword(new BCryptPasswordEncoder().encode("Abcd@1234"));
                         user.setLastUpdate(LocalDateTime.now());

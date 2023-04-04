@@ -14,18 +14,22 @@ const callApi = async (
 		method,
 		headers,
 	};
-	if (!endpoint.includes('auth')) {
+	if (
+		!(
+			endpoint.includes('auth') ||
+			(endpoint.includes('songs') && method === 'get')
+		)
+	) {
 		options.headers = {
 			...headers,
 			Authorization: 'Bearer ' + localStorage.getItem('token'),
 		};
 	}
-	if (method.toLowerCase() === 'get' && !endpoint.includes('auth')) {
+	if (method.toLowerCase() === 'get') {
 		options.url = options.url + '?' + queryString.stringify(params);
 	} else {
 		options.data = data;
 	}
-
 	try {
 		return await axios(options).then((res) => res.data);
 	} catch (error) {

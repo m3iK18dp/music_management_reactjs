@@ -53,4 +53,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     @JsonBackReference
     private List<Token> tokens;
+//    @OneToMany(mappedBy = "owner")
+//    @JsonBackReference
+//    private List<Song> songs;
 }
