@@ -112,28 +112,28 @@ public class SongServiceImpl implements ISongService {
         }
         return songRepository.findById(id).map(updateSong -> {
             try {
-                if (file == null) {
-                    return songRepository.save(Song.builder()
-                            .id(id)
-                            .title(song.getTitle())
-                            .genre(song.getGenre())
-                            .lastUpdate(LocalDateTime.now())
-                            .musician(song.getMusician())
-                            .url(updateSong.getUrl())
-                            .build()
-                    );
-                } else {
-                    return songRepository.save(
-                            Song.builder()
-                                    .id(id)
-                                    .title(song.getTitle())
-                                    .genre(song.getGenre())
-                                    .lastUpdate(LocalDateTime.now())
-                                    .musician(song.getMusician())
-                                    .url(storageService.updateFileToCloundinary(0, updateSong.getUrl(), file))
-                                    .build()
-                    );
-                }
+//                if (file == null) {
+//                    return songRepository.save(Song.builder()
+//                            .id(id)
+//                            .title(song.getTitle())
+//                            .genre(song.getGenre())
+//                            .lastUpdate(LocalDateTime.now())
+//                            .musician(song.getMusician())
+//                            .url(updateSong.getUrl())
+//                            .build()
+//                    );
+//                } else {
+                return songRepository.save(
+                        Song.builder()
+                                .id(id)
+                                .title(song.getTitle())
+                                .genre(song.getGenre())
+                                .lastUpdate(LocalDateTime.now())
+                                .musician(song.getMusician())
+                                .url(file == null ? updateSong.getUrl() : storageService.updateFileToCloundinary(0, updateSong.getUrl(), file))
+                                .build()
+                );
+//                }
             } catch (Exception e) {
                 throw new RuntimeException("Update song failed " + e.getMessage());
             }

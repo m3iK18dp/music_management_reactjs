@@ -130,18 +130,23 @@ function MyAccount() {
 		<>
 			<NavbarComponent />
 			<div className='background-container' />
+			<div className=' background-container-opacity-low' />
 			<Container>
 				<Row
 					className='col-md-8 offset-md-2'
 					style={{
 						margin: '50px auto',
 						border: '3px solid purple',
-						backgroundColor: 'white',
 						maxWidth: 500,
 						borderRadius: 10,
 					}}
 				>
-					<div className='card'>
+					<div
+						className='card'
+						style={{
+							backgroundColor: 'rgba(255,255,255,0.2)',
+						}}
+					>
 						<h1
 							className='text-center'
 							style={{
@@ -203,9 +208,7 @@ function MyAccount() {
 									/>
 								) : (
 									<Form.Group className='mb-3' controlId='status'>
-										<Form.Label>
-											<strong>Status</strong>
-										</Form.Label>
+										<Form.Label>Status</Form.Label>
 										<Form.Switch
 											style={{
 												color: user.status == 1 ? 'green' : 'red',
@@ -259,9 +262,7 @@ function MyAccount() {
 											onMouseOut={(e) => (e.target.style.color = 'black')}
 											onClick={changeReadOnly}
 										>
-											<Form.Text>
-												<strong>Change User Information</strong>
-											</Form.Text>
+											<Form.Text>Change User Information</Form.Text>
 										</div>
 									</Form.Group>
 								) : (
@@ -287,11 +288,9 @@ function MyAccount() {
 												onClick={changeChangePassword}
 											>
 												<Form.Text>
-													<strong>
-														{!changePassword
-															? 'Click here if you want change password'
-															: 'Click here if you do not want change password'}
-													</strong>
+													{!changePassword
+														? 'Click here if you want change password'
+														: 'Click here if you do not want change password'}
 												</Form.Text>
 											</div>
 										</Form.Group>

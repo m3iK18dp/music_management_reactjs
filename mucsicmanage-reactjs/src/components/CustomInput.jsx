@@ -13,8 +13,14 @@ function CustomInput({
 	return (
 		<>
 			<Col className='col' xl={1}>
-				<Form.Label>
-					<strong>{field}</strong>
+				<Form.Label
+					style={{
+						display: 'flex',
+						alignItems: 'center',
+						justifyContent: 'center',
+					}}
+				>
+					{field}
 				</Form.Label>
 			</Col>
 			<Col className='col' xl={size}>
@@ -30,6 +36,7 @@ function CustomInput({
 					placeholder={`Enter Search with ${field}`}
 					value={get(lowerCaseField).toString()}
 					onChange={(event) => set(lowerCaseField, event.target.value)}
+					style={{ padding: '5px 10px' }}
 				/>
 			</Col>
 		</>

@@ -39,23 +39,23 @@ function AuthNavbarComponent() {
 			<Navbar.Collapse id='basic-navbar-nav'>
 				<Nav>
 					<Nav.Link href='/songs' disabled={location.pathname === '/songs'}>
-						<strong>Song Management</strong>
+						Song Management
 					</Nav.Link>
 					{isLoggedIn && isAdmin && (
 						<Nav.Link href='/users' disabled={location.pathname === '/users'}>
-							<strong>Users Management</strong>
+							Users Management
 						</Nav.Link>
 					)}
 				</Nav>
 				<Nav>
 					<Nav.Link href='/login' disabled={location.pathname === '/login'}>
-						<strong>Login</strong>
+						Login
 					</Nav.Link>
 					<Nav.Link
 						href='/register'
 						disabled={location.pathname === '/register'}
 					>
-						<strong>Register</strong>
+						Register
 					</Nav.Link>
 				</Nav>
 			</Navbar.Collapse>

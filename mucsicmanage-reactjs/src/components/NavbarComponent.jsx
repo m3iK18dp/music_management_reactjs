@@ -2,7 +2,7 @@ import { Navbar, Nav } from 'react-bootstrap';
 import { SiApplemusic } from 'react-icons/si';
 import React, { useState } from 'react';
 import { TbLogout } from 'react-icons/tb';
-import { BiUserCircle } from 'react-icons/bi';
+import { HiOutlineUser } from 'react-icons/hi';
 import authenticationService from '../services/AuthenticationService';
 import { useNavigate, useLocation } from 'react-router-dom';
 function NavbarComponent() {
@@ -52,11 +52,11 @@ function NavbarComponent() {
 			<Navbar.Collapse id='basic-navbar-nav'>
 				<Nav>
 					<Nav.Link href='/songs' disabled={location.pathname === '/songs'}>
-						<strong>Song Management</strong>
+						Song Management
 					</Nav.Link>
 					{isLoggedIn && isAdmin && (
 						<Nav.Link href='/users' disabled={location.pathname === '/users'}>
-							<strong>Users Management</strong>
+							Users Management
 						</Nav.Link>
 					)}
 				</Nav>
@@ -68,7 +68,17 @@ function NavbarComponent() {
 					)}`}
 					title='Your Account Information'
 				>
-					<BiUserCircle size={40}></BiUserCircle>
+					<HiOutlineUser
+						size={40}
+						style={{
+							width: 45,
+							height: 45,
+							backgroundColor: 'rgba(255,255,255,0.2)',
+							borderRadius: '50%',
+							padding: 5,
+							filter: 'blur(0.5px)',
+						}}
+					></HiOutlineUser>
 				</Nav.Link>
 			)}
 			{isLoggedIn ? (

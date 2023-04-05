@@ -51,6 +51,8 @@ const Login = () => {
 		<div>
 			<AuthNavbarComponent />
 			<div className='background-container' />
+			<div className=' background-container-opacity-low' />
+
 			<div
 				fluid
 				style={{
@@ -64,7 +66,7 @@ const Login = () => {
 					className='card'
 					style={{
 						border: '3px solid purple',
-						backgroundColor: 'white',
+						backgroundColor: 'rgba(255,255,255,0.2)',
 					}}
 				>
 					<h1

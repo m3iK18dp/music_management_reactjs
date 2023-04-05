@@ -1,126 +1,237 @@
-import { Pagination, Form } from 'react-bootstrap';
+import { Pagination, Form } from "react-bootstrap";
 import {
-	BsFillSkipStartFill,
-	BsFillSkipEndFill,
-	BsFillCaretLeftFill,
-	BsFillCaretRightFill,
-} from 'react-icons/bs';
-import { useNavigate } from 'react-router-dom';
-import convertPathSearchUrl from '../services/ConvertPathSearchUrl';
+  BsFillSkipStartFill,
+  BsFillSkipEndFill,
+  BsFillCaretLeftFill,
+  BsFillCaretRightFill,
+} from "react-icons/bs";
+import { useNavigate } from "react-router-dom";
+import convertPathSearchUrl from "../services/ConvertPathSearchUrl";
+import CustomButton from "./CustomButton";
+import ScrollToTopButton from "./ScrollToTopButton";
 
 function PaginationComponent({ currentPage, totalPages, objectsPerPage }) {
-	currentPage += 1;
-	const navigate = useNavigate();
-	return (
-		<div
-			className='d-flex align-items-center justify-content-between'
-			style={{
-				position: 'fixed',
-				bottom: '0',
-				left: '0',
-				margin: '0 auto',
-				paddingTop: 5,
-				paddingBottom: 5,
-				backgroundColor: 'rgba(248, 249, 250, 0.1)',
-				zIndex: 1,
-			}}
-		>
-			<Pagination style={{ margin: 0 }}>
-				<Pagination.First
-					onClick={() => {
-						navigate(convertPathSearchUrl([{ property: 'page', value: 1 }]));
-					}}
-					disabled={currentPage === 1}
-				>
-					<BsFillSkipStartFill color='black' />
-				</Pagination.First>
-				<Pagination.Prev
-					onClick={() => {
-						navigate(
-							convertPathSearchUrl([
-								{ property: 'page', value: currentPage - 1 },
-							]),
-						);
-					}}
-					disabled={currentPage === 1}
-				>
-					<BsFillCaretLeftFill color='black' />
-				</Pagination.Prev>
-				{Array.from({ length: totalPages }).map((_, index) => (
-					<Pagination.Item
-						key={index}
-						active={index + 1 === currentPage}
-						onClick={() => {
-							navigate(
-								convertPathSearchUrl([{ property: 'page', value: index + 1 }]),
-							);
-						}}
-						style={{
-							'--bs-pagination-active-bg': 'black',
-							'--bs-pagination-active-border-color': 'black',
-						}}
-					>
-						{index + 1}
-					</Pagination.Item>
-				))}
-				<Pagination.Next
-					onClick={() => {
+  currentPage += 1;
+  const navigate = useNavigate();
+  const changePage = (value) => {
+    navigate(convertPathSearchUrl([{ property: "page", value: value }]));
+  };
+  return (
+    <div
+      className="d-flex align-items-center justify-content-between"
+      style={{
+        position: "fixed",
+        bottom: "0",
+        left: "0",
+        margin: "0 auto",
+        paddingTop: 5,
+        zIndex: 1,
+        backgroundColor: "rgba(255, 255, 255, 0.2)",
+        display: "flex",
+      }}
+    >
+      <Pagination style={{ margin: 0 }}>
+        {[
+          {
+            id: "first",
+            icon: BsFillSkipStartFill,
+            value: 1,
+            title: "First Page",
+          },
+          {
+            id: "prev",
+            icon: BsFillCaretLeftFill,
+            value: currentPage - 1,
+            title: "Prev Page",
+          },
+        ].map((obj) => (
+          <CustomButton
+            key={obj.id}
+            IconButton={obj.icon}
+            field={obj.value}
+            func={changePage}
+            size={20}
+            color="white"
+            style={{
+              height: 35,
+              width: 35,
+              border: "1px solid #dee2e6",
+              borderTopLeftRadius: obj.id === "first" ? "0.375rem" : "0",
+              borderBottomLeftRadius: obj.id === "first" ? "0.375rem" : "0",
+              backgroundColor: "rgba(255, 255, 255, 0.1)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            disable={currentPage === 1}
+            id={obj.id}
+            title={obj.title}
+          />
+        ))}
+        {Array.from({ length: totalPages }).map((_, index) => (
+          <Form.Label
+            key={index}
+            onClick={() => {
+              if (index + 1 !== currentPage)
+                navigate(
+                  convertPathSearchUrl([{ property: "page", value: index + 1 }])
+                );
+            }}
+            onMouseOver={(e) => {
+              if (index + 1 !== currentPage) {
+                e.target.style.cursor = "pointer";
+                e.target.style.color = "rgb(40, 144, 144)";
+              }
+            }}
+            onMouseOut={(e) => {
+              e.target.style.color = "rgba(255, 255, 255, 1)";
+            }}
+            style={{
+              color: "white",
+              height: 35,
+              width: 30,
+              border: "1px solid #dee2e6",
+              backgroundColor: `rgba(255, 255, 255, ${
+                index + 1 === currentPage ? 0.5 : 0.1
+              })`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 20,
+            }}
+          >
+            {index + 1}
+          </Form.Label>
+        ))}
+        {/* <CustomButton
+					IconButton={BsFillCaretRightFill}
+					func={() =>
 						navigate(
 							convertPathSearchUrl([
 								{ property: 'page', value: currentPage + 1 },
 							]),
-						);
+						)
+					}
+					size={20}
+					color='white'
+					style={{
+						height: 35,
+						width: 35,
+						padding: '1px 6px',
+						border: '1px solid #dee2e6',
+						backgroundColor: 'rgba(255, 255, 255, 0.1)',
+						display: 'flex',
+						alignItems: 'center',
+						justifyContent: 'center',
 					}}
-					disabled={currentPage === totalPages}
-				>
-					<BsFillCaretRightFill color='black' />
-				</Pagination.Next>
-				<Pagination.Last
-					onClick={() => {
+					disable={currentPage === totalPages}
+					id='next'
+				/>
+				<CustomButton
+					IconButton={BsFillSkipEndFill}
+					func={() =>
 						navigate(
 							convertPathSearchUrl([{ property: 'page', value: totalPages }]),
-						);
-					}}
-					disabled={currentPage === totalPages}
-					style={{ borderRadius: '50% !important' }}
-				>
-					<BsFillSkipEndFill color='black' />
-				</Pagination.Last>
-
-				<Form.Control
-					as='select'
-					value={objectsPerPage}
-					onChange={(event) => {
-						navigate(
-							convertPathSearchUrl([
-								{ property: 'limit', value: event.target.value },
-							]),
-						);
-					}}
-					//   className="rounded-0"
+						)
+					}
+					size={20}
+					color='white'
 					style={{
-						height: 'auto',
-						width: 'auto',
-						padding: '6px 10px',
+						height: 35,
+						width: 35,
+						padding: '1px 6px',
 						border: '1px solid #dee2e6',
-						fontWeight: 'bold',
-						textAlign: 'center',
-						borderTopRightRadius: '0.375rem',
-						borderBottomRightRadius: '0.375rem',
-						borderTopLeftRadius: '0rem',
-						borderBottomLeftRadius: '0rem',
-						marginLeft: 5,
+						backgroundColor: 'rgba(255, 255, 255, 0.1)',
+						display: 'flex',
+						alignItems: 'center',
+						justifyContent: 'center',
 					}}
-				>
-					<option value='2'>2</option>
-					<option value='5'>5</option>
-					<option value='10'>10</option>
-					<option value='20'>20</option>
-					<option value='50'>50</option>
-				</Form.Control>
-			</Pagination>
-		</div>
-	);
+					disable={currentPage === totalPages}
+					id='last'
+				/> */}
+        {[
+          {
+            id: "next",
+            icon: BsFillCaretRightFill,
+            value: currentPage + 1,
+            title: "Next Page",
+          },
+          {
+            id: "last",
+            icon: BsFillSkipEndFill,
+            value: totalPages,
+            title: "Last Page",
+          },
+        ].map((obj) => (
+          <CustomButton
+            key={obj.id}
+            IconButton={obj.icon}
+            field={obj.value}
+            func={changePage}
+            size={20}
+            color="white"
+            style={{
+              height: 35,
+              width: 35,
+              border: "1px solid #dee2e6",
+              borderTopLeftRadius: obj.id === "first" ? "0.375rem" : "0",
+              borderBottomLeftRadius: obj.id === "first" ? "0.375rem" : "0",
+              backgroundColor: "rgba(255, 255, 255, 0.1)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            disable={currentPage === totalPages}
+            id={obj.id}
+            title={obj.title}
+          />
+        ))}
+        <Form.Control
+          as="select"
+          value={objectsPerPage}
+          onChange={(event) =>
+            navigate(
+              convertPathSearchUrl([
+                { property: "limit", value: event.target.value },
+              ])
+            )
+          }
+          style={{
+            height: 35,
+            width: 35,
+            padding: 0,
+            border: "1px solid #dee2e6",
+            fontWeight: "bold",
+            textAlign: "center",
+            borderTopRightRadius: "0.375rem",
+            borderBottomRightRadius: "0.375rem",
+            borderTopLeftRadius: "0rem",
+            borderBottomLeftRadius: "0rem",
+            marginLeft: 5,
+            backgroundColor: "rgba(255, 255, 255, 0.1)",
+            color: "white",
+            fontSize: 20,
+          }}
+        >
+          {[2, 5, 10, 20, 50].map((value) => (
+            <option
+              key={value}
+              value={value}
+              style={{
+                color: "black",
+                fontWeight: "bold",
+              }}
+            >
+              {value}
+            </option>
+          ))}
+        </Form.Control>
+      </Pagination>
+      <Pagination style={{ margin: 0, marginBottom: 5 }}>
+        <ScrollToTopButton style />
+      </Pagination>
+    </div>
+  );
 }
 
 export default PaginationComponent;
