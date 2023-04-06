@@ -17,7 +17,9 @@ function UploadSong() {
 		: id.id > 0
 		? 'Update'
 		: 'Error';
-	if (createOrUpdate === 'Error') navigate('/error');
+	useEffect(() => {
+		if (createOrUpdate === 'Error') navigate('/error/404');
+	});
 
 	const [song, setSong] = useState({
 		title: '',
@@ -37,7 +39,7 @@ function UploadSong() {
 	const [changeFile, setChangeFile] = useState(true);
 	useEffect(() => {
 		if (createOrUpdate === 'Update')
-			songService.get({ _id: id.id }).then((data) => {
+			songService.get({ _id: id.id }, navigate).then((data) => {
 				console.log(data.data);
 				setSong(data.data.content[0]);
 			});
@@ -66,10 +68,11 @@ function UploadSong() {
 								song.id,
 								song,
 								file.current.files[0],
+								navigate,
 						  )
-						: songService.updateSongWithoutFile(song.id, song)
+						: songService.updateSongWithoutFile(song.id, song, navigate)
 					: file.current.files.length > 0
-					? songService.insertSong(song, file.current.files[0])
+					? songService.insertSong(song, file.current.files[0], navigate)
 					: setStatus('Please enter full information.');
 			songServiceFunction.then((res) => {
 				if (res.status === 'ok') {
@@ -99,18 +102,22 @@ function UploadSong() {
 					style={{
 						margin: '15px auto',
 						border: '3px solid purple',
+						width: '60%',
+						minWidth: 400,
 						maxWidth: 500,
 						borderRadius: 10,
 					}}
 				>
-					<div className='card'>
+					<div
+						className='card'
+						style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
+					>
 						<h1
-							className='text-center'
+							className='text-center  neon'
 							style={{
 								borderBottom: '2px solid purple',
 								padding: '20px',
 								marginBottom: '0',
-								backgroundColor: 'rgba(255,255,255,0.2)',
 							}}
 						>
 							{`${createOrUpdate} Song`}

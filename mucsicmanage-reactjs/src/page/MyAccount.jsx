@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Col, Row, Button, Form } from 'react-bootstrap';
 import userService from '../services/UserService';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { AiFillSave } from 'react-icons/ai';
 import { MdCancel } from 'react-icons/md';
 import { FaUserEdit, FaUserLock } from 'react-icons/fa';
@@ -21,7 +21,7 @@ function MyAccount() {
 	const [listPassword, setListPassword] = useState(['', '', '']);
 	const [check, setCheck] = useState(true);
 	const [user, setUser] = useState({
-		id: Number,
+		id: '',
 		firstName: '',
 		lastName: '',
 		email: '',
@@ -31,42 +31,49 @@ function MyAccount() {
 
 	const [readOnly, setReadOnly] = useState(true);
 	const [changePassword, setChangePassword] = useState(false);
-	const username = useParams();
+	const [isFirst, setIsFirst] = useState(true);
 
+	const username = useParams();
+	const navigate = useNavigate();
 	useEffect(() => {
-		userService.get({ _email: username.username }).then((data) => {
+		userService.get({ _email: username.username }, navigate).then((data) => {
 			console.log(data.data);
+			if (data.data.content.length === 0) navigate('/error/404');
 			setUser(data.data.content[0]);
 		});
-	}, [username]);
+	}, [navigate, username]);
 	useEffect(() => {
-		setFirstNameIsFilled(
-			user.firstName === '' && !readOnly ? `Please enter first name` : '',
-		);
-		setLastNameIsFilled(
-			user.lastName === '' && !readOnly ? `Please enter last name` : '',
-		);
-		setEmailIsFilled(
-			user.email === '' && !readOnly ? 'Please enter email' : '',
-		);
-		setRolesCheckIsFilled(
-			user.roles.length === 0 && !readOnly ? 'Please select roles' : '',
-		);
-		setOldPasswordIsFilled(
-			listPassword[0] === '' && changePassword ? 'Please enter Password' : '',
-		);
-		setNewPasswordIsFilled(
-			listPassword[1] === '' && changePassword
-				? 'Please enter new Password'
-				: '',
-		);
-		setConfirmPasswordIsFilled(
-			listPassword[2] === '' && changePassword
-				? 'Please enter Confirm Password'
-				: listPassword[1] !== listPassword[2]
-				? 'Password and Confirm password do not match'
-				: '',
-		);
+		if (!isFirst) {
+			setFirstNameIsFilled(
+				user.firstName === '' && !readOnly ? `Please enter first name` : '',
+			);
+			setLastNameIsFilled(
+				user.lastName === '' && !readOnly ? `Please enter last name` : '',
+			);
+			setEmailIsFilled(
+				user.email === '' && !readOnly ? 'Please enter email' : '',
+			);
+			setRolesCheckIsFilled(
+				user.roles.length === 0 && !readOnly ? 'Please select roles' : '',
+			);
+			setOldPasswordIsFilled(
+				listPassword[0] === '' && changePassword ? 'Please enter Password' : '',
+			);
+			setNewPasswordIsFilled(
+				listPassword[1] === '' && changePassword
+					? 'Please enter new Password'
+					: '',
+			);
+			setConfirmPasswordIsFilled(
+				listPassword[2] === '' && changePassword
+					? 'Please enter Confirm Password'
+					: listPassword[1] !== listPassword[2]
+					? 'Password and Confirm password do not match'
+					: '',
+			);
+		}
+	}, [user, listPassword, readOnly, changePassword, status, check, isFirst]);
+	useEffect(() => {
 		setStatus('');
 	}, [user, listPassword]);
 	const setLstPassword = (index, value) => {
@@ -88,6 +95,8 @@ function MyAccount() {
 		setChangePassword(!changePassword);
 	}
 	function handleSubmit() {
+		setIsFirst(false);
+
 		if (
 			!(
 				user.firstName === '' ||
@@ -103,6 +112,7 @@ function MyAccount() {
 					.updatePasswordToMyUser(
 						user.id,
 						listPassword.filter((value, index) => index !== 2),
+						navigate,
 					)
 					.then((res) => {
 						if (res.status !== 'ok') {
@@ -114,7 +124,7 @@ function MyAccount() {
 					});
 			}
 			if (check)
-				userService.updateUser(user.id, user).then((res) => {
+				userService.updateUser(user.id, user, navigate).then((res) => {
 					if (res.status !== 'ok') {
 						setCheck(false);
 					}
@@ -137,6 +147,8 @@ function MyAccount() {
 					style={{
 						margin: '50px auto',
 						border: '3px solid purple',
+						width: '60%',
+						minWidth: 400,
 						maxWidth: 500,
 						borderRadius: 10,
 					}}
@@ -148,14 +160,14 @@ function MyAccount() {
 						}}
 					>
 						<h1
-							className='text-center'
+							className='text-center neon'
 							style={{
 								borderBottom: '2px solid purple',
 								padding: '20px',
 								marginBottom: '0',
 							}}
 						>
-							{(readOnly ? '' : 'Update ') + 'Account Information'}
+							{(readOnly ? '' : 'Update \n') + 'Account Information'}
 						</h1>
 						<div className='card-body'>
 							<Form>
@@ -192,30 +204,32 @@ function MyAccount() {
 									readonly={readOnly}
 								/>
 								{readOnly ? (
-									<CustomFormGroup
-										funcEnter={handleSubmit}
-										controlId='status'
-										func={set}
-										placeholder='Enter status'
-										label='Status'
-										value={user.status ? 'ENABLED' : 'DISABLED'}
-										formControlStyle={{
-											color: user.status ? 'green' : 'red',
-											fontStyle: 'italic',
-											fontWeight: 'bold',
-										}}
-										readonly={readOnly}
-									/>
+									localStorage.getItem('username') === username.username && (
+										<CustomFormGroup
+											funcEnter={handleSubmit}
+											controlId='status'
+											func={set}
+											placeholder='Enter status'
+											label='Status'
+											value={user.status ? 'ENABLED' : 'DISABLED'}
+											formControlStyle={{
+												color: user.status ? 'green' : 'red',
+												fontStyle: 'italic',
+												fontWeight: 'bold',
+											}}
+											readonly={readOnly}
+										/>
+									)
 								) : (
 									<Form.Group className='mb-3' controlId='status'>
 										<Form.Label>Status</Form.Label>
 										<Form.Switch
 											style={{
-												color: user.status == 1 ? 'green' : 'red',
+												color: user.status ? 'green' : 'red',
 												fontStyle: 'italic',
 												fontWeight: 'bold',
 											}}
-											label={user.status == 1 ? 'Enabled' : 'Disabled'}
+											label={user.status ? 'Enabled' : 'Disabled'}
 											name='status'
 											defaultChecked={user.status}
 											onChange={() => {
@@ -224,47 +238,52 @@ function MyAccount() {
 										/>
 									</Form.Group>
 								)}
-								{readOnly && (
-									<CustomFormGroup
-										funcEnter={handleSubmit}
-										controlId='roles'
-										func={set}
-										placeholder='Enter roles'
-										label='Roles'
-										value={covertArrayObjectToString(user.roles)}
-										warning={rolesCheckIsFilled}
-										formControlStyle={{
-											fontStyle: 'italic',
-											fontWeight: 'bold',
-										}}
-										readonly={readOnly}
-									/>
-								)}
-								{readOnly ? (
-									<Form.Group className='mb-3' controlId='change'>
-										<CustomButton
-											field={user.id}
-											IconButton={FaUserEdit}
-											size={30}
-											func={changeReadOnly}
-											title={'Enable User'}
-											id='change'
+								{readOnly &&
+									localStorage.getItem('username') === username.username && (
+										<CustomFormGroup
+											funcEnter={handleSubmit}
+											controlId='roles'
+											func={set}
+											placeholder='Enter roles'
+											label='Roles'
+											value={covertArrayObjectToString(user.roles)}
+											warning={rolesCheckIsFilled}
+											formControlStyle={{
+												fontStyle: 'italic',
+												fontWeight: 'bold',
+											}}
+											readonly={readOnly}
 										/>
-										<div
-											style={{
-												display: 'inline-block',
-												marginLeft: 20,
-											}}
-											onMouseOver={(e) => {
-												e.target.style.color = 'rgb(40, 144, 144)';
-												e.target.style.cursor = 'pointer';
-											}}
-											onMouseOut={(e) => (e.target.style.color = 'black')}
-											onClick={changeReadOnly}
-										>
-											<Form.Text>Change User Information</Form.Text>
-										</div>
-									</Form.Group>
+									)}
+								{readOnly ? (
+									localStorage.getItem('username') === username.username && (
+										<Form.Group className='mb-3' controlId='change'>
+											<CustomButton
+												field={user.id}
+												IconButton={FaUserEdit}
+												size={30}
+												func={changeReadOnly}
+												title={'Enable User'}
+												id='change'
+											/>
+											<div
+												style={{
+													display: 'inline-block',
+													marginLeft: 20,
+												}}
+												onMouseOver={(e) => {
+													e.target.style.color = 'rgb(40, 144, 144)';
+													e.target.style.cursor = 'pointer';
+												}}
+												onMouseOut={(e) => (e.target.style.color = 'black')}
+												onClick={changeReadOnly}
+											>
+												<Form.Text className='neon'>
+													Change User Information
+												</Form.Text>
+											</div>
+										</Form.Group>
+									)
 								) : (
 									<>
 										<Form.Group className='mb-3' controlId='changePassword'>
@@ -287,7 +306,7 @@ function MyAccount() {
 												onMouseOut={(e) => (e.target.style.color = 'black')}
 												onClick={changeChangePassword}
 											>
-												<Form.Text>
+												<Form.Text className='neon'>
 													{!changePassword
 														? 'Click here if you want change password'
 														: 'Click here if you do not want change password'}

@@ -1,9 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 import AuthNavbarComponent from '../components/AuthNavbarComponent';
 function App() {
+	const navigate = useNavigate();
+	if (localStorage.getItem('token')) navigate('/songs');
 	return (
 		<>
 			<div className='background-container' />

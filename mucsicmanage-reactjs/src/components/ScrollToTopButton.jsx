@@ -45,6 +45,7 @@ const ScrollToTopButton = () => {
 						border: '1px solid #dee2e6',
 						textAlign: 'center',
 					}}
+					id='scroll'
 				/>
 			)}
 		</>

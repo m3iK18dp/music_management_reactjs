@@ -2,12 +2,15 @@ import '../css/MusicLogin.css';
 import authenticationService from '../services/AuthenticationService';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Col, Form, Button } from 'react-bootstrap';
+import { Col, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import AuthNavbarComponent from '../components/AuthNavbarComponent';
 import CustomFormGroup from '../components/CustomFormGroup';
+import CustomButton from '../components/CustomButton';
 
 const Login = () => {
+	const navigate = useNavigate();
+	if (localStorage.getItem('token')) navigate('/songs');
 	const [authLogin, setAuthLogin] = useState({
 		username: '',
 		password: '',
@@ -20,7 +23,6 @@ const Login = () => {
 	const [passwordIsFilled, setPasswordIsFilled] = useState('');
 	const [status, setStatus] = useState('');
 
-	const navigate = useNavigate();
 	useEffect(() => {
 		setUsernameIsFilled(
 			authLogin.username === '' && !isFirst ? 'Please enter username' : '',
@@ -28,16 +30,18 @@ const Login = () => {
 		setPasswordIsFilled(
 			authLogin.password === '' && !isFirst ? 'Please enter Password' : '',
 		);
+	}, [authLogin, isFirst, status]);
+	useEffect(() => {
 		setStatus('');
 	}, [authLogin]);
-
 	const handleSubmit = () => {
 		setIsFirst(false);
 		if (!(authLogin.username === '' || authLogin.password === '')) {
 			setStatus('Please wait...Login in progress');
-			authenticationService.login(authLogin).then((data) => {
+			authenticationService.login(authLogin,navigate).then((data) => {
 				console.log(data);
 				if (data.status === 'ok') {
+					setStatus('');
 					alert('Login successful!');
 					navigate('/songs');
 				} else {
@@ -56,21 +60,21 @@ const Login = () => {
 			<div
 				fluid
 				style={{
-					with: '80%',
-					minWidth: 500,
-					maxWidth: 1000,
-					margin: '80px auto',
+					with: '50%',
+					minWidth: 300,
+					maxWidth: 400,
+					margin: '100px auto',
 				}}
 			>
 				<Col
-					className='card'
+					className='card '
 					style={{
 						border: '3px solid purple',
 						backgroundColor: 'rgba(255,255,255,0.2)',
 					}}
 				>
 					<h1
-						className='text-center'
+						className='text-center neon'
 						style={{
 							borderBottom: '2px solid purple',
 							padding: '20px',
@@ -109,14 +113,25 @@ const Login = () => {
 								value={authLogin.password}
 								warning={passwordIsFilled}
 							/>
-							<Button
-								variant='primary'
-								block='true'
-								style={{ marginTop: 40 }}
-								onClick={() => handleSubmit()}
-							>
-								Login
-							</Button>{' '}
+							<CustomButton
+								className='text-center '
+								style={{
+									width: 90,
+									height: 40,
+									margin: '0 auto',
+									textAlign: 'center',
+									backgroundColor: 'rgba(255,255,255,0.4)',
+									borderRadius: 15,
+									border: '1px solid white',
+									display: 'flex',
+									alignItems: 'center',
+									justifyContent: 'center',
+								}}
+								size={20}
+								color='white'
+								func={handleSubmit}
+								text='Login'
+							/>
 							<div style={{ height: 5 }}>
 								<p
 									style={{
@@ -131,7 +146,10 @@ const Login = () => {
 							</div>
 							<div className='mt-4'>
 								<p className='text-center'>
-									Don't have an account? <Link to='/register'>Register</Link>
+									Don't have an account?{' '}
+									<Link to='/register' className='neon'>
+										Register
+									</Link>
 								</p>
 							</div>
 						</Form>

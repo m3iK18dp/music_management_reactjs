@@ -19,8 +19,6 @@ function UploadUser() {
 		? 'Update'
 		: 'Error';
 
-	if (createOrUpdate === 'Error') navigate('/error');
-
 	const [firstNameIsFilled, setFirstNameIsFilled] = useState('');
 	const [lastNameIsFilled, setLastNameIsFilled] = useState('');
 	const [emailIsFilled, setEmailIsFilled] = useState('');
@@ -38,14 +36,18 @@ function UploadUser() {
 		setUser({ ...user, [prop]: value });
 	};
 	const [isFirst, setIsFirst] = useState(true);
-
+	useEffect(() => {
+		if (createOrUpdate === 'Error') navigate('/error/404');
+	});
 	useEffect(() => {
 		if (createOrUpdate === 'Update')
-			userService.get({ _id: id.id }).then((data) => {
+			userService.get({ _id: id.id }, navigate).then((data) => {
 				console.log(data.data);
 				setUser(data.data.content[0]);
 			});
-		userService.getRoles({}).then((data) => setRoles(data.data.content));
+		userService
+			.getRoles({}, navigate)
+			.then((data) => setRoles(data.data.content));
 	}, [createOrUpdate, id.id]);
 	useEffect(() => {
 		if (!isFirst) {
@@ -75,8 +77,8 @@ function UploadUser() {
 		) {
 			setStatus('Please wait...Updating user is in progress');
 			(createOrUpdate === 'Create'
-				? userService.insertUser(user)
-				: userService.updateUser(user.id, user)
+				? userService.insertUser(user, navigate)
+				: userService.updateUser(user.id, user, navigate)
 			).then((res) => {
 				if (res.status === 'ok') {
 					setStatus('');
@@ -105,6 +107,8 @@ function UploadUser() {
 					style={{
 						margin: '50px auto',
 						border: '3px solid purple',
+						width: '60%',
+						minWidth: 400,
 						maxWidth: 500,
 						borderRadius: 10,
 					}}
@@ -114,7 +118,7 @@ function UploadUser() {
 						style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
 					>
 						<h1
-							className='text-center'
+							className='text-center neon'
 							style={{
 								borderBottom: '2px solid purple',
 								padding: '20px',
@@ -167,11 +171,11 @@ function UploadUser() {
 									<Form.Label>Status</Form.Label>
 									<Form.Switch
 										style={{
-											color: user.status == 1 ? 'green' : 'red',
+											color: user.status ? 'green' : 'red',
 											fontStyle: 'italic',
 											fontWeight: 'bold',
 										}}
-										label={user.status == 1 ? 'Enabled' : 'Disabled'}
+										label={user.status ? 'Enabled' : 'Disabled'}
 										name='status'
 										defaultChecked={user.status}
 										onChange={() => {

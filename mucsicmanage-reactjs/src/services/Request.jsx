@@ -3,6 +3,7 @@ import queryString from 'query-string';
 const API_BASE_URL = 'http://localhost:8080/api';
 
 const callApi = async (
+	navigate,
 	endpoint,
 	method = 'get',
 	data = null,
@@ -13,6 +14,7 @@ const callApi = async (
 		url: `${API_BASE_URL}/${endpoint}`,
 		method,
 		headers,
+		timeout: 5000,
 	};
 	if (
 		!(
@@ -26,14 +28,36 @@ const callApi = async (
 		};
 	}
 	if (method.toLowerCase() === 'get') {
-		options.url = options.url + '?' + queryString.stringify(params);
+		if (Object.keys(params).length !== 0)
+			options.url = options.url + '?' + queryString.stringify(params);
 	} else {
 		options.data = data;
 	}
 	try {
 		return await axios(options).then((res) => res.data);
 	} catch (error) {
-		throw new Error(error);
+		if (error.code === 'ECONNABORTED') {
+			// Lỗi timeout
+			navigate('/error/408');
+		} else if (error.response) {
+			// Lỗi xử lý response
+			const { status, data } = error.response;
+			if (status === 404) {
+				navigate('/error/404');
+			} else if (status === 401) {
+				navigate('/error/401');
+			} else {
+				console.log(
+					`Server responded with error code ${status} and message: ${data}`,
+				);
+			}
+		} else if (error.request) {
+			// Lỗi kết nối
+			navigate('/error/500');
+		} else {
+			// Lỗi xử lý request
+			console.log('Request processing error:', error);
+		}
 	}
 };
 export default callApi;

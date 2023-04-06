@@ -1,12 +1,14 @@
-import { Form, Button, Col, Row } from 'react-bootstrap';
+import { Form, Col } from 'react-bootstrap';
 import '../css/MusicLogin.css';
-import { useRef, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import authenticationService from '../services/AuthenticationService';
 import { useNavigate } from 'react-router-dom';
 import AuthNavbarComponent from '../components/AuthNavbarComponent';
 import CustomFormGroup from '../components/CustomFormGroup';
+import CustomButton from '../components/CustomButton';
 function Register() {
 	const navigate = useNavigate();
+	if (localStorage.getItem('token')) navigate('/songs');
 	const [user, setUser] = useState({
 		firstName: '',
 		lastName: '',
@@ -26,26 +28,25 @@ function Register() {
 	const [isFirst, setIsFirst] = useState(true);
 
 	useEffect(() => {
-		setFirstNameIsFilled(
-			user.firstName === '' && !isFirst ? 'Please enter First name' : '',
-		);
-		setLastNameIsFilled(
-			user.lastName === '' && !isFirst ? 'Please enter Lase name' : '',
-		);
-		setEmailIsFilled(user.email === '' && !isFirst ? 'Please enter email' : '');
-		setPasswordIsFilled(
-			user.password === '' && !isFirst ? 'Please enter Password' : '',
-		);
-		setConfirmPasswordIsFilled(
-			user.confirmPassword === '' && !isFirst
-				? 'Please enter Confirm Password'
-				: user.password !== user.confirmPassword && !isFirst
-				? 'Password and Confirm password do not match'
-				: '',
-		);
+		if (!isFirst) {
+			setFirstNameIsFilled(
+				user.firstName === '' ? 'Please enter First name' : '',
+			);
+			setLastNameIsFilled(user.lastName === '' ? 'Please enter Lase name' : '');
+			setEmailIsFilled(user.email === '' ? 'Please enter email' : '');
+			setPasswordIsFilled(user.password === '' ? 'Please enter Password' : '');
+			setConfirmPasswordIsFilled(
+				user.confirmPassword === ''
+					? 'Please enter Confirm Password'
+					: user.password !== user.confirmPassword
+					? 'Password and Confirm password do not match'
+					: '',
+			);
+		}
+	}, [isFirst, user, status]);
+	useEffect(() => {
 		setStatus('');
 	}, [user]);
-
 	function handleSubmit() {
 		setIsFirst(false);
 		if (
@@ -59,11 +60,10 @@ function Register() {
 		)
 			try {
 				setStatus('Please wait...Saving is in progress');
-				authenticationService.register(user).then((res) => {
+				authenticationService.register(user, navigate).then((res) => {
 					if (res.status === 'ok') {
 						setStatus('');
 						alert('Registration successful!');
-
 						navigate('/login');
 					} else {
 						setEmailIsFilled(
@@ -86,22 +86,21 @@ function Register() {
 			<div
 				fluid
 				style={{
-					with: '80%',
-					minWidth: 500,
-					maxWidth: 1000,
-					margin: '80px auto',
+					with: '50%',
+					minWidth: 300,
+					maxWidth: 400,
+					margin: '100px auto',
 				}}
 			>
 				<Col
 					className='card'
 					style={{
 						border: '3px solid purple',
-						backgroundColor: 'white',
 						backgroundColor: 'rgba(255,255,255,0.2)',
 					}}
 				>
 					<h1
-						className='text-center'
+						className='text-center neon'
 						style={{
 							borderBottom: '2px solid purple',
 							padding: '20px',
@@ -170,9 +169,26 @@ function Register() {
 								warning={confirmPasswordIsFilled}
 							/>
 
-							<Button onClick={handleSubmit} variant='primary'>
-								Register
-							</Button>
+							<CustomButton
+								className='text-center '
+								style={{
+									width: 90,
+									height: 40,
+									margin: '0 auto',
+									textAlign: 'center',
+									backgroundColor: 'rgba(255,255,255,0.4)',
+									borderRadius: 15,
+									border: '1px solid white',
+									display: 'flex',
+									alignItems: 'center',
+									justifyContent: 'center',
+								}}
+								size={20}
+								color='white'
+								variant='primary'
+								func={handleSubmit}
+								text='Register'
+							></CustomButton>
 							<div style={{ height: 5 }}>
 								<p
 									style={{
@@ -187,7 +203,10 @@ function Register() {
 							</div>
 							<div className='mt-4'>
 								<p className='text-center'>
-									You have account? <a href='/login'>Login here</a>
+									You have account?{' '}
+									<a href='/login' className=' neon'>
+										Login here
+									</a>
 								</p>
 							</div>
 						</Form>

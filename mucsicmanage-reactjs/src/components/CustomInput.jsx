@@ -18,6 +18,7 @@ function CustomInput({
 						display: 'flex',
 						alignItems: 'center',
 						justifyContent: 'center',
+						color: 'white',
 					}}
 				>
 					{field}
