@@ -52,18 +52,18 @@ public class MyFileServiceImpl implements IStorageService {
         float fileSizeInMegabytes = file.getSize() / 1_000_000.0f;
         if (type == 0) {
             if (!isMusicFile(file)) {
-                throw new RuntimeException("You can only upload music file");
+                throw new RuntimeException("You can only upload music file.");
             }
             if (fileSizeInMegabytes > 20.0f) {
-                throw new RuntimeException("Music file size must be <= 20Mb");
+                throw new RuntimeException("Music file size must be <= 20Mb.");
             }
         }
         if (type == 1) {
             if (!isImageFile(file)) {
-                throw new RuntimeException("You can only upload music/image file");
+                throw new RuntimeException("You can only upload music/image file.");
             }
             if (fileSizeInMegabytes > 40.0f) {
-                throw new RuntimeException("Image File size must be <= 40Mb");
+                throw new RuntimeException("Image File size must be <= 40Mb.");
             }
         }
         return true;
@@ -87,7 +87,7 @@ public class MyFileServiceImpl implements IStorageService {
                             )
                     ).get("secure_url");
         } catch (Exception exception) {
-            throw new RuntimeException("Failed to upload file." + exception.getMessage());
+            throw new RuntimeException("Upload file in storage failed.");
         }
     }
 
@@ -110,7 +110,7 @@ public class MyFileServiceImpl implements IStorageService {
                             )
                     ).get("secure_url");
         } catch (Exception exception) {
-            throw new RuntimeException("Failed to upload file." + exception.getMessage());
+            throw new RuntimeException("Update file in storage failed.");
         }
     }
 
@@ -124,8 +124,8 @@ public class MyFileServiceImpl implements IStorageService {
                             ObjectUtils.emptyMap()
                     );
             return Boolean.TRUE;
-        } catch (IOException e) {
-            return Boolean.FALSE;
+        } catch (IOException exception) {
+            throw new RuntimeException("Delete file in storage failed.");
         }
     }
 
@@ -139,10 +139,18 @@ public class MyFileServiceImpl implements IStorageService {
                         return url[url.length - 1];
                     }).collect(Collectors.toList()), ObjectUtils.emptyMap());
             return Boolean.TRUE;
-        } catch (IOException e) {
-            return Boolean.FALSE;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (Exception exception) {
+            throw new RuntimeException("Delete all files in storage failed.");
         }
     }
+
+//    private String getHash(byte[] bytes, String algorithm) throws Exception {
+//        java.security.MessageDigest digest = java.security.MessageDigest.getInstance(algorithm);
+//        byte[] hash = digest.digest(bytes);
+//        StringBuilder sb = new StringBuilder();
+//        for (byte b : hash) {
+//            sb.append(String.format("%02x", b));
+//        }
+//        return sb.toString();
+//    }
 }

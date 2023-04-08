@@ -9,6 +9,7 @@ import com.dev.music_manager_backend.services.IAuthenticationService;
 import com.dev.music_manager_backend.services.IUserService;
 import com.dev.music_manager_backend.services.authenticationService.CustomUserDetailsService;
 import com.dev.music_manager_backend.util.JwtTokenUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,13 +50,13 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     }
 
     @Override
-    public List<Object> createAuthenticationToken(AuthenticationRequest authenticationRequest) throws Exception {
+    public List<Object> createAuthenticationToken(AuthenticationRequest authenticationRequest) {
         log.info("Creating authentication token for user {}", authenticationRequest);
 
         String username = authenticationRequest.getUsername();
         String password = authenticationRequest.getPassword();
-        if (!userService.findUserByEmail(username).map(User::isStatus).orElse(false)) {
-            throw new BadCredentialsException("User is disabled");
+        if (!userService.findUserByEmail(username).map(User::isStatus).orElseThrow(() -> new BadCredentialsException("No account found matching username."))) {
+            throw new BadCredentialsException("User is disabled.");
         }
         try {
             authenticationManager.authenticate(
@@ -64,12 +65,15 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
                             password
                     )
             );
-        } catch (BadCredentialsException e) {
-            throw new Exception("INVALID_CREDENTIALS", e);
+        } catch (BadCredentialsException exception) {
+            throw new RuntimeException("Your password is incorrect. Please re-enter your password.");
         }
         userService.revokeAllUserTokens(username);
         String token = saveUserToken(username).getToken();
-        return Arrays.asList(token, getRoleByToken(token));
+        return Arrays.asList(token,
+                tokenRepository.findRoleByToken(token)
+
+        );
     }
 
 
@@ -80,9 +84,19 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     }
 
     @Override
-    public List<String> getRoleByToken(String token) {
-        return tokenRepository.findRoleByToken(token);
+    public List<Object> getAccountInformationByToken(HttpServletRequest request) {
+        //List: isRevoked, isExpired, username, listRoles
+        JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
+        return tokenRepository.findByToken(
+                        request.getHeader("Authorization")
+                                .substring(7)
+                )
+                .map(tokenRepo -> Arrays.asList(
+                                tokenRepo.isRevoked(),
+                                jwtTokenUtil.isTokenExpired(tokenRepo.getToken()),
+                                jwtTokenUtil.extractUserName(tokenRepo.getToken()),
+                                tokenRepository.findRoleByToken(tokenRepo.getToken())
+                        )
+                ).orElseThrow(() -> new RuntimeException("Your token is invalid, please login again to continue."));
     }
-
-
 }

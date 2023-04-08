@@ -12,13 +12,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin()
 public class UserController {
     private final IUserService userService;
 
@@ -34,37 +33,26 @@ public class UserController {
                                               @RequestParam(value = "_type_sort", defaultValue = "asc") String typeSort,
                                               HttpServletRequest request
     ) {
-
-        LinkedHashMap<String, Object> filter = new LinkedHashMap<>();
-        filter.put("id", id);
-        filter.put("email", email);
-        filter.put("name", name);
-        filter.put("roleIds", roleIds);
-        filter.put("status", status);
-        filter.put("page", page);
-        filter.put("limit", limit);
-        filter.put("field", field);
-        filter.put("typeSort", typeSort);
         Page<User> users = new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 0);
         try {
             users = userService.findUsersWithPaginationAndSort(id, email, name, roleIds, status, page, limit, field, typeSort, request);
             if (users.isEmpty()) {
                 return new ResponseObject<>(
                         "failed",
-                        "Not found Users with " + filter,
+                        "Not found Users.",
                         users
                 );
             } else {
                 return new ResponseObject<>(
                         "ok",
-                        "Get All Success with " + filter,
+                        "Get All Successfully.",
                         users
                 );
             }
         } catch (Exception exception) {
             return new ResponseObject<>(
-                    "failed",
-                    "Can't get all Users with " + filter + " ====" + exception.getMessage(),
+                    "error",
+                    "Can't get Users with filter. " + exception.getMessage(),
                     users
             );
         }
@@ -77,13 +65,13 @@ public class UserController {
         try {
             return new ResponseObject<>(
                     "ok",
-                    "Add User Success",
+                    "Add User Successfully.",
                     userService.saveUser(user)
             );
         } catch (Exception exception) {
             return new ResponseObject<>(
-                    "failed",
-                    "Can't add user --- " + exception.getMessage(),
+                    "error",
+                    "Can't add user. " + exception.getMessage(),
                     new User()
             );
         }
@@ -99,13 +87,13 @@ public class UserController {
         try {
             return new ResponseObject<>(
                     "ok",
-                    "Update user with id: " + id,
+                    "Update user successfully.",
                     userService.updateUser(id, user, request)
             );
         } catch (Exception exception) {
             return new ResponseObject<>(
-                    "failed",
-                    "Can't update user with id = " + id + "\n" + exception.getMessage(),
+                    "error",
+                    "Can't update user. " + exception.getMessage(),
                     new User()
             );
         }
@@ -119,13 +107,13 @@ public class UserController {
         try {
             return new ResponseObject<>(
                     "ok",
-                    "Reset password to user with id: " + id + " success",
+                    "Reset password to user with id: " + id + " successfully.",
                     userService.resetUserPassword(id, request)
             );
         } catch (Exception exception) {
             return new ResponseObject<>(
                     "failed",
-                    "Can't reset password to user with id = " + id + "\n" + exception.getMessage(),
+                    "Can't reset password to user with id = " + id + ". " + exception.getMessage(),
                     new User()
             );
         }
@@ -141,13 +129,13 @@ public class UserController {
         try {
             return new ResponseObject<>(
                     "ok",
-                    "Update user email with id: " + id,
+                    "Update user email with id: " + id + " successfully.",
                     userService.updateEmailToUser(id, email, request)
             );
         } catch (Exception exception) {
             return new ResponseObject<>(
-                    "failed",
-                    "Can't update user email with id = " + id + "\n" + exception.getMessage(),
+                    "error",
+                    "Can't update user email with id = " + id + ". " + exception.getMessage(),
                     new User()
             );
         }
@@ -163,13 +151,13 @@ public class UserController {
         try {
             return new ResponseObject<>(
                     "ok",
-                    "Update user email with id: " + id,
+                    "Update user email with id: " + id + " successfully.",
                     userService.updatePasswordToUser(id, listPassword.get(0), listPassword.get(1), request)
             );
         } catch (Exception exception) {
             return new ResponseObject<>(
-                    "failed",
-                    "Can't update user password with id = " + id + "\n" + exception.getMessage(),
+                    "error",
+                    "Can't update user password with id = " + id + ". " + exception.getMessage(),
                     new User()
             );
         }
@@ -183,13 +171,13 @@ public class UserController {
         try {
             return new ResponseObject<>(
                     "ok",
-                    "Change Status user with id = " + id + " successfully",
+                    "Change Status user with id = " + id + " successfully.",
                     userService.changeStatusUser(id, request)
             );
         } catch (Exception exception) {
             return new ResponseObject<>(
-                    "failed",
-                    "Cannot change status User with id = " + id + "===" + exception.getMessage(),
+                    "error",
+                    "Cannot change status User with id = " + id + ". " + exception.getMessage(),
                     new User()
             );
         }
@@ -207,35 +195,26 @@ public class UserController {
             @RequestParam(value = "_type_sort", defaultValue = "asc") String typeSort,
             HttpServletRequest request
     ) {
-        LinkedHashMap<String, Object> filter = new LinkedHashMap<String, Object>();
-        filter.put("id", id);
-        filter.put("name", name);
-        filter.put("roleIds", roleIds);
-        filter.put("userId", userId);
-        filter.put("page", page);
-        filter.put("limit", limit);
-        filter.put("field", field);
-        filter.put("typeSort", typeSort);
         Page<Role> roles = new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 0);
         try {
             roles = userService.findRolesWithPaginationAndSort(id, name, roleIds, userId, page, limit, field, typeSort, request);
             if (roles.isEmpty()) {
                 return new ResponseObject<>(
                         "failed",
-                        "Not found Roles with " + filter,
+                        "Not found Roles.",
                         roles
                 );
             } else {
                 return new ResponseObject<>(
                         "ok",
-                        "Get Roles Success with " + filter,
+                        "Get Roles Successfully.",
                         roles
                 );
             }
         } catch (Exception exception) {
             return new ResponseObject<>(
-                    "failed",
-                    "Can't get Roles with " + filter + " ===" + exception.getMessage(),
+                    "error",
+                    "Can't get Roles. " + exception.getMessage(),
                     roles
             );
         }

@@ -28,12 +28,6 @@ public class SongServiceImpl implements ISongService {
     @Autowired
     private final IStorageService storageService;
 
-    //    @Override
-//    public Page<Song> findSongsWithPaginationAndSort(Long id, String title, String genre, String musician, int page, int limit, String field, String typeSort) {
-//        return new PageImpl<>(songRepository.findSongsWithPaginationAndSort(id, title, genre, musician, page * limit, limit, field, typeSort));
-////        page*limit bở vì trong file SongRepository ta dùng offset, nó có tác dụng bỏ qua số phần tử tính từ đầu dữ liệu bảng đầu ra, nên vậy
-////        ta cần nhân để bỏ qua đúng số phần tử của 1 trang, có nghĩa ta sẽ được những dòng dữ liệu của trang tiếp theo
-//    }
     @Override
     public Page<Song> findSongsWithPaginationAndSort(Long id, String title, String genre, String musician, int page, int limit, String field, String typeSort) {
         LinkedHashMap<String, Object> filter = new LinkedHashMap<String, Object>();
@@ -49,41 +43,11 @@ public class SongServiceImpl implements ISongService {
         return songRepository.findSongsWithPaginationAndSort(id, title, genre, musician, PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
     }
 
-//    @Override
-//    public Page<Song> findAllSongs(int page, int limit, String field, String typeSort) {
-//        return songRepository.findAll(PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
-//    }
-//
-//    @Override
-//    public Optional<Song> findSongById(Long id) {
-//        log.info("Get song by id: {}", id);
-//        return songRepository.findById(id);
-//    }
-
-//    @Override
-//    public Page<Song> findSongByTitle(String title, int page, int limit, String field, String typeSort) {
-//        log.info("Get song by title: {}", title);
-//        return songRepository.findByTitleContaining(title.replace("%20", " "), PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
-//    }
-//
-//    @Override
-//    public Page<Song> findSongByMusician(String musician, int page, int limit, String field, String typeSort) {
-//        log.info("Get song by musician: {}", musician);
-//        return songRepository.findByMusicianContaining(musician.replace("%20", " "), PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
-//    }
-//
-//    @Override
-//    public Page<Song> findSongByGenre(String genre, int page, int limit, String field, String typeSort) {
-//        log.info("Get song by genre: {}", genre);
-//        return songRepository.findByGenreContaining(genre.replace("%20", " "), PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field)));
-//
-//    }
-
     @Override
     public Song insertSong(Song song, MultipartFile file) {
         log.info("Insert song: {}", song.getId());
         if (songRepository.findByTitle(song.getTitle()).contains(song)) {
-            throw new RuntimeException("Cannot insert song -> Musician: " + song.getMusician() + " already exists song with title: " + song.getTitle());
+            throw new RuntimeException("Upload song failed. With Musician: " + song.getMusician() + " already exists song with title: " + song.getTitle() + ".");
         }
         try {
             return songRepository.save(
@@ -95,8 +59,8 @@ public class SongServiceImpl implements ISongService {
                             .url(storageService.uploadFileToCloundinary(0, file))
                             .build()
             );
-        } catch (Exception e) {
-            throw new RuntimeException("Upload song failed " + e.getMessage());
+        } catch (Exception exception) {
+            throw new RuntimeException(exception.getMessage().contains("failed") ? exception.getMessage() : "Upload song failed.");
         }
     }
 
@@ -104,25 +68,14 @@ public class SongServiceImpl implements ISongService {
     public Song updateSong(Long id, Song song, MultipartFile file) {
         log.info("Update song: {}", song.getId());
         List<Song> songs = songRepository.findByTitle(song.getTitle());
-        if (songs.contains(song)) {
-            if (songs.stream()
-                    .filter(songStr -> songStr.equals(song))
-                    .findFirst().map(songMap -> !songMap.getId().equals(id)).orElse(false))
-                throw new RuntimeException("Cannot update Song -> Musician: " + song.getMusician() + " already exists song with title: " + song.getTitle());
-        }
+
+        if (songs.stream()
+                .filter(songStr -> songStr.equals(song))
+                .findFirst().map(songMap -> !songMap.getId().equals(id)).orElse(false))
+            throw new RuntimeException("Update Song failed. With Musician: " + song.getMusician() + " already exists song with title: " + song.getTitle() + ".");
+
         return songRepository.findById(id).map(updateSong -> {
             try {
-//                if (file == null) {
-//                    return songRepository.save(Song.builder()
-//                            .id(id)
-//                            .title(song.getTitle())
-//                            .genre(song.getGenre())
-//                            .lastUpdate(LocalDateTime.now())
-//                            .musician(song.getMusician())
-//                            .url(updateSong.getUrl())
-//                            .build()
-//                    );
-//                } else {
                 return songRepository.save(
                         Song.builder()
                                 .id(id)
@@ -133,11 +86,10 @@ public class SongServiceImpl implements ISongService {
                                 .url(file == null ? updateSong.getUrl() : storageService.updateFileToCloundinary(0, updateSong.getUrl(), file))
                                 .build()
                 );
-//                }
-            } catch (Exception e) {
-                throw new RuntimeException("Update song failed " + e.getMessage());
+            } catch (Exception exception) {
+                throw new RuntimeException(exception.getMessage().contains("failed") ? exception.getMessage() : "Update song failed.");
             }
-        }).orElseThrow(() -> new RuntimeException("Update song failed"));
+        }).orElseThrow(() -> new RuntimeException("Song not found."));
     }
 
     @Override
@@ -149,11 +101,11 @@ public class SongServiceImpl implements ISongService {
                         storageService.deleteFileFromCloundinary(song.getUrl());
                         songRepository.delete(song);
                         return song;
-                    } catch (Exception e) {
-                        throw new RuntimeException("Delete song failed " + e.getMessage());
+                    } catch (Exception exception) {
+                        throw new RuntimeException(exception.getMessage().contains("failed") ? exception.getMessage() : "Delete song failed.");
                     }
                 }
-        ).orElseThrow(() -> new RuntimeException("Delete song failed"));
+        ).orElseThrow(() -> new RuntimeException("Song not found."));
     }
 
     @Override
@@ -164,7 +116,7 @@ public class SongServiceImpl implements ISongService {
             songRepository.deleteAll();
             return Boolean.TRUE;
         } catch (Exception e) {
-            throw new RuntimeException("Delete all songs failed " + e.getMessage());
+            throw new RuntimeException("Delete all songs failed. " + (e.getMessage().contains("failed") ? "" : e.getMessage()));
         }
     }
 }

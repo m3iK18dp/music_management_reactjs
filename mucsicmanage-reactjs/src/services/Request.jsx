@@ -10,15 +10,20 @@ const callApi = async (
   params = {},
   headers = {}
 ) => {
+  // Kiểm tra thời gian hết hạn của token và xóa token nếu đã hết hạn
   const options = {
     url: `${API_BASE_URL}/${endpoint}`,
     method,
     headers,
-    timeout: 5000,
+    timeout:
+      endpoint.includes("songs") &&
+      ["post", "put"].includes(method.toLowerCase())
+        ? 15000
+        : 5000,
   };
   if (
     !(
-      endpoint.includes("auth") ||
+      (endpoint.includes("auth") && method === "post") ||
       (endpoint.includes("songs") && method === "get")
     )
   ) {
@@ -34,7 +39,10 @@ const callApi = async (
     options.data = data;
   }
   try {
-    return await axios(options).then((res) => res.data);
+    return await axios(options).then((res) => {
+      console.log(res.data.data);
+      return res.data;
+    });
   } catch (error) {
     if (error.code === "ECONNABORTED") {
       // Lỗi timeout

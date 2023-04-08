@@ -24,8 +24,10 @@ import convertPathSearchUrl from "../services/ConvertPathSearchUrl";
 import CustomInput from "../components/CustomInput";
 import CustomButton from "../components/CustomButton";
 import CustomTableHeaderWithSort from "../components/CustomTableHeaderWithSort";
+import { checkToken } from "../services/CheckToken";
 function Users() {
   const navigate = useNavigate();
+
   const path = useLocation().search;
   const [search, setSearch] = useState({
     id: "",
@@ -52,6 +54,7 @@ function Users() {
   };
   const [expandFilter, setExpandFilter] = useState(false);
   useEffect(() => {
+    checkToken(navigate);
     const searchParams = new URLSearchParams(window.location.search);
     const params = {};
     [
@@ -175,7 +178,7 @@ function Users() {
       <div className=" background-container-opacity-low" />
 
       <Container
-        fluid
+        fluid="true"
         style={{
           position: "fixed",
           top: 55,

@@ -23,12 +23,17 @@ import CustomInput from "../components/CustomInput";
 import CustomButton from "../components/CustomButton";
 import CustomTableHeaderWithSort from "../components/CustomTableHeaderWithSort";
 import AudioPlayer from "../components/AudioPlayer";
+import { checkToken } from "../services/CheckToken";
 function Songs() {
+  const navigate = useNavigate();
+  const alertRevoked =
+    "Your account has been revoked, login with another account or contact Administrator to unlock your account to use more features.";
   const isLoggedIn =
-    localStorage.getItem("token") && localStorage.getItem("roles");
+    localStorage.getItem("token") &&
+    !JSON.parse(localStorage.getItem("isRevoked"));
   const roles = localStorage.getItem("roles");
   const isAdmin = roles !== null ? roles.includes("ROLE_ADMIN") : false;
-  const navigate = useNavigate();
+
   const path = useLocation().search;
   const [search, setSearch] = useState({
     id: "",
@@ -56,6 +61,7 @@ function Songs() {
     }));
   };
   useEffect(() => {
+    checkToken(navigate, 0);
     const searchParams = new URLSearchParams(window.location.search);
     const params = {};
     [
@@ -159,13 +165,23 @@ function Songs() {
     navigate(convertPathSearchUrl(search));
   };
   const handleNewSong = () => {
-    navigate("/songs/new");
+    if (!localStorage.getItem("token"))
+      alert(
+        "This feature is only available to logged in users. If you want to use it, please login to continue."
+      );
+    else if (JSON.parse(localStorage.getItem("isRevoked"))) {
+      alert(alertRevoked);
+    } else navigate("/songs/new");
   };
   const handleUpdateSong = (id) => {
-    navigate(`/songs/${id}`);
+    if (JSON.parse(localStorage.getItem("isRevoked"))) {
+      alert(alertRevoked);
+    } else navigate(`/songs/${id}`);
   };
   const handleDeleteSong = (id) => {
-    if (window.confirm("Do you want to delete this song?")) {
+    if (JSON.parse(localStorage.getItem("isRevoked"))) {
+      alert(alertRevoked);
+    } else if (window.confirm("Do you want to delete this song?")) {
       songService.deleteSong(id, navigate).then((res) => {
         if (res.status === "ok") {
           alert("You delete Song success!");
@@ -203,7 +219,7 @@ function Songs() {
 
       <NavbarComponent />
       <Container
-        fluid
+        fluid="true"
         style={{
           position: "fixed",
           top: 55,
@@ -295,16 +311,14 @@ function Songs() {
                 size={50}
               />
             </Col>
-            {isLoggedIn && (
-              <Col>
-                <CustomButton
-                  IconButton={RiHeartAddFill}
-                  func={handleNewSong}
-                  title={"Add new Song"}
-                  id="new-song"
-                />
-              </Col>
-            )}
+            <Col>
+              <CustomButton
+                IconButton={RiHeartAddFill}
+                func={handleNewSong}
+                title={"Add new Song"}
+                id="new-song"
+              />
+            </Col>
             <Col />
             <Col />
           </Row>
@@ -337,7 +351,14 @@ function Songs() {
           <colgroup>
             <col width="60" span="1" />
             <col width="auto" span="3" />
-            <col width={isLoggedIn ? "110" : "70"} span="1" />
+            <col
+              width={
+                JSON.parse(localStorage.getItem("isRevoked")) || isLoggedIn
+                  ? "110"
+                  : "70"
+              }
+              span="1"
+            />
           </colgroup>
           <thead className="table-dark ">
             <tr>
@@ -417,26 +438,28 @@ function Songs() {
                     }
                     id={`play-pause-${song.id}`}
                   />
-                  {isLoggedIn && isAdmin && (
-                    <>
-                      <CustomButton
-                        field={song.id}
-                        IconButton={AiOutlineEdit}
-                        size={30}
-                        func={handleUpdateSong}
-                        title={"Edit Song"}
-                        id={`edit-song-${song.id}`}
-                      />
-                      <CustomButton
-                        field={song.id}
-                        IconButton={AiOutlineDelete}
-                        size={30}
-                        func={handleDeleteSong}
-                        title={"Delete Song"}
-                        id={`delete-song-${song.id}`}
-                      />
-                    </>
-                  )}
+                  {(JSON.parse(localStorage.getItem("isRevoked")) ||
+                    isLoggedIn) &&
+                    isAdmin && (
+                      <>
+                        <CustomButton
+                          field={song.id}
+                          IconButton={AiOutlineEdit}
+                          size={30}
+                          func={handleUpdateSong}
+                          title={"Edit Song"}
+                          id={`edit-song-${song.id}`}
+                        />
+                        <CustomButton
+                          field={song.id}
+                          IconButton={AiOutlineDelete}
+                          size={30}
+                          func={handleDeleteSong}
+                          title={"Delete Song"}
+                          id={`delete-song-${song.id}`}
+                        />
+                      </>
+                    )}
                 </td>
               </tr>
             ))}

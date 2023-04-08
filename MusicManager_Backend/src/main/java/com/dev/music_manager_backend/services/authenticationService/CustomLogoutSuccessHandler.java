@@ -2,7 +2,6 @@ package com.dev.music_manager_backend.services.authenticationService;
 
 import com.dev.music_manager_backend.models.ResponseObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
@@ -15,7 +14,7 @@ import java.io.IOException;
 public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
 
     @Override
-    public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json;charset=UTF-8");
         response.getWriter().write(new ObjectMapper().writeValueAsString(new ResponseObject<>("ok", "Logout successful", "")));

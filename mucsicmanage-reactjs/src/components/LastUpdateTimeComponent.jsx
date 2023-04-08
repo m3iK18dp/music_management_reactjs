@@ -16,6 +16,7 @@ function LastUpdateTimeComponent(date) {
       style={{
         fontStyle: "italic",
         fontWeight: "bold",
+        margin: 0,
         marginTop: "15px",
         color: "green",
         fontSize: 12,

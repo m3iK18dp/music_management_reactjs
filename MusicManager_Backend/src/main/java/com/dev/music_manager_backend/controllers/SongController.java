@@ -12,12 +12,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 @RestController
 @RequestMapping(path = "/api/songs")
 @RequiredArgsConstructor
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin()
 public class SongController {
 
     @Autowired
@@ -34,186 +33,47 @@ public class SongController {
             @RequestParam(value = "_field", defaultValue = "id") String field,
             @RequestParam(value = "_type_sort", defaultValue = "asc") String typeSort
     ) {
-        LinkedHashMap<String, Object> filter = new LinkedHashMap<String, Object>();
-        filter.put("id", id);
-        filter.put("title", title);
-        filter.put("genre", genre);
-        filter.put("musician", musician);
-        filter.put("page", page);
-        filter.put("limit", limit);
-        filter.put("field", field);
-        filter.put("typeSort", typeSort);
         Page<Song> songs = new PageImpl<>(new ArrayList<>());
         try {
             songs = songService.findSongsWithPaginationAndSort(id, title, genre, musician, page, limit, field, typeSort);
             if (songs.isEmpty()) {
                 return new ResponseObject<>(
                         "failed",
-                        "Not found songs with " + filter,
+                        "Not found songs.",
                         songs
                 );
             } else {
                 return new ResponseObject<>(
                         "ok",
-                        "Get songs success with " + filter,
+                        "Get songs successfully.",
                         songs
                 );
             }
         } catch (Exception e) {
             return new ResponseObject<>(
-                    "failed",
-                    "Cannot get songs with " + filter + "======" + e.getMessage(),
+                    "error",
+                    "Cannot get songs. " + e.getMessage(),
                     songs
             );
         }
     }
-
-//    ResponseObject<Page<Song>> getAllSongs(int page, int limit, String field, String typeSort) {
-//        Page<Song> songs = new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 0);
-//        try {
-//            songs = songService.findAllSongs(page, limit, field, typeSort);
-//            if (songs.isEmpty()) {
-//                return new ResponseObject<>(
-//                        "failed",
-//                        "Not found songs",
-//                        songs
-//                );
-//            } else {
-//                return new ResponseObject<>(
-//                        "ok",
-//                        "Get all songs with " + Arrays.toString(new Object[]{page, limit, field}) + " success",
-//                        songs
-//                );
-//            }
-//        } catch (Exception e) {
-//            return new ResponseObject<>(
-//                    "failed",
-//                    "Cannot get all songs with " + Arrays.toString(new Object[]{page, limit, field}) + " " + e.getMessage(),
-//                    songs
-//            );
-//        }
-//    }
-//
-//    ResponseObject<Page<Song>> getSongById(Long id) {
-//        try {
-//            return songService.findSongById(id).map(song ->
-//                    new ResponseObject<>(
-//                            "ok",
-//                            "Query song successfully",
-//                            (Page<Song>) new PageImpl<>(List.of(song), PageRequest.of(0, 10), 1)
-//                    )
-//            ).orElseGet(() ->
-//                    new ResponseObject<>(
-//                            "failed",
-//                            "Not found song with id = " + id,
-//                            new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 1)
-//                    )
-//            );
-//        } catch (Exception e) {
-//            return new ResponseObject<>(
-//                    "failed",
-//                    "Cannot get song with id = " + id + "\n" + e.getMessage(),
-//                    new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 1)
-//            );
-//        }
-//
-//    }
-//
-//    ResponseObject<Page<Song>> getSongByTitle(String title, int page, int limit, String field, String typeSort) {
-//        Page<Song> songs = new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 0);
-//        try {
-//            songs = songService.findSongByTitle(title, page, limit, field, typeSort);
-//            if (songs.isEmpty()) {
-//                return new ResponseObject<>(
-//                        "failed",
-//                        "Not found song with title = " + title,
-//                        songs
-//                );
-//            } else {
-//                return new ResponseObject<>(
-//                        "ok",
-//                        "Get songs by title with " + Arrays.toString(new Object[]{title, page, limit, field}) + " successfully",
-//                        songs
-//                );
-//            }
-//        } catch (Exception e) {
-//            return new ResponseObject<>(
-//                    "failed",
-//                    "Cannot get songs by title with " + Arrays.toString(new Object[]{title, page, limit, field}) + " " + e.getMessage(),
-//                    songs
-//            );
-//        }
-//    }
-//
-//    ResponseObject<Page<Song>> getSongByMusician(String musician, int page, int limit, String field, String typeSort) {
-//        Page<Song> songs = new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 0);
-//        try {
-//            songs = songService.findSongByMusician(musician, page, limit, field, typeSort);
-//            if (songs.isEmpty()) {
-//                return new ResponseObject<>(
-//                        "failed",
-//                        "Not found song with musician = " + musician,
-//                        songs
-//                );
-//            } else {
-//                return new ResponseObject<>(
-//                        "ok",
-//                        "Get songs by musician with " + Arrays.toString(new Object[]{musician, page, limit, field}) + " successfully",
-//                        songs
-//                );
-//            }
-//        } catch (Exception e) {
-//            return new ResponseObject<>(
-//                    "failed",
-//                    "Cannot get songs by musician with " + Arrays.toString(new Object[]{musician, page, limit, field}) + " " + e.getMessage(),
-//                    songs
-//            );
-//        }
-//    }
-//
-//    ResponseObject<Page<Song>> getSongByGenre(String genre, int page, int limit, String field, String typeSort) {
-//        Page<Song> songs = new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 0);
-//        try {
-//            songs = songService.findSongByGenre(genre, page, limit, field, typeSort);
-//            if (songs.isEmpty()) {
-//                return new ResponseObject<>(
-//                        "failed",
-//                        "Not found song with genre = " + genre,
-//                        songs
-//                );
-//            } else {
-//                return new ResponseObject<>(
-//                        "ok",
-//                        "Get songs by genre with " + Arrays.toString(new Object[]{genre, page, limit, field}) + " successfully",
-//                        songs
-//                );
-//            }
-//        } catch (Exception e) {
-//            return new ResponseObject<>(
-//                    "failed",
-//                    "Cannot get songs by genre with " + Arrays.toString(new Object[]{genre, page, limit, field}) + " " + e.getMessage(),
-//                    songs
-//            );
-//        }
-//    }
 
     @PostMapping("")
     ResponseObject<Song> insertSong(
             @RequestParam("song") String data,
             @RequestParam("file") MultipartFile file
     ) {
-
         try {
             Song song = MyObjectMapper.readValue(data, Song.class);
             return new ResponseObject<>(
                     "ok",
-                    "Song successfully inserted",
+                    "Song successfully inserted.",
                     songService.insertSong(song, file)
             );
         } catch (Exception exception) {
             return new ResponseObject<>(
-                    "failed",
-                    "Can't insert song\n" + exception.getMessage(),
+                    "error",
+                    exception.getMessage(),
                     new Song()
             );
         }
@@ -230,13 +90,13 @@ public class SongController {
             Song song = MyObjectMapper.readValue(data, Song.class);
             return new ResponseObject<>(
                     "ok",
-                    "Update Song successfully",
+                    "Update Song successfully.",
                     songService.updateSong(id, song, file)
             );
         } catch (Exception exception) {
             return new ResponseObject<>(
-                    "failed",
-                    "Cannot update Song\n" + exception.getMessage(),
+                    "error",
+                    exception.getMessage(),
                     new Song()
             );
         }
@@ -251,13 +111,13 @@ public class SongController {
             Song song = MyObjectMapper.readValue(data, Song.class);
             return new ResponseObject<>(
                     "ok",
-                    "Update Song successfully",
+                    "Update Song successfully.",
                     songService.updateSong(id, song, null)
             );
         } catch (Exception exception) {
             return new ResponseObject<>(
-                    "failed",
-                    "Cannot update Song\n" + exception.getMessage(),
+                    "error",
+                    exception.getMessage(),
                     new Song()
             );
         }
@@ -271,13 +131,13 @@ public class SongController {
         try {
             return new ResponseObject<>(
                     "ok",
-                    "Delete song successfully",
+                    "Delete song successfully.",
                     songService.deleteSong(id)
             );
         } catch (Exception exception) {
             return new ResponseObject<>(
-                    "failed",
-                    "Cannot can find song to delete\n" + exception.getMessage(),
+                    "error",
+                    exception.getMessage(),
                     new Song()
             );
         }
@@ -285,17 +145,23 @@ public class SongController {
 
     @DeleteMapping("")
     ResponseObject<Boolean> deleteAllSong() {
-        if (songService.deleteAllSongs()) {
-            return new ResponseObject<>(
-                    "ok",
-                    "Delete all song successfully",
-                    Boolean.TRUE
-            );
-        } else {
-            return new ResponseObject<>(
+        try {
+            if (songService.deleteAllSongs())
+                return new ResponseObject<>(
+                        "ok",
+                        "Delete all songs successfully.",
+                        Boolean.TRUE
+                );
+            else return new ResponseObject<>(
                     "failed",
-                    "Can't delete all songs",
-                    Boolean.TRUE
+                    "Delete all songs failed.",
+                    Boolean.FALSE
+            );
+        } catch (Exception exception) {
+            return new ResponseObject<>(
+                    "error",
+                    exception.getMessage(),
+                    Boolean.FALSE
             );
         }
     }

@@ -22,10 +22,6 @@ public class JwtTokenUtil {
     public static final int JWT_EXPIRATION_MS = 1209600000;
 
     //    private static final Logger log = Logger.getLogger(JwtTokenUtil.class);
-    public String extractUserNameWithType(String token) {
-        return extractClaim(token.substring(7), Claims::getSubject);
-    }
-
     public String extractUserName(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -53,7 +49,7 @@ public class JwtTokenUtil {
         return Keys.hmacShaKeyFor(encodedKey);
     }
 
-    private boolean isTokenExpired(String token) {
+    public boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
