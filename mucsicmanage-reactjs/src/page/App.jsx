@@ -1,12 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Container } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
 import NavbarComponent from "../components/NavbarComponent";
+import { checkToken } from "../services/CheckToken";
 function App() {
   const navigate = useNavigate();
-  if (localStorage.getItem("token")) navigate("/songs");
+  useEffect(() => {
+    checkToken(navigate, 0);
+    if (localStorage.getItem("token")) navigate("/songs");
+  });
   return (
     <>
       <div className="background-container" />

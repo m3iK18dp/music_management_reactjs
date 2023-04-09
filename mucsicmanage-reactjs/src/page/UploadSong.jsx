@@ -19,9 +19,6 @@ function UploadSong() {
     : id.id > 0
     ? "Update"
     : "Error";
-  useEffect(() => {
-    if (createOrUpdate === "Error") navigate("/error/404");
-  });
 
   const [song, setSong] = useState({
     title: "",
@@ -40,6 +37,7 @@ function UploadSong() {
   const [isFirst, setIsFirst] = useState(true);
   const [changeFile, setChangeFile] = useState(true);
   useEffect(() => {
+    if (createOrUpdate === "Error") navigate("/error/404");
     checkToken(navigate);
     if (createOrUpdate === "Update")
       songService.get({ _id: id.id }, navigate).then((data) => {

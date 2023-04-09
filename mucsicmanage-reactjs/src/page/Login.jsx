@@ -7,10 +7,14 @@ import { useNavigate } from "react-router-dom";
 import NavbarComponent from "../components/NavbarComponent";
 import CustomFormGroup from "../components/CustomFormGroup";
 import CustomButton from "../components/CustomButton";
+import { checkToken } from "../services/CheckToken";
 
 const Login = () => {
   const navigate = useNavigate();
-  if (localStorage.getItem("token")) navigate("/songs");
+  useEffect(() => {
+    checkToken(navigate, 0);
+    if (localStorage.getItem("token")) navigate("/songs");
+  });
   const [authLogin, setAuthLogin] = useState({
     username: "",
     password: "",

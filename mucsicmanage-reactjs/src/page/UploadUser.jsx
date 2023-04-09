@@ -20,9 +20,6 @@ function UploadUser() {
     : id.id > 0
     ? "Update"
     : "Error";
-  useEffect(() => {
-    if (createOrUpdate === "Error") navigate("/error/404");
-  });
   const [firstNameIsFilled, setFirstNameIsFilled] = useState("");
   const [lastNameIsFilled, setLastNameIsFilled] = useState("");
   const [emailIsFilled, setEmailIsFilled] = useState("");
@@ -43,6 +40,7 @@ function UploadUser() {
   const [isFirst, setIsFirst] = useState(true);
 
   useEffect(() => {
+    if (createOrUpdate === "Error") navigate("/error/404");
     checkToken(navigate);
     if (createOrUpdate === "Update")
       userService.get({ _id: id.id }, navigate).then((data) => {

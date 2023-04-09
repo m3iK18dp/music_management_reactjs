@@ -9,7 +9,6 @@ import com.dev.music_manager_backend.services.IAuthenticationService;
 import com.dev.music_manager_backend.services.IUserService;
 import com.dev.music_manager_backend.services.authenticationService.CustomUserDetailsService;
 import com.dev.music_manager_backend.util.JwtTokenUtil;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,7 +51,6 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     @Override
     public List<Object> createAuthenticationToken(AuthenticationRequest authenticationRequest) {
         log.info("Creating authentication token for user {}", authenticationRequest);
-
         String username = authenticationRequest.getUsername();
         String password = authenticationRequest.getPassword();
         if (!userService.findUserByEmail(username).map(User::isStatus).orElseThrow(() -> new BadCredentialsException("No account found matching username."))) {
@@ -72,25 +70,27 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         String token = saveUserToken(username).getToken();
         return Arrays.asList(token,
                 tokenRepository.findRoleByToken(token)
-
         );
     }
 
 
     @Override
-    public User saveRegistration(User user) {
+    public List<Object> saveRegistration(User user) {
         log.info("Saving registration for user {}", user);
-        return userService.saveUser(user);
+        String password = user.getPassword();
+        userService.saveUser(user);
+        return createAuthenticationToken(
+                new AuthenticationRequest(user.getEmail(), password)
+        );
     }
 
     @Override
-    public List<Object> getAccountInformationByToken(HttpServletRequest request) {
+    public List<Object> getAccountInformationByToken(String token) {
+        log.info("Get Account Information");
+        System.out.println(token);
         //List: isRevoked, isExpired, username, listRoles
         JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
-        return tokenRepository.findByToken(
-                        request.getHeader("Authorization")
-                                .substring(7)
-                )
+        return tokenRepository.findByToken(token.substring(0, token.length() - 1))
                 .map(tokenRepo -> Arrays.asList(
                                 tokenRepo.isRevoked(),
                                 jwtTokenUtil.isTokenExpired(tokenRepo.getToken()),

@@ -6,9 +6,13 @@ import { Link, useNavigate } from "react-router-dom";
 import NavbarComponent from "../components/NavbarComponent";
 import CustomFormGroup from "../components/CustomFormGroup";
 import CustomButton from "../components/CustomButton";
+import { checkToken } from "../services/CheckToken";
 function Register() {
   const navigate = useNavigate();
-  if (localStorage.getItem("token")) navigate("/songs");
+  useEffect(() => {
+    checkToken(navigate, 0);
+    if (localStorage.getItem("token")) navigate("/songs");
+  });
   const [user, setUser] = useState({
     firstName: "",
     lastName: "",
@@ -87,7 +91,7 @@ function Register() {
           if (res.status === "ok") {
             setStatus("");
             alert("Registration successful!");
-            navigate("/login");
+            navigate("/songs");
           } else {
             setEmailIsFilled(res.message);
             setStatus("Registration failed.");

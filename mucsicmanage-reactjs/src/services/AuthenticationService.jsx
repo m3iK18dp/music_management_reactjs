@@ -20,15 +20,26 @@ const authenticationService = {
     }
   },
   register: async (user, navigate) => {
-    return await callApi(navigate, "auth", "post", user);
+    try {
+      const res = await callApi(navigate, "auth", "post", user);
+      if (res.status === "ok") {
+        localStorage.setItem("token", res.data[0]);
+        localStorage.setItem("username", user.email);
+        localStorage.setItem("roles", res.data[1]);
+        localStorage.setItem("isRevoked", false);
+      }
+      return res;
+    } catch (err) {
+      throw new Error(err);
+    }
   },
   logout: async (navigate) => {
     const res = await callApi(navigate, "auth/logout");
     if (res.status === "ok") localStorage.clear();
     return res;
   },
-  getAccountInformation: async (navigate) => {
-    return await callApi(navigate, "auth/account_information", "get");
+  getAccountInformation: async (navigate, token) => {
+    return await callApi(navigate, "auth/account_information", "post", token);
   },
 };
 export default authenticationService;

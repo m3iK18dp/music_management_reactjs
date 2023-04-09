@@ -4,7 +4,6 @@ import com.dev.music_manager_backend.DTO.AuthenticationRequest;
 import com.dev.music_manager_backend.models.ResponseObject;
 import com.dev.music_manager_backend.models.User;
 import com.dev.music_manager_backend.services.IAuthenticationService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -40,13 +39,13 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/account_information")
-    public ResponseObject<List<Object>> getAccountInformationByToken(HttpServletRequest request) {
+    @PostMapping("/account_information")
+    public ResponseObject<List<Object>> getAccountInformationByToken(@RequestBody String token) {
         try {
             return new ResponseObject<>(
                     "ok",
                     "Get Account Information success.",
-                    authenticationService.getAccountInformationByToken(request)
+                    authenticationService.getAccountInformationByToken(token)
             );
         } catch (Exception exception) {
             return new ResponseObject<>(
@@ -58,7 +57,7 @@ public class AuthController {
     }
 
     @PostMapping("")
-    public ResponseObject<User> registration(@RequestBody User user) {
+    public ResponseObject<List<Object>> registration(@RequestBody User user) {
         try {
             return new ResponseObject<>(
                     "ok",
@@ -69,7 +68,7 @@ public class AuthController {
             return new ResponseObject<>(
                     "error",
                     exception.getMessage(),
-                    new User()
+                    new ArrayList<>()
             );
         }
     }
