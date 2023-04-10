@@ -40,14 +40,18 @@ public class UserServiceImpl implements IUserService {
     private final JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
 
     @Override
-    public User saveUser(User user) {
+    public User saveUser(User user, boolean type) {
         log.info("Saving user: {}", user);
 
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         user.setRoles(
-                !user.getRoles().isEmpty()
-                        ? user.getRoles()
-                        : Collections.singletonList(roleRepository.findByName("ROLE_USER").orElseThrow(() -> new RuntimeException("List role is empty.")))
+                type ? user.getRoles()
+                        : Collections.singletonList(
+                        roleRepository.findByName("USER")
+                                .orElseThrow(
+                                        () -> new RuntimeException("List role is empty.")
+                                )
+                )
         );
         List<Role> attachedRoles = new ArrayList<>();
         for (Role role : user.getRoles()) {
@@ -72,7 +76,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public User updateUser(Long id, User user, HttpServletRequest request) {
         User userFromAuth = extractUser(request);
-        if ((id != 1 || userFromAuth.getId() == 1) && (userFromAuth.getRoles().contains(roleRepository.findByName("ROLE_ADMIN").orElse(new Role())) || Objects.equals(userFromAuth.getId(), id))) {
+        if ((id != 1 || userFromAuth.getId() == 1) && (userFromAuth.getRoles().contains(roleRepository.findByName("ADMIN").orElse(new Role())) || Objects.equals(userFromAuth.getId(), id))) {
             log.info("Updating user by admin: {}", id);
             List<Role> attachedRoles = new ArrayList<>();
             for (Role role : user.getRoles()) {
@@ -92,7 +96,13 @@ public class UserServiceImpl implements IUserService {
                                 .email(user.getEmail())
                                 .status(user.isStatus())
                                 .password(updateUser.getPassword())
-                                .roles(user.getRoles())
+                                .roles(
+                                        userFromAuth.getRoles()
+                                                .contains(
+                                                        roleRepository.findByName("ADMIN")
+                                                                .orElse(new Role())
+                                                ) ? user.getRoles() : updateUser.getRoles()
+                                )
                                 .lastUpdate(LocalDateTime.now())
                                 .build()
                 );
@@ -107,7 +117,7 @@ public class UserServiceImpl implements IUserService {
     public User updateEmailToUser(Long id, String email, HttpServletRequest request) {
         log.info("Updating email to user: {}", id);
         User userFromAuth = extractUser(request);
-        if (userFromAuth.getId() == 1 || (id != 1 && (userFromAuth.getRoles().contains(roleRepository.findByName("ROLE_ADMIN").orElse(new Role())) || Objects.equals(userFromAuth.getId(), id)))) {
+        if (userFromAuth.getId() == 1 || (id != 1 && (userFromAuth.getRoles().contains(roleRepository.findByName("ADMIN").orElse(new Role())) || Objects.equals(userFromAuth.getId(), id)))) {
             return userRepository.findById(id).map(user -> {
                 user.setEmail(email);
                 user.setLastUpdate(LocalDateTime.now());
@@ -145,7 +155,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public Page<Role> findRolesWithPaginationAndSort(Long id, String name, List<Long> roleIds, Long userId, int page, int limit, String field, String typeSort, HttpServletRequest request) {
         User userFromAuth = extractUser(request);
-        if (userFromAuth.getRoles().contains(roleRepository.findByName("ROLE_ADMIN").orElse(new Role())) || Objects.equals(userFromAuth.getId(), userId)) {
+        if (userFromAuth.getRoles().contains(roleRepository.findByName("ADMIN").orElse(new Role())) || Objects.equals(userFromAuth.getId(), userId)) {
             LinkedHashMap<String, Object> filter = new LinkedHashMap<String, Object>();
             filter.put("id", id);
             filter.put("name", name);
@@ -167,7 +177,7 @@ public class UserServiceImpl implements IUserService {
     public User changeStatusUser(Long userId, HttpServletRequest request) {
         log.info("Change Status User " + userId);
         User userFromAuth = extractUser(request);
-        if (userFromAuth.getId() == 1 || (userId != 1 && (userFromAuth.getRoles().contains(roleRepository.findByName("ROLE_ADMIN").orElse(new Role())) || Objects.equals(userFromAuth.getId(), userId)))) {
+        if (userFromAuth.getId() == 1 || (userId != 1 && (userFromAuth.getRoles().contains(roleRepository.findByName("ADMIN").orElse(new Role())) || Objects.equals(userFromAuth.getId(), userId)))) {
             return userRepository.findById(userId).map(user -> {
 
                 if (user.isStatus())
@@ -202,7 +212,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public Page<User> findUsersWithPaginationAndSort(Long id, String email, String name, List<Long> roleIds, int status, int page, int limit, String field, String typeSort, HttpServletRequest request) {
         User userFromAuth = extractUser(request);
-        if (userFromAuth.getRoles().contains(roleRepository.findByName("ROLE_ADMIN").orElse(new Role())) || Objects.equals(userFromAuth.getId(), id) || Objects.equals(userFromAuth.getEmail(), email)) {
+        if (userFromAuth.getRoles().contains(roleRepository.findByName("ADMIN").orElse(new Role())) || Objects.equals(userFromAuth.getId(), id) || Objects.equals(userFromAuth.getEmail(), email)) {
 
             LinkedHashMap<String, Object> filter = new LinkedHashMap<String, Object>();
             filter.put("id", id);
@@ -227,8 +237,8 @@ public class UserServiceImpl implements IUserService {
             try {
                 log.info("Initializing roles");
                 List<Role> roles = new ArrayList<Role>();
-                roles.add(new Role("ROLE_ADMIN"));
-                roles.add(new Role("ROLE_USER"));
+                roles.add(new Role("ADMIN"));
+                roles.add(new Role("USER"));
                 roleRepository.saveAll(roles);
             } catch (Exception e) {
                 throw new RuntimeException("Error when querying.");
@@ -248,7 +258,7 @@ public class UserServiceImpl implements IUserService {
                                 .email("admin@gmail.com")
                                 .password(new BCryptPasswordEncoder().encode("admin"))
                                 .status(true)
-                                .roles(Collections.singletonList(roleRepository.findByName("ROLE_ADMIN").orElse(null)))
+                                .roles(Collections.singletonList(roleRepository.findByName("ADMIN").orElse(null)))
                                 .build()
                 );
             } catch (Exception e) {
@@ -274,7 +284,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public User resetUserPassword(Long id, HttpServletRequest request) {
         User userFromAuth = extractUser(request);
-        if (userFromAuth.getId() == 1 || (id != 1 && (userFromAuth.getRoles().contains(roleRepository.findByName("ROLE_ADMIN").orElse(new Role())) || Objects.equals(userFromAuth.getId(), id)))) {
+        if (userFromAuth.getId() == 1 || (id != 1 && (userFromAuth.getRoles().contains(roleRepository.findByName("ADMIN").orElse(new Role())) || Objects.equals(userFromAuth.getId(), id)))) {
 
             return userRepository.findById(id).map(user -> {
                         user.setPassword(new BCryptPasswordEncoder().encode("Abcd@1234"));

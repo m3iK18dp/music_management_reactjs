@@ -14,7 +14,7 @@ public interface IUserService {
 
     Optional<User> findUserByEmail(String email);
 
-    User saveUser(User user);
+    User saveUser(User user, boolean type);
 
     User updateUser(Long id, User user, HttpServletRequest request);
 

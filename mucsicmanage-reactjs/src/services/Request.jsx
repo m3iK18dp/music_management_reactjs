@@ -40,7 +40,7 @@ const callApi = async (
   }
   try {
     return await axios(options).then((res) => {
-      console.log(res.data.data);
+      // console.log(res.data.data);
       return res.data;
     });
   } catch (error) {

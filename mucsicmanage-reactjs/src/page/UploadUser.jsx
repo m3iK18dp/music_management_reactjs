@@ -8,6 +8,7 @@ import NavbarComponent from "../components/NavbarComponent";
 import LastUpdateTimeComponent from "../components/LastUpdateTimeComponent";
 import CustomFormGroup from "../components/CustomFormGroup";
 import { checkToken } from "../services/CheckToken";
+import MySelect from "../components/MySelect";
 
 function UploadUser() {
   const id = useParams();
@@ -25,7 +26,7 @@ function UploadUser() {
   const [emailIsFilled, setEmailIsFilled] = useState("");
   const [rolesCheckIsFilled, setRolesCheckIsFilled] = useState("");
   const [status, setStatus] = useState("");
-  const [roles, setRoles] = useState([]);
+  const [allRoles, setAllRoles] = useState([]);
   const [user, setUser] = useState({
     id: "",
     firstName: "",
@@ -49,7 +50,7 @@ function UploadUser() {
       });
     userService
       .getRoles({}, navigate)
-      .then((data) => setRoles(data.data.content));
+      .then((data) => setAllRoles(data.data.content));
   }, [createOrUpdate, id.id]);
   useEffect(() => {
     if (!isFirst) {
@@ -177,7 +178,7 @@ function UploadUser() {
                     }}
                     label={user.status ? "Enabled" : "Disabled"}
                     name="status"
-                    defaultChecked={user.status}
+                    checked={user.status}
                     onChange={() => {
                       set("status", !user.status);
                     }}
@@ -185,8 +186,7 @@ function UploadUser() {
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="roles">
                   <Form.Label>Roles</Form.Label>
-
-                  {roles.map((role) => (
+                  {/* {allRoles.map((role) => (
                     <Form.Check
                       key={role.id}
                       type="checkbox"
@@ -210,7 +210,12 @@ function UploadUser() {
                         }
                       }}
                     />
-                  ))}
+                  ))} */}
+                  <MySelect
+                    check={user.roles}
+                    setCheck={(value) => set("roles", value)}
+                    all={allRoles}
+                  />
                   <div style={{ height: 5 }}>
                     <p
                       style={{

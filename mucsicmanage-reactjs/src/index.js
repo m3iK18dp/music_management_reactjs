@@ -34,7 +34,7 @@ root.render(
         path="/users"
         element={
           localStorage.getItem("roles") &&
-          localStorage.getItem("roles").includes("ROLE_ADMIN") ? (
+          localStorage.getItem("roles").includes("ADMIN") ? (
             <Users />
           ) : (
             <ErrorPage code={403} />
@@ -45,7 +45,7 @@ root.render(
         path="/users/:id"
         element={
           localStorage.getItem("roles") &&
-          localStorage.getItem("roles").includes("ROLE_ADMIN") ? (
+          localStorage.getItem("roles").includes("ADMIN") ? (
             <UploadUser />
           ) : (
             <ErrorPage code={403} />

@@ -66,7 +66,7 @@ public class UserController {
             return new ResponseObject<>(
                     "ok",
                     "Add User Successfully.",
-                    userService.saveUser(user)
+                    userService.saveUser(user, true)
             );
         } catch (Exception exception) {
             return new ResponseObject<>(

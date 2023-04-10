@@ -25,6 +25,8 @@ import CustomInput from "../components/CustomInput";
 import CustomButton from "../components/CustomButton";
 import CustomTableHeaderWithSort from "../components/CustomTableHeaderWithSort";
 import { checkToken } from "../services/CheckToken";
+import MySelect from "../components/MySelect";
+
 function Users() {
   const navigate = useNavigate();
 
@@ -227,49 +229,26 @@ function Users() {
           </Row>
           <Row>
             <Col xs={1}></Col>
-
             <Col xs={1}>
-              <Form.Label>Role</Form.Label>
+              <Form.Label style={{ color: "white" }}>Role</Form.Label>
             </Col>
             <Col xs={4}>
-              {Array.from(get("roles") ? get("roles") : []).map((role) => (
-                <div key={role.id}>
-                  <Form.Check
-                    type="checkbox"
-                    label={role.name}
-                    name={role.name}
-                    value={role.id}
-                    checked={Array.from(
-                      get("role_ids") ? get("role_ids") : []
-                    ).find((roleId) => roleId === role.id)}
-                    onChange={(event) => {
-                      const isChecked = event.target.checked;
-                      if (isChecked) {
-                        set("role_ids", [
-                          ...Array.from(get("role_ids") ? get("role_ids") : []),
-                          role.id,
-                        ]);
-                      } else {
-                        set(
-                          "role_ids",
-                          Array.from(get("role_ids")).filter(
-                            (roleId) => roleId !== role.id
-                          )
-                        );
-                      }
-                    }}
-                  />
-                </div>
-              ))}
+              <MySelect
+                check={search.role_ids}
+                setCheck={(value) => set("role_ids", value)}
+                all={search.roles}
+                full={false}
+              />
             </Col>
             <Col xs={1}></Col>
             <Col xs={1}>
-              <Form.Label>Role</Form.Label>
+              <Form.Label style={{ color: "white" }}>Status</Form.Label>
             </Col>
             <Col xs={4}>
               {["1", "0", ""].map((status) => (
                 <div key={`status_${status}`}>
                   <Form.Check
+                    style={{ color: "white" }}
                     type="radio"
                     label={
                       status === "1"

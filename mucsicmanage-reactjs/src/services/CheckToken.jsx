@@ -18,7 +18,7 @@ export function checkToken(navigate = useNavigate, check = 1) {
     authenticationService
       .getAccountInformation(navigate, localStorage.getItem("token"))
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         if (res.status === "error") {
           alert(res.message);
           localStorage.clear();

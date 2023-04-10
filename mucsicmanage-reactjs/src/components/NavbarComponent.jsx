@@ -25,7 +25,7 @@ function NavbarComponent() {
     localStorage.getItem("token") &&
     !JSON.parse(localStorage.getItem("isRevoked"));
   const roles = localStorage.getItem("roles");
-  const isAdmin = roles !== null ? roles.includes("ROLE_ADMIN") : false;
+  const isAdmin = roles !== null ? roles.includes("ADMIN") : false;
   return (
     <Navbar
       // expanded={expanded}
