@@ -78,7 +78,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     public List<Object> saveRegistration(User user) {
         log.info("Saving registration for user {}", user);
         String password = user.getPassword();
-        userService.saveUser(user, false);
+        userService.registerUser(user);
         return createAuthenticationToken(
                 new AuthenticationRequest(user.getEmail(), password)
         );

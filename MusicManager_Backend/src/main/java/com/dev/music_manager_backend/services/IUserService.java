@@ -1,5 +1,6 @@
 package com.dev.music_manager_backend.services;
 
+import com.dev.music_manager_backend.DTO.UserRequestDto;
 import com.dev.music_manager_backend.models.Role;
 import com.dev.music_manager_backend.models.User;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,26 +15,30 @@ public interface IUserService {
 
     Optional<User> findUserByEmail(String email);
 
-    User saveUser(User user, boolean type);
+    UserRequestDto registerUser(User user);
 
-    User updateUser(Long id, User user, HttpServletRequest request);
+    UserRequestDto saveUser(UserRequestDto user);
 
-    User updateEmailToUser(Long id, String email, HttpServletRequest request);
+    UserRequestDto updateUser(Long id, UserRequestDto user, HttpServletRequest request);
 
-    User updatePasswordToUser(Long id, String oldPassword, String newPassword, HttpServletRequest request);
+    UserRequestDto updateEmailToUser(Long id, String email, HttpServletRequest request);
+
+    UserRequestDto updatePasswordToUser(Long id, String oldPassword, String newPassword, HttpServletRequest request);
+
+    UserRequestDto changeStatusUser(Long userId, HttpServletRequest request);
+
+    ////////////////////////////////Important
+    void revokeAllUserTokens(String username);
+
+    UserRequestDto resetUserPassword(Long id, HttpServletRequest request);
 
     Page<Role> findRolesWithPaginationAndSort(Long id, String name, List<Long> roleIds, Long userId, int page, int limit, String field, String typeSort, HttpServletRequest request);
 
-    User changeStatusUser(Long userId, HttpServletRequest request);
-
-    Page<User> findUsersWithPaginationAndSort(Long id, String email, String name, List<Long> roleIds, int status, int page, int limit, String field, String typeSort, HttpServletRequest request);
+    Page<UserRequestDto> findUsersWithPaginationAndSort(Long id, String email, String name, List<Long> roleIds, int status, int page, int limit, String field, String typeSort, HttpServletRequest request);
 
     void roleInitialization();
 
     void userInitialization();
 
-    ////////////////////////////////Important
-    void revokeAllUserTokens(String username);
 
-    User resetUserPassword(Long id, HttpServletRequest request);
 }

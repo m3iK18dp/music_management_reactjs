@@ -1,6 +1,7 @@
 package com.dev.music_manager_backend.services;
 
-import com.dev.music_manager_backend.models.Song;
+import com.dev.music_manager_backend.DTO.SongRequestDto;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -8,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public interface ISongService {
 
-    Page<Song> findSongsWithPaginationAndSort(Long id, String title, String genre, String musician, int page, int limit, String field, String typeSort);
+    Page<SongRequestDto> findSongsWithPaginationAndSort(Long id, String title, String genre, String musician, int page, int limit, String field, String typeSort, Long ownerId);
 
 //    Page<Song> findAllSongs(int page, int limit, String field, String typeSort);
 //
@@ -20,11 +21,11 @@ public interface ISongService {
 //
 //    Page<Song> findSongByGenre(String genre, int page, int limit, String field, String typeSort);
 
-    Song insertSong(Song song, MultipartFile file);
+    SongRequestDto insertSong(SongRequestDto song, MultipartFile file, HttpServletRequest request);
 
-    Song updateSong(Long id, Song song, MultipartFile file);
+    SongRequestDto updateSong(Long id, SongRequestDto song, MultipartFile file, HttpServletRequest request);
 
-    Song deleteSong(Long id);
+    SongRequestDto deleteSong(Long id, HttpServletRequest request);
 
     Boolean deleteAllSongs();
 }

@@ -1,6 +1,7 @@
 package com.dev.music_manager_backend.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -51,11 +52,11 @@ public class User {
 //    @JsonManagedReference
     private List<Role> roles = new ArrayList<>();
     @OneToMany(mappedBy = "user")
-    @JsonBackReference
+    @JsonBackReference("users-tokens")
     private List<Token> tokens;
-//    @OneToMany(mappedBy = "owner")
-//    @JsonBackReference
-//    private List<Song> songs;
+    @OneToMany(mappedBy = "owner")
+    @JsonIgnoreProperties("owner")
+    private List<Song> songs;
 
 
     @Override

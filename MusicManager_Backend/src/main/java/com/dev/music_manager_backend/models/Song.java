@@ -1,5 +1,6 @@
 package com.dev.music_manager_backend.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -31,17 +32,19 @@ public class Song {
     private LocalDateTime lastUpdate = LocalDateTime.now();
     @Column(nullable = false)
     private String url;
-    //    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+
+    //    @ManyToMany(fetch = FetchType.EAGER)
 //    @JoinTable(
 //            name = "songs_musicians",
 //            joinColumns = {@JoinColumn(name = "SONG_ID", referencedColumnName = "id")},
 //            inverseJoinColumns = {@JoinColumn(name = "MUSICIAN_ID", referencedColumnName = "id")})
 ////    @JsonManagedReference
 //    private List<Musician> musicians = new ArrayList<>();
-//    @ManyToOne(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "USER_ID", referencedColumnName = "id")
-//    @JsonManagedReference
-//    private User user;
+
+    @ManyToOne()
+    @JoinColumn(name = "OWNER_ID", referencedColumnName = "id")
+    @JsonIgnoreProperties("songs")
+    private User owner;
 
     @Override
     public boolean equals(Object o) {

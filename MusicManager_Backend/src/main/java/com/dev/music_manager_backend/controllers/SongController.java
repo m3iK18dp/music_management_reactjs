@@ -1,9 +1,10 @@
 package com.dev.music_manager_backend.controllers;
 
+import com.dev.music_manager_backend.DTO.SongRequestDto;
 import com.dev.music_manager_backend.models.ResponseObject;
-import com.dev.music_manager_backend.models.Song;
 import com.dev.music_manager_backend.services.ISongService;
 import com.dev.music_manager_backend.util.MyObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,7 +24,7 @@ public class SongController {
     private final ISongService songService;
 
     @GetMapping("")
-    ResponseObject<Page<Song>> get(
+    ResponseObject<Page<SongRequestDto>> get(
             @RequestParam(value = "_id", defaultValue = "-1") Long id,
             @RequestParam(value = "_title", defaultValue = "") String title,
             @RequestParam(value = "_genre", defaultValue = "") String genre,
@@ -31,11 +32,12 @@ public class SongController {
             @RequestParam(value = "_page", defaultValue = "0") int page,
             @RequestParam(value = "_limit", defaultValue = "10") int limit,
             @RequestParam(value = "_field", defaultValue = "id") String field,
-            @RequestParam(value = "_type_sort", defaultValue = "asc") String typeSort
+            @RequestParam(value = "_type_sort", defaultValue = "asc") String typeSort,
+            @RequestParam(value = "_owner_id", defaultValue = "-1") Long ownerId
     ) {
-        Page<Song> songs = new PageImpl<>(new ArrayList<>());
+        Page<SongRequestDto> songs = new PageImpl<>(new ArrayList<>());
         try {
-            songs = songService.findSongsWithPaginationAndSort(id, title, genre, musician, page, limit, field, typeSort);
+            songs = songService.findSongsWithPaginationAndSort(id, title, genre, musician, page, limit, field, typeSort, ownerId);
             if (songs.isEmpty()) {
                 return new ResponseObject<>(
                         "failed",
@@ -59,86 +61,86 @@ public class SongController {
     }
 
     @PostMapping("")
-    ResponseObject<Song> insertSong(
+    ResponseObject<SongRequestDto> insertSong(
             @RequestParam("song") String data,
-            @RequestParam("file") MultipartFile file
+            @RequestParam("file") MultipartFile file,
+            HttpServletRequest request
     ) {
         try {
-            Song song = MyObjectMapper.readValue(data, Song.class);
             return new ResponseObject<>(
                     "ok",
                     "Song successfully inserted.",
-                    songService.insertSong(song, file)
+                    songService.insertSong(MyObjectMapper.readValue(data, SongRequestDto.class), file, request)
             );
         } catch (Exception exception) {
             return new ResponseObject<>(
                     "error",
                     exception.getMessage(),
-                    new Song()
+                    new SongRequestDto()
             );
         }
     }
 
     @PutMapping("/withf/{id}")
-    ResponseObject<Song> updateSongWithFile(
+    ResponseObject<SongRequestDto> updateSongWithFile(
             @PathVariable Long id,
             @RequestParam("song") String data,
-            @RequestParam("file") MultipartFile file
+            @RequestParam("file") MultipartFile file,
+            HttpServletRequest request
     ) {
         try {
-            System.out.print(file);
-            Song song = MyObjectMapper.readValue(data, Song.class);
             return new ResponseObject<>(
                     "ok",
                     "Update Song successfully.",
-                    songService.updateSong(id, song, file)
+                    songService.updateSong(id, MyObjectMapper.readValue(data, SongRequestDto.class), file, request)
             );
         } catch (Exception exception) {
             return new ResponseObject<>(
                     "error",
                     exception.getMessage(),
-                    new Song()
+                    new SongRequestDto()
             );
         }
     }
 
     @PutMapping("/withoutf/{id}")
-    ResponseObject<Song> updateSongWithoutFile(
+    ResponseObject<SongRequestDto> updateSongWithoutFile(
             @PathVariable Long id,
-            @RequestParam("song") String data
+            @RequestBody SongRequestDto song,
+            HttpServletRequest request
     ) {
         try {
-            Song song = MyObjectMapper.readValue(data, Song.class);
             return new ResponseObject<>(
                     "ok",
                     "Update Song successfully.",
-                    songService.updateSong(id, song, null)
+                    songService.updateSong(id, song, null, request)
             );
         } catch (Exception exception) {
             return new ResponseObject<>(
                     "error",
                     exception.getMessage(),
-                    new Song()
+                    new SongRequestDto()
             );
         }
     }
 
 
     @DeleteMapping("/{id}")
-    ResponseObject<Song> deleteSong(
-            @PathVariable Long id
+    ResponseObject<SongRequestDto> deleteSong(
+            @PathVariable Long id,
+            HttpServletRequest request
     ) {
         try {
             return new ResponseObject<>(
                     "ok",
                     "Delete song successfully.",
-                    songService.deleteSong(id)
+                    songService.deleteSong(id, request)
             );
         } catch (Exception exception) {
             return new ResponseObject<>(
                     "error",
                     exception.getMessage(),
-                    new Song()
+                    new SongRequestDto()
             );
         }
     }

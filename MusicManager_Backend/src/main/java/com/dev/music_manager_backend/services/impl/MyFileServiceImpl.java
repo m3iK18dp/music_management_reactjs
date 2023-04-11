@@ -115,16 +115,18 @@ public class MyFileServiceImpl implements IStorageService {
     }
 
     @Override
-    public Boolean deleteFileFromCloundinary(String publicId) {
+    public Boolean deleteFileFromCloundinary(String url) {
         try {
+            String[] arrUrl = url.split("/");
             cloudinary
                     .uploader()
                     .destroy(
-                            "MusicManager/" + publicId,
-                            ObjectUtils.emptyMap()
+                            arrUrl[arrUrl.length - 1],
+                            ObjectUtils.asMap()
                     );
             return Boolean.TRUE;
         } catch (IOException exception) {
+            exception.printStackTrace();
             throw new RuntimeException("Delete file in storage failed.");
         }
     }

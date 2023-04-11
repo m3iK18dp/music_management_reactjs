@@ -28,7 +28,7 @@ public class Role {
         this.name = name;
     }
 
-    @ManyToMany(mappedBy = "roles")
+    @ManyToMany(mappedBy = "roles", cascade = CascadeType.ALL)
     @JsonBackReference
     @ToString.Exclude
     private List<User> users;

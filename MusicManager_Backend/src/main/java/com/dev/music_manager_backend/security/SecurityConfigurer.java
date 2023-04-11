@@ -79,9 +79,10 @@ public class SecurityConfigurer {
                                 authorize
                                         .requestMatchers("/api/auth", "/api/auth/**").permitAll()
                                         .requestMatchers(HttpMethod.GET, "/api/songs/**").permitAll()
+                                        .requestMatchers(HttpMethod.PUT, "/api/songs/**").authenticated()
+//                                        .requestMatchers(HttpMethod.PUT, "/api/songs/**").hasAnyAuthority("ADMIN")
                                         .requestMatchers(HttpMethod.POST, "/api/songs/**").authenticated()
-                                        .requestMatchers(HttpMethod.PUT, "/api/songs/**").hasAnyAuthority("ADMIN")
-                                        .requestMatchers(HttpMethod.DELETE, "/api/songs/**").hasAnyAuthority("ADMIN")
+                                        .requestMatchers(HttpMethod.DELETE, "/api/songs/**").authenticated()
 
 //                                .requestMatchers(HttpMethod.GET, "/api/users", "/api/users/**").authenticated()
                                         .requestMatchers(HttpMethod.POST, "/api/users", "/api/users/**").hasAnyAuthority("ADMIN")

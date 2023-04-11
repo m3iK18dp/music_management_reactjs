@@ -15,21 +15,31 @@ public interface SongRepository extends JpaRepository<Song, Long> {
                        (:id = -1 OR s.id = :id) AND
                        LOWER(s.title) LIKE LOWER(CONCAT('%', :title, '%')) AND
                        (LOWER(s.genre) LIKE LOWER(CONCAT('%', :genre, '%')) OR s.genre IS NULL) AND
-                       (LOWER(s.musician) LIKE LOWER(CONCAT('%', :musician, '%')) OR s.musician IS NULL)
+                       (LOWER(s.musician) LIKE LOWER(CONCAT('%', :musician, '%')) OR s.musician IS NULL) AND
+                       (:owner_id = -1 OR s.owner_id = :owner_id)
             """, countQuery = """
               SELECT COUNT(s.id) FROM songs s WHERE
                        (:id = -1 OR s.id = :id) AND
                        LOWER(s.title) LIKE LOWER(CONCAT('%', :title, '%')) AND
                        (LOWER(s.genre) LIKE LOWER(CONCAT('%', :genre, '%')) OR s.genre IS NULL) AND
-                       (LOWER(s.musician) LIKE LOWER(CONCAT('%', :musician, '%')) OR s.musician IS NULL)
+                       (LOWER(s.musician) LIKE LOWER(CONCAT('%', :musician, '%')) OR s.musician IS NULL) AND
+                       (:owner_id = -1 OR s.owner_id = :owner_id)
             """, nativeQuery = true)
     Page<Song> findSongsWithPaginationAndSort(
             @Param("id") Long id,
             @Param("title") String title,
             @Param("genre") String genre,
             @Param("musician") String musician,
+            @Param("owner_id") Long owner_id,
             Pageable pageable
     );
+
+    @Query(value = """
+            SELECT s.*
+                    FROM songs s
+                    WHERE s.id IN :songIds
+            """, nativeQuery = true)
+    List<Song> findSongsByListSongIds(List<Long> songIds);
 
     //    Page<Song> findByTitleContaining(String title, Pageable pageable);
 //

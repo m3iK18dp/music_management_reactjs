@@ -52,6 +52,12 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
             Pageable pageable
     );
 
+    @Query(value = """
+            SELECT r.*
+                    FROM roles r
+                    WHERE r.id IN :roleIds
+            """, nativeQuery = true)
+    List<Role> findRolesByListRoleIds(List<Long> roleIds);
 //    @Query(value = """
 //            DELETE FROM musicmanager.roles WHERE name != 'ROLE_ADMIN'
 //            """, nativeQuery = true)

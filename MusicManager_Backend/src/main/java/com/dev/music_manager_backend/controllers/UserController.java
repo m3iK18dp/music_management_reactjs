@@ -1,8 +1,8 @@
 package com.dev.music_manager_backend.controllers;
 
+import com.dev.music_manager_backend.DTO.UserRequestDto;
 import com.dev.music_manager_backend.models.ResponseObject;
 import com.dev.music_manager_backend.models.Role;
-import com.dev.music_manager_backend.models.User;
 import com.dev.music_manager_backend.services.IUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -22,18 +22,18 @@ public class UserController {
     private final IUserService userService;
 
     @GetMapping("/users")
-    public ResponseObject<Page<User>> getUser(@RequestParam(value = "_id", defaultValue = "-1") Long id,
-                                              @RequestParam(value = "_email", defaultValue = "") String email,
-                                              @RequestParam(value = "_name", defaultValue = "") String name,
-                                              @RequestParam(value = "_role_ids", defaultValue = "") List<Long> roleIds,
-                                              @RequestParam(value = "_status", defaultValue = "-1") int status,
-                                              @RequestParam(value = "_page", defaultValue = "0") int page,
-                                              @RequestParam(value = "_limit", defaultValue = "10") int limit,
-                                              @RequestParam(value = "_field", defaultValue = "id") String field,
-                                              @RequestParam(value = "_type_sort", defaultValue = "asc") String typeSort,
-                                              HttpServletRequest request
+    public ResponseObject<Page<UserRequestDto>> getUser(@RequestParam(value = "_id", defaultValue = "-1") Long id,
+                                                        @RequestParam(value = "_email", defaultValue = "") String email,
+                                                        @RequestParam(value = "_name", defaultValue = "") String name,
+                                                        @RequestParam(value = "_role_ids", defaultValue = "") List<Long> roleIds,
+                                                        @RequestParam(value = "_status", defaultValue = "-1") int status,
+                                                        @RequestParam(value = "_page", defaultValue = "0") int page,
+                                                        @RequestParam(value = "_limit", defaultValue = "10") int limit,
+                                                        @RequestParam(value = "_field", defaultValue = "id") String field,
+                                                        @RequestParam(value = "_type_sort", defaultValue = "asc") String typeSort,
+                                                        HttpServletRequest request
     ) {
-        Page<User> users = new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 0);
+        Page<UserRequestDto> users = new PageImpl<>(new ArrayList<>(), PageRequest.of(0, 10), 0);
         try {
             users = userService.findUsersWithPaginationAndSort(id, email, name, roleIds, status, page, limit, field, typeSort, request);
             if (users.isEmpty()) {
@@ -59,29 +59,29 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public ResponseObject<User> addUser(
-            @RequestBody User user
+    public ResponseObject<UserRequestDto> addUser(
+            @RequestBody UserRequestDto user
     ) {
         try {
             return new ResponseObject<>(
                     "ok",
                     "Add User Successfully.",
-                    userService.saveUser(user, true)
+                    userService.saveUser(user)
             );
         } catch (Exception exception) {
             return new ResponseObject<>(
                     "error",
                     "Can't add user. " + exception.getMessage(),
-                    new User()
+                    new UserRequestDto()
             );
         }
     }
 
     //admin
     @PutMapping("/users/{id}")
-    public ResponseObject<User> updateUser(
+    public ResponseObject<UserRequestDto> updateUser(
             @PathVariable Long id,
-            @RequestBody User user,
+            @RequestBody UserRequestDto user,
             HttpServletRequest request
     ) {
         try {
@@ -94,13 +94,13 @@ public class UserController {
             return new ResponseObject<>(
                     "error",
                     "Can't update user. " + exception.getMessage(),
-                    new User()
+                    new UserRequestDto()
             );
         }
     }
 
     @PutMapping("/users/reset_password/{id}")
-    public ResponseObject<User> resetPassword(
+    public ResponseObject<UserRequestDto> resetPassword(
             @PathVariable Long id,
             HttpServletRequest request
     ) {
@@ -114,14 +114,14 @@ public class UserController {
             return new ResponseObject<>(
                     "failed",
                     "Can't reset password to user with id = " + id + ". " + exception.getMessage(),
-                    new User()
+                    new UserRequestDto()
             );
         }
     }
 
     //user
     @PutMapping("/users/update_email/{id}")
-    public ResponseObject<User> updateEmailToUser(
+    public ResponseObject<UserRequestDto> updateEmailToUser(
             @PathVariable Long id,
             @RequestBody String email,
             HttpServletRequest request
@@ -136,14 +136,14 @@ public class UserController {
             return new ResponseObject<>(
                     "error",
                     "Can't update user email with id = " + id + ". " + exception.getMessage(),
-                    new User()
+                    new UserRequestDto()
             );
         }
     }
 
     //user
     @PutMapping("/users/update_password/{id}")
-    public ResponseObject<User> updatePasswordToUser(
+    public ResponseObject<UserRequestDto> updatePasswordToUser(
             @PathVariable Long id,
             @RequestBody List<String> listPassword,
             HttpServletRequest request
@@ -158,13 +158,13 @@ public class UserController {
             return new ResponseObject<>(
                     "error",
                     "Can't update user password with id = " + id + ". " + exception.getMessage(),
-                    new User()
+                    new UserRequestDto()
             );
         }
     }
 
     @PutMapping("/users/change_status/{id}")
-    public ResponseObject<User> changStatusUser(
+    public ResponseObject<UserRequestDto> changStatusUser(
             @PathVariable Long id,
             HttpServletRequest request
     ) {
@@ -178,7 +178,7 @@ public class UserController {
             return new ResponseObject<>(
                     "error",
                     "Cannot change status User with id = " + id + ". " + exception.getMessage(),
-                    new User()
+                    new UserRequestDto()
             );
         }
     }
