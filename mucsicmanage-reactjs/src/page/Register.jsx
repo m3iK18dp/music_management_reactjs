@@ -30,107 +30,80 @@ function Register() {
   const [confirmPasswordIsFilled, setConfirmPasswordIsFilled] = useState("");
   const [status, setStatus] = useState("");
   const [isFirst, setIsFirst] = useState(true);
-  const validateInput = (field, maxLength, message = "", type = 0) => {
-    if (type && !isFirst && field.length === 0) return message;
+  const [checkForm, setCheckForm] = useState(true);
+  const validateInput = (field, maxLength, message = "") => {
+    if (field.length === 0) {
+      setCheckForm(false);
+      return !isFirst ? message : "";
+    }
     if (field.length > maxLength) {
+      setCheckForm(false);
       return `You have exceeded the allowed number of characters ${field.length}/${maxLength}`;
     }
     return "";
   };
   useEffect(() => {
+    setCheckForm(true);
     setFirstNameIsFilled(
-      validateInput(user.firstName, 40, `Please enter first name`, 1)
+      validateInput(user.firstName, 40, `Please enter first name`)
     );
     setLastNameIsFilled(
-      validateInput(user.lastName, 10, `Please enter last name`, 1)
+      validateInput(user.lastName, 10, `Please enter last name`)
     );
-    setEmailIsFilled(validateInput(user.email, 50, "Please enter email", 1));
+    setEmailIsFilled(validateInput(user.email, 50, "Please enter email"));
     setPasswordIsFilled(
-      validateInput(user.password, Infinity, passwordIsFilled, 1)
+      validateInput(user.password, Infinity, "Please enter password")
     );
-    setPasswordIsFilled(
-      !/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$/.test(
-        user.password
+    if (user.password !== "") {
+      if (user.password.length < 8 || user.password.length > 20) {
+        setCheckForm(false);
+        setPasswordIsFilled(
+          "Invalid password. Password must be between 8 and 20 characters"
+        );
+      } else if (
+        !/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$/.test(
+          user.password
+        )
+      ) {
+        setCheckForm(false);
+        setPasswordIsFilled(
+          "Invalid password. Password needs at least 1 uppercase, 1 lowercase, 1 number and 1 special character in @#$%^&+=_!"
+        );
+      } else setPasswordIsFilled("");
+    }
+    setConfirmPasswordIsFilled(
+      validateInput(
+        user.confirmPassword,
+        Infinity,
+        "Please enter Confirm Password"
       )
-        ? "Invalid password. Password must be between 8 and 20 characters and include at least one uppercase letter, one lowercase letter, one number and one special character in the following @#$%^&+=_!"
-        : ""
     );
-
-    if (!isFirst) {
-      setConfirmPasswordIsFilled(
-        user.confirmPassword === ""
-          ? "Please enter Confirm Password"
-          : user.password !== user.confirmPassword
-          ? "Password and Confirm password do not match"
-          : ""
-      );
-    }
+    if (user.confirmPassword !== "")
+      if (user.password !== user.confirmPassword) {
+        setCheckForm(false);
+        setConfirmPasswordIsFilled(
+          "Password and Confirm password do not match"
+        );
+      } else setConfirmPasswordIsFilled("");
   }, [isFirst, user]);
-  useEffect(() => {
-    // setFirstNameIsFilled(
-    //   validateInput(user.firstName, 40, `Please enter first name`, 1)
-    // );
-    // setLastNameIsFilled(
-    //   validateInput(user.lastName, 10, `Please enter last name`, 1)
-    // );
-    // setEmailIsFilled(validateInput(user.email, 50, "Please enter email", 1));
-
-    // setPasswordIsFilled(
-    //   !/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$/.test(
-    //     user.password
-    //   )
-    //     ? "Invalid password. Password must be between 8 and 20 characters and include at least one uppercase letter, one lowercase letter, one number and one special character in the following @#$%^&+=_!"
-    //     : ""
-    // );
-    // setPasswordIsFilled(
-    //   validateInput(
-    //     user.password,
-    //     Infinity,
-    //     "Please enter Password",
-    //     passwordIsFilled,
-    //     1
-    //   )
-    // );
-    if (!isFirst) {
-      setConfirmPasswordIsFilled(
-        user.confirmPassword === ""
-          ? "Please enter Confirm Password"
-          : user.password !== user.confirmPassword
-          ? "Password and Confirm password do not match"
-          : confirmPasswordIsFilled
-      );
-    }
-  }, [status]);
   useEffect(() => {
     setStatus("");
   }, [user]);
   function handleSubmit() {
     setIsFirst(false);
-    if (
-      !(
-        user.firstName === "" ||
-        user.lastName === "" ||
-        user.email === "" ||
-        user.password === "" ||
-        user.confirmPassword === ""
-      )
-    )
-      try {
-        setStatus("Please wait...Saving is in progress");
-        authenticationService.register(user, navigate).then((res) => {
-          if (res.status === "ok") {
-            setStatus("");
-            alert("Registration successful!");
-            navigate("/songs");
-          } else {
-            setEmailIsFilled(res.message);
-            setStatus("Registration failed.");
-          }
-        });
-      } catch (error) {
-        console.log(error);
-      }
-    else setStatus("Register failed. Please enter full information.");
+    if (checkForm) {
+      setStatus("Please wait...Saving is in progress");
+      authenticationService.register(user, navigate).then((res) => {
+        if (res.status === "ok") {
+          setStatus("");
+          alert("Registration successful!");
+          navigate("/songs");
+        } else {
+          setEmailIsFilled(res.message);
+          setStatus("Registration failed.");
+        }
+      });
+    } else setStatus("Failed. Please check information entered.");
   }
   return (
     <div>
@@ -143,7 +116,7 @@ function Register() {
         style={{
           with: "50%",
           minWidth: 300,
-          maxWidth: 400,
+          maxWidth: 500,
           margin: "100px auto",
         }}
       >
@@ -152,6 +125,7 @@ function Register() {
           style={{
             border: "3px solid purple",
             backgroundColor: "rgba(255,255,255,0.2)",
+            padding: "20px",
           }}
         >
           <h1
@@ -169,13 +143,14 @@ function Register() {
             className="card-body"
             style={{
               with: "80%",
-              minWidth: 400,
-              maxWidth: 900,
+              minWidth: 250,
+              maxWidth: 550,
             }}
           >
             <Form>
               <Col>
                 <CustomFormGroup
+                  formGroupStyle={{ width: "100%", marginRight: 20 }}
                   funcEnter={handleSubmit}
                   controlId="firstName"
                   func={set}
@@ -243,19 +218,17 @@ function Register() {
                 variant="primary"
                 func={handleSubmit}
                 text="Register"
-              ></CustomButton>
-              <div style={{ height: 5 }}>
-                <p
-                  style={{
-                    fontStyle: "italic",
-                    color: "red",
-                    margin: 0,
-                    fontSize: 12,
-                  }}
-                >
-                  {status}
-                </p>
-              </div>
+              />
+              <p
+                style={{
+                  fontStyle: "italic",
+                  color: "red",
+                  margin: 0,
+                  fontSize: 12,
+                }}
+              >
+                {status}
+              </p>
               <div className="mt-4">
                 <p className="text-center">
                   You have account?{" "}

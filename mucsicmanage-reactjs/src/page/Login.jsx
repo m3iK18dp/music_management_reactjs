@@ -135,19 +135,17 @@ const Login = () => {
                 color="white"
                 func={handleSubmit}
                 text="Login"
-              />
-              <div style={{ height: 5 }}>
-                <p
-                  style={{
-                    fontStyle: "italic",
-                    color: "red",
-                    margin: 0,
-                    fontSize: 12,
-                  }}
-                >
-                  {status}
-                </p>
-              </div>
+              />{" "}
+              <p
+                style={{
+                  fontStyle: "italic",
+                  color: "red",
+                  margin: 0,
+                  fontSize: 12,
+                }}
+              >
+                {status}
+              </p>
               <div className="mt-4">
                 <p className="text-center">
                   Don't have an account?{" "}
