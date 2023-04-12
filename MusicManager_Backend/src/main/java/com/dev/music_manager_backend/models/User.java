@@ -25,13 +25,13 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotBlank
-    @Column(nullable = false)
+    @Column(nullable = false, length = 40)
     private String firstName;
     @NotBlank
-    @Column(nullable = false)
+    @Column(nullable = false, length = 10)
     private String lastName;
     @NotBlank
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 50)
     private String email;
     @NotBlank
     @Column(nullable = false)

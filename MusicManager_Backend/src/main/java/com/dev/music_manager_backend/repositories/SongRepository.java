@@ -16,21 +16,31 @@ public interface SongRepository extends JpaRepository<Song, Long> {
                        LOWER(s.title) LIKE LOWER(CONCAT('%', :title, '%')) AND
                        (LOWER(s.genre) LIKE LOWER(CONCAT('%', :genre, '%')) OR s.genre IS NULL) AND
                        (LOWER(s.musician) LIKE LOWER(CONCAT('%', :musician, '%')) OR s.musician IS NULL) AND
-                       (:owner_id = -1 OR s.owner_id = :owner_id)
+                       (:owner_email = '' OR s.owner_id IN (
+                                SELECT u.id FROM songs so, users u
+                                    WHERE so.owner_id = u.id
+                                    AND u.email = :owner_email
+                                )
+                       )
             """, countQuery = """
               SELECT COUNT(s.id) FROM songs s WHERE
                        (:id = -1 OR s.id = :id) AND
                        LOWER(s.title) LIKE LOWER(CONCAT('%', :title, '%')) AND
                        (LOWER(s.genre) LIKE LOWER(CONCAT('%', :genre, '%')) OR s.genre IS NULL) AND
                        (LOWER(s.musician) LIKE LOWER(CONCAT('%', :musician, '%')) OR s.musician IS NULL) AND
-                       (:owner_id = -1 OR s.owner_id = :owner_id)
+                       (:owner_email = '' OR s.owner_id IN (
+                                SELECT u.id FROM songs so, users u
+                                    WHERE so.owner_id = u.id
+                                    AND u.email = :owner_email
+                                )
+                       )
             """, nativeQuery = true)
     Page<Song> findSongsWithPaginationAndSort(
             @Param("id") Long id,
             @Param("title") String title,
             @Param("genre") String genre,
             @Param("musician") String musician,
-            @Param("owner_id") Long owner_id,
+            @Param("owner_email") String ownerEmail,
             Pageable pageable
     );
 

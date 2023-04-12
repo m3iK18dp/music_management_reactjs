@@ -49,6 +49,8 @@ public class UserServiceImpl implements IUserService {
     @Override
     public UserRequestDto registerUser(User user) {
         log.info("Register user: {}", user);
+        if (!user.getPassword().matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=_!])(?=\\S+$).{8,20}$"))
+            throw new RuntimeException("Invalid password. Password must be between 8 and 20 characters and include at least one uppercase letter, one lowercase letter, one number and one special character in the following @#$%^&+=_!");
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         user.setRoles(
                 Collections.singletonList(
@@ -98,11 +100,9 @@ public class UserServiceImpl implements IUserService {
     }
 
     private User extractUser(HttpServletRequest request) {
-        try {
+        if (request.getHeader("Authorization") != null)
             return userRepository.findByEmail(new JwtTokenUtil().extractUserName(request.getHeader("Authorization").substring(7))).orElse(new User());
-        } catch (Exception exception) {
-            throw new RuntimeException("Error when querying.");
-        }
+        return new User();
     }
 
     @Override
@@ -187,6 +187,8 @@ public class UserServiceImpl implements IUserService {
             return userRepository.findById(id).map(user -> {
                 BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
                 if (encoder.matches(oldPassword, user.getPassword())) {
+                    if (!newPassword.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=_!])(?=\\S+$).{8,20}$"))
+                        throw new RuntimeException("Invalid password. Password must be between 8 and 20 characters and include at least one uppercase letter, one lowercase letter, one number and one special character in the following @#$%^&+=_!");
                     user.setPassword(new BCryptPasswordEncoder().encode(newPassword));
                     user.setLastUpdate(LocalDateTime.now());
                     return new UserRequestDto(userRepository.save(user));

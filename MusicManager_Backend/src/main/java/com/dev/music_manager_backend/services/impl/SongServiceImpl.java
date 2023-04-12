@@ -41,15 +41,13 @@ public class SongServiceImpl implements ISongService {
     private final RoleRepository roleRepository;
 
     private User extractUser(HttpServletRequest request) {
-        try {
+        if (request.getHeader("Authorization") != null)
             return userRepository.findByEmail(new JwtTokenUtil().extractUserName(request.getHeader("Authorization").substring(7))).orElse(new User());
-        } catch (Exception exception) {
-            throw new RuntimeException("Error when querying.");
-        }
+        return new User();
     }
 
     @Override
-    public Page<SongRequestDto> findSongsWithPaginationAndSort(Long id, String title, String genre, String musician, int page, int limit, String field, String typeSort, Long ownerId) {
+    public Page<SongRequestDto> findSongsWithPaginationAndSort(Long id, String title, String genre, String musician, int page, int limit, String field, String typeSort, String ownerEmail, HttpServletRequest request) {
         LinkedHashMap<String, Object> filter = new LinkedHashMap<String, Object>();
         filter.put("id", id);
         filter.put("title", title);
@@ -59,9 +57,24 @@ public class SongServiceImpl implements ISongService {
         filter.put("limit", limit);
         filter.put("field", field);
         filter.put("typeSort", typeSort);
+        filter.put("ownerEmail", ownerEmail);
         log.info("findSongsWithPaginationAndSort with " + filter);
-        Pageable pageable = PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field));
-        return SongRequestDto.fromSongs(songRepository.findSongsWithPaginationAndSort(id, title, genre, musician, ownerId, pageable), pageable);
+        User userFromAuth = extractUser(request);
+
+        if (Objects.equals(ownerEmail, "") ||
+                Objects.equals(userFromAuth.getEmail(), ownerEmail) ||
+                userFromAuth.getRoles().stream().anyMatch(r -> Objects.equals(r.getName(), "ADMIN"))
+        ) {
+            Pageable pageable = PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field));
+            return SongRequestDto.fromSongs(
+                    songRepository.findSongsWithPaginationAndSort(
+                            id, title, genre, musician,
+                            ownerEmail,
+                            pageable
+                    ),
+                    pageable
+            );
+        } else throw new RuntimeException("You not admin, you can only get songs with your own email address");
     }
 
     @Override

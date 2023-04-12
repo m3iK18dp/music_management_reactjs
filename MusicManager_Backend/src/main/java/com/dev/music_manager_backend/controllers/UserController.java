@@ -151,7 +151,7 @@ public class UserController {
         try {
             return new ResponseObject<>(
                     "ok",
-                    "Update user email with id: " + id + " successfully.",
+                    "Update user password with id: " + id + " successfully.",
                     userService.updatePasswordToUser(id, listPassword.get(0), listPassword.get(1), request)
             );
         } catch (Exception exception) {
@@ -188,7 +188,7 @@ public class UserController {
             @RequestParam(value = "_id", defaultValue = "-1") Long id,
             @RequestParam(value = "_name", defaultValue = "") String name,
             @RequestParam(value = "_role_ids", defaultValue = "") List<Long> roleIds,
-            @RequestParam(value = "_userId", defaultValue = "-1") Long userId,
+            @RequestParam(value = "_user_id", defaultValue = "-1") Long userId,
             @RequestParam(value = "_page", defaultValue = "0") int page,
             @RequestParam(value = "_limit", defaultValue = "10") int limit,
             @RequestParam(value = "_field", defaultValue = "id") String field,

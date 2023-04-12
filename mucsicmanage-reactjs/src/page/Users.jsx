@@ -29,7 +29,8 @@ import MySelect from '../components/MySelect';
 
 function Users() {
 	const navigate = useNavigate();
-
+	const roles = sessionStorage.getItem('roles');
+	const isAdmin = roles !== null ? roles.includes('ADMIN') : false;
 	const path = useLocation().search;
 	const [search, setSearch] = useState({
 		id: '',
@@ -57,6 +58,7 @@ function Users() {
 	const [expandFilter, setExpandFilter] = useState(false);
 	useEffect(() => {
 		checkToken(navigate);
+		if (!isAdmin) navigate('/error/403');
 		const searchParams = new URLSearchParams(window.location.search);
 		const params = {};
 		[
@@ -192,7 +194,7 @@ function Users() {
 					minWidth: 450,
 				}}
 				className={`background-color filter-container ${
-					expandFilter ? 'expanded' : ''
+					expandFilter ? 'expanded-no-admin' : ''
 				}`}
 			>
 				<Form
@@ -318,7 +320,9 @@ function Users() {
 					overflow: 'hidden',
 					overflowX: 'scroll',
 				}}
-				className={` filter-container ${expandFilter ? 'expanded' : ''}`}
+				className={` filter-container ${
+					expandFilter ? 'expanded-no-admin' : ''
+				}`}
 			>
 				<Table striped bordered>
 					<thead className='table-dark'>

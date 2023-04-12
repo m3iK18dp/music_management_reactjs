@@ -13,7 +13,8 @@ import MySelect from '../components/MySelect';
 function UploadUser() {
 	const id = useParams();
 	const navigate = useNavigate();
-
+	const roles = sessionStorage.getItem('roles');
+	const isAdmin = roles !== null ? roles.includes('ADMIN') : false;
 	const createOrUpdate = isNaN(id.id)
 		? id.id === 'new'
 			? 'Create'
@@ -43,6 +44,7 @@ function UploadUser() {
 	useEffect(() => {
 		if (createOrUpdate === 'Error') navigate('/error/404');
 		checkToken(navigate);
+		if (!isAdmin) navigate('/error/403');
 		if (createOrUpdate === 'Update')
 			userService.get({ _id: id.id }, navigate).then((data) => {
 				console.log(data.data);
@@ -53,16 +55,33 @@ function UploadUser() {
 			.then((data) => setAllRoles(data.data.content));
 	}, [createOrUpdate, id.id]);
 	useEffect(() => {
-		if (!isFirst) {
-			setFirstNameIsFilled(
-				user.firstName === '' ? `Please enter first name` : '',
-			);
-			setLastNameIsFilled(user.lastName === '' ? `Please enter last name` : '');
-			setEmailIsFilled(user.email === '' ? 'Please enter email' : '');
-			setRolesCheckIsFilled(
-				user.roleIds.length === 0 ? 'Please select roles' : '',
-			);
-		}
+		const validateInput = (field, maxLength, message = '', type = 0) => {
+			if (type && !isFirst && field.length === 0) return message;
+			if (field.length > maxLength) {
+				return `You have exceeded the allowed number of characters ${field.length}/${maxLength}`;
+			}
+			return '';
+		};
+		setFirstNameIsFilled(
+			validateInput(user.firstName, 40, `Please enter first name`, 1),
+		);
+		setLastNameIsFilled(
+			validateInput(user.lastName, 10, `Please enter last name`, 1),
+		);
+		setEmailIsFilled(validateInput(user.email, 50, 'Please enter email', 1));
+		setRolesCheckIsFilled(
+			validateInput(user.email, Infinity, 'Please select roles', 1),
+		);
+		// if (!isFirst) {
+		// 	setFirstNameIsFilled(
+		// 		user.firstName === '' ? `Please enter first name` : '',
+		// 	);
+		// 	setLastNameIsFilled(user.lastName === '' ? `Please enter last name` : '');
+		// 	setEmailIsFilled(user.email === '' ? 'Please enter email' : '');
+		// 	setRolesCheckIsFilled(
+		// 		user.roleIds.length === 0 ? 'Please select roles' : '',
+		// 	);
+		// }
 	}, [user, isFirst, status]);
 	useEffect(() => {
 		setStatus('');

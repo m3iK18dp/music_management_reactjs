@@ -30,15 +30,33 @@ function Register() {
   const [confirmPasswordIsFilled, setConfirmPasswordIsFilled] = useState("");
   const [status, setStatus] = useState("");
   const [isFirst, setIsFirst] = useState(true);
-
+  const validateInput = (field, maxLength, message = "", type = 0) => {
+    if (type && !isFirst && field.length === 0) return message;
+    if (field.length > maxLength) {
+      return `You have exceeded the allowed number of characters ${field.length}/${maxLength}`;
+    }
+    return "";
+  };
   useEffect(() => {
+    setFirstNameIsFilled(
+      validateInput(user.firstName, 40, `Please enter first name`, 1)
+    );
+    setLastNameIsFilled(
+      validateInput(user.lastName, 10, `Please enter last name`, 1)
+    );
+    setEmailIsFilled(validateInput(user.email, 50, "Please enter email", 1));
+    setPasswordIsFilled(
+      validateInput(user.password, Infinity, passwordIsFilled, 1)
+    );
+    setPasswordIsFilled(
+      !/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$/.test(
+        user.password
+      )
+        ? "Invalid password. Password must be between 8 and 20 characters and include at least one uppercase letter, one lowercase letter, one number and one special character in the following @#$%^&+=_!"
+        : ""
+    );
+
     if (!isFirst) {
-      setFirstNameIsFilled(
-        user.firstName === "" ? "Please enter First name" : ""
-      );
-      setLastNameIsFilled(user.lastName === "" ? "Please enter Lase name" : "");
-      setEmailIsFilled(user.email === "" ? "Please enter email" : "");
-      setPasswordIsFilled(user.password === "" ? "Please enter Password" : "");
       setConfirmPasswordIsFilled(
         user.confirmPassword === ""
           ? "Please enter Confirm Password"
@@ -49,19 +67,31 @@ function Register() {
     }
   }, [isFirst, user]);
   useEffect(() => {
+    // setFirstNameIsFilled(
+    //   validateInput(user.firstName, 40, `Please enter first name`, 1)
+    // );
+    // setLastNameIsFilled(
+    //   validateInput(user.lastName, 10, `Please enter last name`, 1)
+    // );
+    // setEmailIsFilled(validateInput(user.email, 50, "Please enter email", 1));
+
+    // setPasswordIsFilled(
+    //   !/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$/.test(
+    //     user.password
+    //   )
+    //     ? "Invalid password. Password must be between 8 and 20 characters and include at least one uppercase letter, one lowercase letter, one number and one special character in the following @#$%^&+=_!"
+    //     : ""
+    // );
+    // setPasswordIsFilled(
+    //   validateInput(
+    //     user.password,
+    //     Infinity,
+    //     "Please enter Password",
+    //     passwordIsFilled,
+    //     1
+    //   )
+    // );
     if (!isFirst) {
-      setFirstNameIsFilled(
-        user.firstName === "" ? "Please enter First name" : firstNameIsFilled
-      );
-      setLastNameIsFilled(
-        user.lastName === "" ? "Please enter Lase name" : lastNameIsFilled
-      );
-      setEmailIsFilled(
-        user.email === "" ? "Please enter email" : emailIsFilled
-      );
-      setPasswordIsFilled(
-        user.password === "" ? "Please enter Password" : passwordIsFilled
-      );
       setConfirmPasswordIsFilled(
         user.confirmPassword === ""
           ? "Please enter Confirm Password"

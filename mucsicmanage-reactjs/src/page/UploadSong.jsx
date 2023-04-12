@@ -21,6 +21,7 @@ function UploadSong() {
 		: 'Error';
 
 	const [song, setSong] = useState({
+		id: '',
 		title: '',
 		genre: '',
 		musician: '',
@@ -31,6 +32,9 @@ function UploadSong() {
 	};
 	const file = useRef(null);
 	const [titleIsFilled, setTitleIsFilled] = useState('');
+	const [musicianIsFilled, setMusicianIsFilled] = useState('');
+	const [genreIsFilled, setGenreIsFilled] = useState('');
+
 	const [fileIsFilled, setFileIsFilled] = useState('');
 
 	const [status, setStatus] = useState('');
@@ -44,7 +48,9 @@ function UploadSong() {
 				console.log(data.data);
 				if (
 					createOrUpdate === 'Update' &&
-					data.data.content[0].ownerEmail !== localStorage.getItem('username')
+					data.data.content[0].ownerEmail !==
+						sessionStorage.getItem('username') &&
+					!sessionStorage.getItem('roles').includes('ADMIN')
 				)
 					navigate('/error/403');
 
@@ -52,12 +58,21 @@ function UploadSong() {
 			});
 	}, [createOrUpdate, id.id]);
 	useEffect(() => {
-		if (!isFirst) {
-			setTitleIsFilled(song.title === '' ? `Please enter a title` : '');
-			if (createOrUpdate === 'Create')
-				setFileIsFilled(
-					file.current.files.length === 0 ? 'Please select file' : '',
-				);
+		const validateInput = (field, maxLength, message = '', type = 0) => {
+			if (type && !isFirst && field.length === 0) return message;
+			if (field.length > maxLength) {
+				return `You have exceeded the allowed number of characters ${field.length}/${maxLength}`;
+			}
+			return '';
+		};
+		setTitleIsFilled(validateInput(song.title, 100, 'Please enter a title', 1));
+		setMusicianIsFilled(validateInput(song.musician, 30));
+		setGenreIsFilled(validateInput(song.genre, 30));
+
+		if (createOrUpdate === 'Create') {
+			setFileIsFilled(
+				validateInput(file.current.files, Infinity, 'Please select file', 1),
+			);
 		}
 	}, [song, isFirst, status, changeFile, createOrUpdate]);
 	useEffect(() => {
@@ -66,7 +81,12 @@ function UploadSong() {
 
 	function handleSubmit() {
 		setIsFirst(false);
-		if (song.title !== '') {
+		if (
+			song.title !== '' &&
+			song.title.length <= 100 &&
+			song.musician.length <= 30 &&
+			song.genre.length <= 30
+		) {
 			setStatus(`Please wait...${createOrUpdate} song is in progress`);
 			const songServiceFunction =
 				createOrUpdate === 'Update'
@@ -103,7 +123,6 @@ function UploadSong() {
 			<NavbarComponent />
 			<div className='background-container' />
 			<div className=' background-container-opacity-low' />
-
 			<Container>
 				<Row
 					className='col-md-8 offset-md-2'
@@ -159,6 +178,7 @@ function UploadSong() {
 									label='Genre'
 									value={song.genre}
 									type='text'
+									warning={genreIsFilled}
 								/>
 								<CustomFormGroup
 									funcEnter={handleSubmit}
@@ -168,6 +188,7 @@ function UploadSong() {
 									label='Musician'
 									value={song.musician}
 									type='text'
+									warning={musicianIsFilled}
 								/>
 								<CustomFormGroup
 									funcEnter={handleSubmit}

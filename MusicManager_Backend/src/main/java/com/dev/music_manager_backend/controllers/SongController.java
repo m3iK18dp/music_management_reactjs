@@ -33,11 +33,12 @@ public class SongController {
             @RequestParam(value = "_limit", defaultValue = "10") int limit,
             @RequestParam(value = "_field", defaultValue = "id") String field,
             @RequestParam(value = "_type_sort", defaultValue = "asc") String typeSort,
-            @RequestParam(value = "_owner_id", defaultValue = "-1") Long ownerId
+            @RequestParam(value = "_owner_email", defaultValue = "") String ownerEmail,
+            HttpServletRequest request
     ) {
         Page<SongRequestDto> songs = new PageImpl<>(new ArrayList<>());
         try {
-            songs = songService.findSongsWithPaginationAndSort(id, title, genre, musician, page, limit, field, typeSort, ownerId);
+            songs = songService.findSongsWithPaginationAndSort(id, title, genre, musician, page, limit, field, typeSort, ownerEmail, request);
             if (songs.isEmpty()) {
                 return new ResponseObject<>(
                         "failed",

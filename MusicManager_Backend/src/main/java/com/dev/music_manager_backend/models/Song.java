@@ -23,9 +23,9 @@ public class Song {
     @Column(nullable = false, length = 100)
     private String title;
 
-    @Column
+    @Column(length = 30)
     private String musician;
-    @Column(length = 50)
+    @Column(length = 30)
     private String genre;
     @Column
     @Builder.Default

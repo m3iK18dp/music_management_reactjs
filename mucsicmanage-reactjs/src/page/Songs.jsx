@@ -25,16 +25,27 @@ import CustomTableHeaderWithSort from '../components/CustomTableHeaderWithSort';
 import AudioPlayer from '../components/AudioPlayer';
 import { checkToken } from '../services/CheckToken';
 function Songs() {
+	// 	{
+	// 	id = '',
+	// 	title ='',
+	// 	genre = '',
+	// 	musician = '',
+	// 	page = 0,
+	// 	limit = 10,
+	// 	field = 'id',
+	// 	type_sort = 'asc',
+	// 	owner_email = '',
+	// }
 	const navigate = useNavigate();
 	const alertRevoked =
 		'Your account has been revoked, login with another account or contact Administrator to unlock your account to use more features.';
 	const isLoggedIn =
 		localStorage.getItem('token') &&
-		!JSON.parse(localStorage.getItem('isRevoked'));
-	const roles = localStorage.getItem('roles');
+		!JSON.parse(sessionStorage.getItem('isRevoked'));
+	const roles = sessionStorage.getItem('roles');
 	const isAdmin = roles !== null ? roles.includes('ADMIN') : false;
 
-	const path = useLocation().search;
+	const location = useLocation();
 	const [search, setSearch] = useState({
 		id: '',
 		title: '',
@@ -42,8 +53,12 @@ function Songs() {
 		musician: '',
 		page: 0,
 		limit: 10,
-		field: 'id',
+		field: isAdmin ? 'id' : 'title',
 		type_sort: 'asc',
+		owner_email:
+			location.pathname === '/my_songs'
+				? sessionStorage.getItem('username')
+				: '',
 	});
 	const [totalPages, setTotalPages] = useState(1);
 	const [currentSongs, setCurrentSongs] = useState([]);
@@ -73,6 +88,7 @@ function Songs() {
 			'limit',
 			'field',
 			'type_sort',
+			'owner_email',
 		].forEach((prop) => {
 			const value = searchParams.get(prop);
 			if (value !== null)
@@ -80,6 +96,9 @@ function Songs() {
 			params[`_${prop}`] =
 				prop === 'id' ? (get(prop) > 0 ? get(prop) : -1) : get(prop);
 		});
+		// if (location.pathname === '/my_songs')
+		// 	params['_owner_email'] = sessionStorage.getItem('username');
+
 		songService.get(params, navigate).then((data) => {
 			setTotalPages(data.data.totalPages);
 			setCurrentSongs(data.data.content);
@@ -92,7 +111,7 @@ function Songs() {
 				);
 			}
 		});
-	}, [path]);
+	}, [location.search]);
 
 	const handleAudioPlayerUpdate = (songs = currentSongs, type = 0) => {
 		// const currentSongsPlayingInSession = ;
@@ -134,7 +153,6 @@ function Songs() {
 	};
 	const handleSearch = () => {
 		const search = [];
-
 		['id', 'title', 'genre', 'musician'].forEach((field) => {
 			search.push({
 				property: field,
@@ -169,17 +187,17 @@ function Songs() {
 			alert(
 				'This feature is only available to logged in users. If you want to use it, please login to continue.',
 			);
-		else if (JSON.parse(localStorage.getItem('isRevoked'))) {
+		else if (JSON.parse(sessionStorage.getItem('isRevoked'))) {
 			alert(alertRevoked);
 		} else navigate('/songs/new');
 	};
 	const handleUpdateSong = (id) => {
-		if (JSON.parse(localStorage.getItem('isRevoked'))) {
+		if (JSON.parse(sessionStorage.getItem('isRevoked'))) {
 			alert(alertRevoked);
 		} else navigate(`/songs/${id}`);
 	};
 	const handleDeleteSong = (id) => {
-		if (JSON.parse(localStorage.getItem('isRevoked'))) {
+		if (JSON.parse(sessionStorage.getItem('isRevoked'))) {
 			alert(alertRevoked);
 		} else if (window.confirm('Do you want to delete this song?')) {
 			songService.deleteSong(id, navigate).then((res) => {
@@ -232,7 +250,7 @@ function Songs() {
 					overflow: 'hidden',
 				}}
 				className={`background-color filter-container ${
-					expandFilter ? 'expanded' : ''
+					expandFilter ? (isAdmin ? 'expanded-no-admin' : 'expanded-admin') : ''
 				}`}
 			>
 				<Form
@@ -243,52 +261,80 @@ function Songs() {
 						padding: 5,
 					}}
 				>
-					<Row>
-						{['Id', 'Title'].map((field) => (
-							<React.Fragment key={field}>
-								<CustomInput
-									set={set}
-									get={get}
-									field={field}
-									type={field === 'Id' ? 'number' : 'text'}
-									min={field === 'Id' ? 1 : 'none'}
-									func={handleSearch}
-									size={4}
-								/>
-								<Col className='col' xl={1}>
-									<CustomButton
+					{isAdmin ? (
+						<>
+							<Row>
+								{['Id', 'Title'].map((field) => (
+									<React.Fragment key={field}>
+										<CustomInput
+											set={set}
+											get={get}
+											field={field}
+											type={field === 'Id' ? 'number' : 'text'}
+											min={field === 'Id' ? 1 : 'none'}
+											func={handleSearch}
+											size={4}
+										/>
+										<Col className='col'>
+											<CustomButton
+												field={field}
+												IconButton={MdCancel}
+												func={handleCancelSearch}
+												title={`Cancel Search with ${field}`}
+												id={`${field}-filter`}
+											/>
+										</Col>
+									</React.Fragment>
+								))}
+							</Row>
+							<Row>
+								{['Genre', 'Musician'].map((field) => (
+									<React.Fragment key={field}>
+										<CustomInput
+											set={set}
+											get={get}
+											field={field}
+											func={handleSearch}
+											size={4}
+										/>
+										<Col className='col'>
+											<CustomButton
+												field={field}
+												IconButton={MdCancel}
+												func={handleCancelSearch}
+												title={`Cancel Search with ${field}`}
+												id={`${field}-filter`}
+											/>
+										</Col>
+									</React.Fragment>
+								))}
+							</Row>
+						</>
+					) : (
+						<Row>
+							{['Title', 'Genre', 'Musician'].map((field) => (
+								<React.Fragment key={field}>
+									<CustomInput
+										set={set}
+										get={get}
 										field={field}
-										IconButton={MdCancel}
-										func={handleCancelSearch}
-										title={`Cancel Search with ${field}`}
-										id={`${field}-filter`}
+										func={handleSearch}
+										size={2}
 									/>
-								</Col>
-							</React.Fragment>
-						))}
-					</Row>
-					<Row>
-						{['Genre', 'Musician'].map((field) => (
-							<React.Fragment key={field}>
-								<CustomInput
-									set={set}
-									get={get}
-									field={field}
-									func={handleSearch}
-									size={4}
-								/>
-								<Col className='col' xl={1}>
-									<CustomButton
-										field={field}
-										IconButton={MdCancel}
-										func={handleCancelSearch}
-										title={`Cancel Search with ${field}`}
-										id={`${field}-filter`}
-									/>
-								</Col>
-							</React.Fragment>
-						))}
-					</Row>
+									<Col className='col'>
+										<CustomButton
+											field={field}
+											IconButton={MdCancel}
+											func={handleCancelSearch}
+											title={`Cancel Search with ${field}`}
+											id={`${field}-filter`}
+										/>
+									</Col>
+								</React.Fragment>
+							))}
+						</Row>
+					)}
+
 					<Row />
 					<Row>
 						<Col />
@@ -336,10 +382,12 @@ function Songs() {
 			</Container>
 			<Container
 				style={{
-					marginTop: 350,
+					marginTop: isAdmin ? 350 : 300,
 					overflow: 'hidden',
 				}}
-				className={`filter-container ${expandFilter ? 'expanded' : ''}`}
+				className={`filter-container ${
+					expandFilter ? (isAdmin ? 'expanded-no-admin' : 'expanded-admin') : ''
+				}`}
 			>
 				<Table
 					striped
@@ -353,7 +401,7 @@ function Songs() {
 						<col width='auto' span='3' />
 						<col
 							width={
-								JSON.parse(localStorage.getItem('isRevoked')) || isLoggedIn
+								JSON.parse(sessionStorage.getItem('isRevoked')) || isLoggedIn
 									? '110'
 									: '70'
 							}
@@ -438,10 +486,9 @@ function Songs() {
 										}
 										id={`play-pause-${song.id}`}
 									/>
-									{(JSON.parse(localStorage.getItem('isRevoked')) ||
+									{(JSON.parse(sessionStorage.getItem('isRevoked')) ||
 										isLoggedIn) &&
-										(isAdmin ||
-											song.ownerEmail === localStorage.getItem('username')) && (
+										(isAdmin || location.pathname === '/my_songs') && (
 											<>
 												<CustomButton
 													field={song.id}

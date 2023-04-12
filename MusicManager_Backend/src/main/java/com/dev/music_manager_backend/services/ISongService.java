@@ -9,17 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public interface ISongService {
 
-    Page<SongRequestDto> findSongsWithPaginationAndSort(Long id, String title, String genre, String musician, int page, int limit, String field, String typeSort, Long ownerId);
-
-//    Page<Song> findAllSongs(int page, int limit, String field, String typeSort);
-//
-//    Optional<Song> findSongById(Long id);
-
-//    Page<Song> findSongByTitle(String title, int page, int limit, String field, String typeSort);
-//
-//    Page<Song> findSongByMusician(String musician, int page, int limit, String field, String typeSort);
-//
-//    Page<Song> findSongByGenre(String genre, int page, int limit, String field, String typeSort);
+    Page<SongRequestDto> findSongsWithPaginationAndSort(Long id, String title, String genre, String musician, int page, int limit, String field, String typeSort, String ownerEmail, HttpServletRequest request);
 
     SongRequestDto insertSong(SongRequestDto song, MultipartFile file, HttpServletRequest request);
 
