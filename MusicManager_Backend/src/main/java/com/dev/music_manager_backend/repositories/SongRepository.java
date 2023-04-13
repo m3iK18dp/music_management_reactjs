@@ -21,6 +21,11 @@ public interface SongRepository extends JpaRepository<Song, Long> {
                                     WHERE so.owner_id = u.id
                                     AND u.email = :owner_email
                                 )
+                       ) AND
+                       (:playlist_id = -1 OR s.id IN (
+                                SELECT so.id FROM playlists p, playlists_songs ps, songs so
+                                WHERE p.id = ps.PLAYLIST_ID AND ps.SONG_ID = so.id AND p.id = :playlist_id
+                            )
                        )
             """, countQuery = """
               SELECT COUNT(s.id) FROM songs s WHERE
@@ -33,6 +38,11 @@ public interface SongRepository extends JpaRepository<Song, Long> {
                                     WHERE so.owner_id = u.id
                                     AND u.email = :owner_email
                                 )
+                       ) AND
+                       (:playlist_id = -1 OR s.id IN (
+                                SELECT so.id FROM playlists p, playlists_songs ps, songs so
+                                WHERE p.id = ps.PLAYLIST_ID AND ps.SONG_ID = so.id AND p.id = :playlist_id
+                            )
                        )
             """, nativeQuery = true)
     Page<Song> findSongsWithPaginationAndSort(
@@ -41,6 +51,7 @@ public interface SongRepository extends JpaRepository<Song, Long> {
             @Param("genre") String genre,
             @Param("musician") String musician,
             @Param("owner_email") String ownerEmail,
+            @Param("playlist_id") Long playlistId,
             Pageable pageable
     );
 

@@ -3,7 +3,6 @@ package com.dev.music_manager_backend.services.impl;
 import com.dev.music_manager_backend.DTO.SongRequestDto;
 import com.dev.music_manager_backend.models.Song;
 import com.dev.music_manager_backend.models.User;
-import com.dev.music_manager_backend.repositories.RoleRepository;
 import com.dev.music_manager_backend.repositories.SongRepository;
 import com.dev.music_manager_backend.repositories.UserRepository;
 import com.dev.music_manager_backend.services.ISongService;
@@ -37,31 +36,41 @@ public class SongServiceImpl implements ISongService {
     private final IStorageService storageService;
     @Autowired
     private final UserRepository userRepository;
-    @Autowired
-    private final RoleRepository roleRepository;
 
     private User extractUser(HttpServletRequest request) {
-        if (request.getHeader("Authorization") != null)
-            return userRepository.findByEmail(new JwtTokenUtil().extractUserName(request.getHeader("Authorization").substring(7))).orElse(new User());
+        if (request.getHeader("Authorization") != null) {
+            if (!request.getHeader("Authorization").startsWith("Bearer "))
+                throw new RuntimeException("Token is invalid.");
+            JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
+            String token = request.getHeader("Authorization").substring(7);
+            return userRepository.findByEmail(jwtTokenUtil.extractUserName(token)).map(user -> {
+                if (jwtTokenUtil.isTokenExpired(token))
+                    throw new RuntimeException("Your token has expired, please re-enter to make a new token.");
+                if (!user.isStatus())
+                    throw new RuntimeException("The user of the above token has been disabled. Please use another user's token or contact the admin to activate the user.");
+                return user;
+            }).orElse(new User());
+        }
         return new User();
     }
 
     @Override
-    public Page<SongRequestDto> findSongsWithPaginationAndSort(Long id, String title, String genre, String musician, int page, int limit, String field, String typeSort, String ownerEmail, HttpServletRequest request) {
-        LinkedHashMap<String, Object> filter = new LinkedHashMap<String, Object>();
+    public Page<SongRequestDto> findSongsWithPaginationAndSort(Long id, String title, String genre, String musician, String ownerEmail, Long playlistId, int page, int limit, String field, String typeSort, HttpServletRequest request) {
+        LinkedHashMap<String, Object> filter = new LinkedHashMap<>();
         filter.put("id", id);
         filter.put("title", title);
         filter.put("genre", genre);
         filter.put("musician", musician);
+        filter.put("ownerEmail", ownerEmail);
+        filter.put("playlistId", playlistId);
         filter.put("page", page);
         filter.put("limit", limit);
         filter.put("field", field);
         filter.put("typeSort", typeSort);
-        filter.put("ownerEmail", ownerEmail);
+
         log.info("findSongsWithPaginationAndSort with " + filter);
         User userFromAuth = extractUser(request);
-
-        if (Objects.equals(ownerEmail, "") ||
+        if ((Objects.equals(ownerEmail, "") && playlistId == -1) ||
                 Objects.equals(userFromAuth.getEmail(), ownerEmail) ||
                 userFromAuth.getRoles().stream().anyMatch(r -> Objects.equals(r.getName(), "ADMIN"))
         ) {
@@ -70,6 +79,7 @@ public class SongServiceImpl implements ISongService {
                     songRepository.findSongsWithPaginationAndSort(
                             id, title, genre, musician,
                             ownerEmail,
+                            playlistId,
                             pageable
                     ),
                     pageable
@@ -79,10 +89,16 @@ public class SongServiceImpl implements ISongService {
 
     @Override
     public SongRequestDto insertSong(SongRequestDto song, MultipartFile file, HttpServletRequest request) {
-        log.info("Insert song: {}", song.getId());
-        if (songRepository.findByTitle(song.getTitle()).contains(song)) {
+        log.info("Insert song: {}", song);
+        if (songRepository.findByTitle(song.getTitle())
+                .stream().anyMatch(
+                        songStr -> Objects.equals(songStr.getTitle(), song.getTitle())
+                                && Objects.equals(songStr.getMusician(), song.getMusician())
+                )
+        ) {
             throw new RuntimeException("Upload song failed. With Musician: " + song.getMusician() + " already exists song with title: " + song.getTitle() + ".");
         }
+        User user = extractUser(request);
         try {
             return new SongRequestDto(songRepository.save(
                     Song.builder()
@@ -91,7 +107,7 @@ public class SongServiceImpl implements ISongService {
                             .lastUpdate(LocalDateTime.now())
                             .musician(song.getMusician())
                             .url(storageService.uploadFileToCloundinary(0, file))
-                            .owner(extractUser(request))
+                            .owner(user)
                             .build()
             ));
         } catch (Exception exception) {
@@ -108,7 +124,8 @@ public class SongServiceImpl implements ISongService {
             List<Song> songs = songRepository.findByTitle(song.getTitle());
 
             if (songs.stream()
-                    .filter(songStr -> songStr.equals(song))
+                    .filter(songStr -> Objects.equals(songStr.getTitle(), song.getTitle())
+                            && Objects.equals(songStr.getMusician(), song.getMusician()))
                     .findFirst().map(songMap -> !songMap.getId().equals(id)).orElse(false))
                 throw new RuntimeException("Update Song failed. With Musician: " + song.getMusician() + " already exists song with title: " + song.getTitle() + ".");
 
@@ -133,12 +150,9 @@ public class SongServiceImpl implements ISongService {
             throw new RuntimeException("You not admin, you can only update your songs.");
     }
 
-//    private final SessionFactory sessionFactory;
-
     @Override
     public SongRequestDto deleteSong(Long id, HttpServletRequest request) {
         User userFromAuth = extractUser(request);
-
         if (userFromAuth.getRoles().stream().anyMatch(r -> Objects.equals(r.getName(), "ADMIN"))
                 || userFromAuth.getSongs().stream().anyMatch(s -> Objects.equals(s.getId(), id))) {
             log.info("Delete song: {}", id);
@@ -146,15 +160,10 @@ public class SongServiceImpl implements ISongService {
                     songRepository.findById(id).map(
                             song -> {
                                 try {
-//                                    Session session = sessionFactory.getCurrentSession();
-//                                    Song songSession = session.get(Song.class, id);
-//                                    session.evict(songSession); // remove the object from Hibernate's cache
-//                                    session.delete(songSession);
-                                    songRepository.delete(song);
+                                    songRepository.deleteById(id);
                                     storageService.deleteFileFromCloundinary(song.getUrl());
                                     return new SongRequestDto(song);
                                 } catch (Exception exception) {
-                                    exception.printStackTrace();
                                     throw new RuntimeException(exception.getMessage().contains("failed") ? exception.getMessage() : "Delete song failed.");
                                 }
                             }

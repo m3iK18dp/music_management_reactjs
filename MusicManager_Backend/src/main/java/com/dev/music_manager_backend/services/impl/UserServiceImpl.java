@@ -42,8 +42,21 @@ public class UserServiceImpl implements IUserService {
     @Autowired
     private final EntityManager entityManager;
 
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email).orElse(null);
+    private User extractUser(HttpServletRequest request) {
+        if (request.getHeader("Authorization") != null) {
+            if (!request.getHeader("Authorization").startsWith("Bearer "))
+                throw new RuntimeException("Token is invalid.");
+            JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
+            String token = request.getHeader("Authorization").substring(7);
+            return userRepository.findByEmail(jwtTokenUtil.extractUserName(token)).map(user -> {
+                if (jwtTokenUtil.isTokenExpired(token))
+                    throw new RuntimeException("Your token has expired, please re-enter to make a new token.");
+                if (!user.isStatus())
+                    throw new RuntimeException("The user of the above token has been disabled. Please use another user's token or contact the admin to activate the user.");
+                return user;
+            }).orElse(new User());
+        }
+        return new User();
     }
 
     @Override
@@ -66,6 +79,7 @@ public class UserServiceImpl implements IUserService {
         }
         user.setRoles(attachedRoles);
         user.setSongs(new ArrayList<>());
+        user.setPlayLists(new ArrayList<>());
         try {
             return new UserRequestDto(userRepository.save(user));
         } catch (Exception exception) {
@@ -90,6 +104,7 @@ public class UserServiceImpl implements IUserService {
                                     .status(user.isStatus())
                                     .roles(attachedRoles)
                                     .songs(new ArrayList<>())
+                                    .playLists(new ArrayList<>())
                                     .build()
                     )
             );
@@ -98,12 +113,7 @@ public class UserServiceImpl implements IUserService {
             throw new RuntimeException("Email already exists, please enter another email to continue.");
         }
     }
-
-    private User extractUser(HttpServletRequest request) {
-        if (request.getHeader("Authorization") != null)
-            return userRepository.findByEmail(new JwtTokenUtil().extractUserName(request.getHeader("Authorization").substring(7))).orElse(new User());
-        return new User();
-    }
+    
 
     @Override
     public UserRequestDto updateUser(Long id, UserRequestDto user, HttpServletRequest request) {
@@ -139,7 +149,8 @@ public class UserServiceImpl implements IUserService {
                                                         ? attachedRoles
                                                         : updateUser.getRoles()
                                         )
-                                        .songs(songRepository.findSongsByListSongIds(user.getSongIds()))
+                                        .songs(updateUser.getSongs())
+                                        .playLists(updateUser.getPlayLists())
                                         .lastUpdate(LocalDateTime.now())
                                         .build()
                         )

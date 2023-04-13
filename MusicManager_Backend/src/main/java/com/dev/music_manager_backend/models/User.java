@@ -57,7 +57,9 @@ public class User {
     @OneToMany(mappedBy = "owner")
     @JsonIgnoreProperties("owner")
     private List<Song> songs;
-
+    @OneToMany(mappedBy = "owner")
+    @JsonIgnoreProperties("owner")
+    private List<PlayList> playLists;
 
     @Override
     public boolean equals(Object o) {

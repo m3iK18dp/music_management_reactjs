@@ -1,11 +1,13 @@
 package com.dev.music_manager_backend.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Setter
@@ -45,6 +47,10 @@ public class Song {
     @JoinColumn(name = "OWNER_ID", referencedColumnName = "id")
     @JsonIgnoreProperties("songs")
     private User owner;
+    @ManyToMany(mappedBy = "songs")
+    @JsonBackReference
+    @ToString.Exclude
+    private List<PlayList> playLists;
 
     @Override
     public boolean equals(Object o) {

@@ -1,7 +1,6 @@
 package com.dev.music_manager_backend.DTO;
 
 import com.dev.music_manager_backend.models.Role;
-import com.dev.music_manager_backend.models.Song;
 import com.dev.music_manager_backend.models.User;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
@@ -21,7 +20,8 @@ public class UserRequestDto {
     private boolean status = true;
     private LocalDateTime lastUpdate;
     private List<Long> roleIds;
-    private List<Long> songIds;
+//    private List<Long> songIds;
+//    private List<Long> playlistIds;
 
     public UserRequestDto() {
     }
@@ -34,7 +34,8 @@ public class UserRequestDto {
         this.status = user.isStatus();
         this.lastUpdate = user.getLastUpdate();
         this.roleIds = user.getRoles().stream().map(Role::getId).collect(Collectors.toList());
-        this.songIds = user.getSongs().stream().map(Song::getId).collect(Collectors.toList());
+//        this.songIds = user.getSongs().stream().map(Song::getId).collect(Collectors.toList());
+//        this.playlistIds = user.getPlayLists().stream().map(PlayList::getId).collect(Collectors.toList());
     }
 
     public static Page<UserRequestDto> fromUsers(Page<User> users, Pageable pageable) {

@@ -21,7 +21,7 @@ public class Token {
     @Enumerated(EnumType.STRING)
     private TokenType tokenType;
     private boolean revoked;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne()
     @JoinColumn(name = "USER_ID", referencedColumnName = "id")
 //    @JsonManagedReference
     private User user;
