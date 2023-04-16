@@ -94,16 +94,16 @@ public class MyFileServiceImpl implements IStorageService {
     @Override
     public String updateFileToCloundinary(int type, String url, MultipartFile file) {
         log.info("Update File To Cloudinary: {}", file.getOriginalFilename());
-
         try {
             checkBindingForFile(type, file);
             String[] arrUrl = url.split("/");
+            String[] publicId = arrUrl[arrUrl.length - 1].split("\\.");
             return (String) cloudinary
                     .uploader()
                     .upload(
                             file.getBytes(),
                             ObjectUtils.asMap(
-                                    "public_id", arrUrl[arrUrl.length - 1],
+                                    "public_id", publicId[0],
                                     "folder", "MusicManager",
                                     "overwrite", true,
                                     "resource_type", "auto"
@@ -118,10 +118,11 @@ public class MyFileServiceImpl implements IStorageService {
     public Boolean deleteFileFromCloundinary(String url) {
         try {
             String[] arrUrl = url.split("/");
+            String[] publicId = arrUrl[arrUrl.length - 1].split("\\.");
             cloudinary
                     .uploader()
                     .destroy(
-                            arrUrl[arrUrl.length - 1],
+                            publicId[0],
                             ObjectUtils.asMap()
                     );
             return Boolean.TRUE;
@@ -137,8 +138,9 @@ public class MyFileServiceImpl implements IStorageService {
             cloudinary
                     .api()
                     .deleteResources(listSong.stream().map(song -> {
-                        String[] url = song.getUrl().split("/");
-                        return url[url.length - 1];
+                        String[] arrUrl = song.getUrl().split("/");
+                        String[] publicId = arrUrl[arrUrl.length - 1].split("\\.");
+                        return publicId[0];
                     }).collect(Collectors.toList()), ObjectUtils.emptyMap());
             return Boolean.TRUE;
         } catch (Exception exception) {

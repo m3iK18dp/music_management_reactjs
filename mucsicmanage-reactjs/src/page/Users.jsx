@@ -362,68 +362,83 @@ function Users() {
               <th className="column-">Actions</th>
             </tr>
           </thead>
-          <tbody>
-            {get("currentUsers").map((user) => (
-              <tr key={user.id}>
-                <td>{user.id}</td>
+          {get("currentUsers").length !== 0 && (
+            <tbody>
+              {get("currentUsers").map((user) => (
+                <tr key={user.id}>
+                  <td>{user.id}</td>
 
-                <td style={{ textAlign: "left" }}>{user.firstName}</td>
-                <td style={{ textAlign: "left" }}>{user.lastName}</td>
-                <td style={{ textAlign: "left" }}>{user.email}</td>
-                <td>
-                  {covertArrayObjectToString(
-                    search.roles.filter((role) =>
-                      user.roleIds.includes(role.id)
-                    )
-                  )}
-                </td>
-                <td>
-                  {!user.status ? (
+                  <td style={{ textAlign: "left" }}>{user.firstName}</td>
+                  <td style={{ textAlign: "left" }}>{user.lastName}</td>
+                  <td style={{ textAlign: "left" }}>{user.email}</td>
+                  <td>
+                    {covertArrayObjectToString(
+                      search.roles.filter((role) =>
+                        user.roleIds.includes(role.id)
+                      )
+                    )}
+                  </td>
+                  <td>
+                    {!user.status ? (
+                      <CustomButton
+                        field={user.id}
+                        IconButton={RiUserUnfollowLine}
+                        size={30}
+                        func={changeStatus}
+                        title={"Disable User"}
+                        id={`td-status-disable-${user.id}`}
+                        disable={user.id === 1}
+                      />
+                    ) : (
+                      <CustomButton
+                        field={user.id}
+                        IconButton={RiUserFollowLine}
+                        size={30}
+                        func={changeStatus}
+                        title={"Enable User"}
+                        id={`td-status-enable-${user.id}`}
+                        disable={user.id === 1}
+                      />
+                    )}
+                  </td>
+                  <td>
                     <CustomButton
                       field={user.id}
-                      IconButton={RiUserUnfollowLine}
+                      IconButton={MdLockReset}
                       size={30}
-                      func={changeStatus}
-                      title={"Disable User"}
-                      id={`td-status-disable-${user.id}`}
+                      func={handleResetPassword}
+                      title={"Reset Password for User"}
+                      id={`reset-password-${user.id}`}
                       disable={user.id === 1}
                     />
-                  ) : (
                     <CustomButton
                       field={user.id}
-                      IconButton={RiUserFollowLine}
+                      IconButton={RiUserSettingsLine}
                       size={30}
-                      func={changeStatus}
-                      title={"Enable User"}
-                      id={`td-status-enable-${user.id}`}
+                      func={handleUpdateUser}
+                      title={"Edit User"}
+                      id={`edit-${user.id}`}
                       disable={user.id === 1}
                     />
-                  )}
-                </td>
-                <td>
-                  <CustomButton
-                    field={user.id}
-                    IconButton={MdLockReset}
-                    size={30}
-                    func={handleResetPassword}
-                    title={"Reset Password for User"}
-                    id={`reset-password-${user.id}`}
-                    disable={user.id === 1}
-                  />
-                  <CustomButton
-                    field={user.id}
-                    IconButton={RiUserSettingsLine}
-                    size={30}
-                    func={handleUpdateUser}
-                    title={"Edit User"}
-                    id={`edit-${user.id}`}
-                    disable={user.id === 1}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          )}
         </Table>
+        {get("currentUsers").length === 0 && (
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignContent: "center",
+              color: "white",
+            }}
+          >
+            Empty search user list
+          </div>
+        )}
       </Container>
       <div style={{ visibility: "hidden", height: 50 }} />
       <Row>

@@ -31,7 +31,7 @@ function MyAccount() {
     status: 1,
     roleIds: [],
   });
-  const [playlists, setPlaylists] = useState([]);
+
   const [readOnly, setReadOnly] = useState(true);
   const [changePassword, setChangePassword] = useState(false);
   const [isFirst, setIsFirst] = useState(true);
@@ -47,9 +47,6 @@ function MyAccount() {
       userService
         .getRoles({ _user_id: data.data.content[0].id })
         .then((dataR) => setRoles(dataR.data.content));
-      playlistService
-        .get({ _owner_email: sessionStorage.getItem("username") })
-        .then((data) => setPlaylists(data.data.content));
     });
   }, [navigate, username]);
   useEffect(() => {
@@ -174,34 +171,6 @@ function MyAccount() {
       <div className="background-container" />
       <div className=" background-container-opacity-low" />
       <div style={{ position: "relative", width: "100%", display: "flex" }}>
-        <Container
-          style={{
-            width: "15%",
-            maxWidth: 180,
-            minWidth: 100,
-            margin: "50px 0 0 20px",
-          }}
-        >
-          <div style={{ marginTop: 30 }}>
-            <h3
-              style={{
-                fontWeight: "bold",
-                fontStyle: "italic",
-                color: "rgba(255,255,255,0.7)",
-              }}
-            >
-              My Play List
-            </h3>
-            {playlists.map((playlist) => (
-              <div
-                key={playlist.id}
-                onClick={() => navigate(`/my_playlist/${playlist.id}`)}
-              >
-                <h5>{playlist.name}</h5>
-              </div>
-            ))}
-          </div>
-        </Container>
         <Container>
           <Row
             className="col-md-8 offset-md-2"

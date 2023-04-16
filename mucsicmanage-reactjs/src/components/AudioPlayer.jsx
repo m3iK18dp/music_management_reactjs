@@ -218,9 +218,10 @@ function MusicPlayer({
               }
               disable={
                 sessionStorage.getItem("urlPlayingList") ===
-                window.location.search
+                window.location.pathname + window.location.search
               }
               title="Direct Playing List"
+              id="playings-list"
             />
           )}
         </Col>

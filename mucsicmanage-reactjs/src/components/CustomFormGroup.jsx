@@ -10,7 +10,7 @@ const CustomFormGroup = forwardRef(
       placeholder = "",
       label,
       prop = controlId,
-      value = null,
+      value = undefined,
       warning = null,
       formControlStyle,
       type = "text",
@@ -36,7 +36,7 @@ const CustomFormGroup = forwardRef(
           placeholder={placeholder}
           required
           ref={ref}
-          value={value}
+          {...(value !== null ? { value: value } : {})} // <-- bổ sung điều kiện kiểm tra value
           readOnly={readonly}
           onKeyDown={(event) => {
             if (event.key === "Enter") {
