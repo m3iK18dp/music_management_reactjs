@@ -6,18 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="35eb1f67-c063-4eb4-9195-99fe53a5385b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/services/impl/MyFileServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/src/main/java/com/dev/music_manager_backend/services/impl/MyFileServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/controllers/PlaylistController.class" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/controllers/PlaylistController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/services/IPlaylistService.class" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/services/IPlaylistService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/services/impl/MyFileServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/services/impl/MyFileServiceImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/services/impl/PlayListServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/MusicManager_Backend/target/classes/com/dev/music_manager_backend/services/impl/PlayListServiceImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/AudioPlayer.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/AudioPlayer.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/CustomFormGroup.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/CustomFormGroup.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/CustomInput.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/CustomInput.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/NavbarComponent.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/NavbarComponent.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/CustomContextMenu.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/MyAccount.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/MyAccount.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/CustomContextMenu.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/CustomContextMenu.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/MySelect.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/components/MySelect.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/css/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/css/index.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/Songs.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/Songs.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/Users.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/mucsicmanage-reactjs/src/page/Users.jsx" afterDir="false" />
     </list>

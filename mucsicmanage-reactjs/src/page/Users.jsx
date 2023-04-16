@@ -176,7 +176,7 @@ function Users() {
     setExpandFilter(!expandFilter);
   };
   return (
-    <div style={{ overflow: "hidden", width: "90%" }}>
+    <div style={{ width: "100%", height: "100%" }}>
       <NavbarComponent />
       <div className="background-container " />
       <div className=" background-container-opacity-low" />
@@ -199,7 +199,6 @@ function Users() {
       >
         <Form
           style={{
-            overflow: "hidden",
             maxWidth: "1200px",
             margin: "0 auto",
             padding: 5,
@@ -316,15 +315,14 @@ function Users() {
       </Container>
       <Container
         style={{
-          marginTop: 260,
-          overflow: "hidden",
-          overflowX: "scroll",
+          marginTop: 250,
+          overflowX: "auto",
         }}
-        className={` filter-container ${
+        className={`filter-container ${
           expandFilter ? "expanded-no-admin" : ""
         }`}
       >
-        <Table striped bordered>
+        <Table style={{}} striped bordered>
           <thead className="table-dark">
             <tr>
               {[

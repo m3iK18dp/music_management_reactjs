@@ -1,6 +1,6 @@
 import "../css/songs.css";
 import React, { useEffect, useState, useRef } from "react";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useNavigate, useLocation, useParams, Link } from "react-router-dom";
 import { Container, Row, Col, Form, Table } from "react-bootstrap";
 import { AiOutlineEdit, AiOutlineDelete } from "react-icons/ai";
 import {
@@ -282,7 +282,7 @@ function Songs() {
   };
   return (
     <div
-      style={{ overflow: "hidden", width: "100%" }}
+      style={{ width: "100%", height: "100%" }}
       onClick={handleCloseContextMenu}
     >
       {/* /////////////////////////////////////// */}
@@ -290,15 +290,29 @@ function Songs() {
       <div className="background-container" />
       <div className=" background-container-opacity-low" />
       <NavbarComponent />
-      <div style={{ position: "relative", width: "100%", display: "flex" }}>
+      <div
+        style={{
+          position: "relative",
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          alignContent: "flex-start",
+        }}
+      >
         <Container
           style={{
+            // display: "flex",
+            backgroundColor: "rgba(255,255,255,0.2)",
             width: "15%",
+            height: "100%",
             maxWidth: 180,
-            minWidth: 100,
-            margin: "50px 0 0 20px",
-            marginTop: isAdmin ? 370 : 320,
-            overflow: "hidden",
+            minWidth: 120,
+            margin: 0,
+            // marginTop: isAdmin ? 360 : 310,
+            paddingTop: isAdmin ? 360 : 310,
+            // marginBottom: 50,
+            // overflow: "auto",
+            // justifyContent: "center",
           }}
           className={`filter-container ${
             expandFilter
@@ -308,32 +322,60 @@ function Songs() {
               : ""
           }`}
         >
-          <div style={{ overflow: "hidden", overflowY: "auto" }}>
+          <div
+            style={{
+              overflow: "auto",
+            }}
+          >
+            <Link
+              to={`/songs${window.location.search}`}
+              style={{ color: "white", textDecoration: "none" }}
+            >
+              <h3
+                style={{
+                  margin: 0,
+                  borderBottom: "1px solid rgba(255,255,255,1)",
+                  marginBottom: 25,
+                  paddingTop: 20,
+                }}
+              >
+                All Songs
+              </h3>
+            </Link>
             <h3
               style={{
                 fontWeight: "bold",
                 fontStyle: "italic",
                 color: "rgba(255,255,255,0.7)",
+                borderBottom: "1px solid rgba(255,255,255,1)",
+                marginBottom: 25,
+                paddingTop: 20,
               }}
             >
               My Play List
             </h3>
             {playlists.map((playlist) => (
-              <div key={"playlist-" + playlist.id}>
-                <div
-                  onClick={() =>
-                    navigate(
-                      `/my_playlist/${playlist.id}${window.location.search}`
-                    )
-                  }
+              <div
+                key={"playlist-" + playlist.id}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  borderBottom: "1px solid rgba(255,255,255,0.4)",
+                  marginBottom: 15,
+                }}
+              >
+                <Link
+                  to={`/my_playlist/${playlist.id}${window.location.search}`}
+                  style={{ color: "white", textDecoration: "none" }}
                 >
-                  <h5>{playlist.name}</h5>
-                </div>
+                  <h5 style={{ margin: 0 }}>{playlist.name}</h5>
+                </Link>
                 <CustomButton
                   field={playlist.id}
                   IconButton={AiOutlineDelete}
                   func={handleDeletePlaylist}
-                  size={15}
+                  size={25}
                   id={`delete-playlist-${playlist.id}`}
                 />
               </div>
@@ -351,7 +393,6 @@ function Songs() {
             padding: "5px 30px",
             width: "100%",
             minWidth: 400,
-            overflow: "hidden",
           }}
           className={`background-color filter-container ${
             expandFilter
@@ -363,7 +404,6 @@ function Songs() {
         >
           <Form
             style={{
-              overflow: "hidden",
               maxWidth: "1200px",
               margin: "0 auto",
               padding: 5,
@@ -491,7 +531,8 @@ function Songs() {
         <Container
           style={{
             marginTop: isAdmin ? 350 : 300,
-            overflow: "hidden",
+            // marginBottom: 50,
+            // overflow: "auto",
           }}
           className={`filter-container ${
             expandFilter
@@ -641,9 +682,10 @@ function Songs() {
               Empty search song list
             </div>
           )}
-        </Container>
+        </Container>{" "}
+        <div style={{ visibility: "hidden", height: 100 }} />
       </div>
-      <div style={{ visibility: "hidden", height: 50 }} />
+
       <Row>
         <PaginationComponent
           currentPage={get("page")}
