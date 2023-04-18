@@ -109,11 +109,15 @@ function UploadUser() {
 			<div className='background-container' />
 			<div className=' background-container-opacity-low' />
 
-			<Container>
+			<Container
+				style={{
+					margin: '50px auto',
+				}}
+			>
 				<Row
 					className='col-md-8 offset-md-2'
 					style={{
-						margin: '50px auto',
+						margin: '100px auto',
 						border: '3px solid purple',
 						width: '60%',
 						minWidth: 400,
