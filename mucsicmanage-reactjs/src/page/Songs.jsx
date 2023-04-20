@@ -1,8 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import '../css/songs.css';
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation, useParams, Link } from 'react-router-dom';
 import { Container, Row, Col, Form, Table } from 'react-bootstrap';
-import { AiOutlineEdit, AiOutlineDelete } from 'react-icons/ai';
+import { BiLeftArrow } from 'react-icons/bi';
 import {
 	BsSearchHeart,
 	BsSortNumericUpAlt,
@@ -10,10 +11,10 @@ import {
 	BsSortNumericDownAlt,
 	BsSortAlphaDownAlt,
 	BsArrowsExpand,
+	BsFileEarmarkMusic,
+	BsMusicNoteList,
 } from 'react-icons/bs';
-// import { AiOutlinePlayCircle, AiOutlinePauseCircle } from 'react-icons/ai';
-import { RiHeartAddFill } from 'react-icons/ri';
-import { MdCancel } from 'react-icons/md';
+import { MdCancel, MdOutlineCancel } from 'react-icons/md';
 import { MdOutlineSearchOff } from 'react-icons/md';
 import PaginationComponent from '../components/PaginationComponent';
 import NavbarComponent from '../components/NavbarComponent';
@@ -26,6 +27,7 @@ import AudioPlayer from '../components/AudioPlayer';
 import { checkToken } from '../services/CheckToken';
 import CustomContextMenu from '../components/contextMenu/CustomContextMenu';
 import playlistService from '../services/PlayListService';
+import { IoMdAdd } from 'react-icons/io';
 function Songs() {
 	// 	{
 	// 	id = '',
@@ -42,13 +44,13 @@ function Songs() {
 	const prams = useParams();
 	const alertRevoked =
 		'Your account has been revoked, login with another account or contact Administrator to unlock your account to use more features.';
-	const isLoggedIn =
-		localStorage.getItem('token') &&
-		!JSON.parse(sessionStorage.getItem('isRevoked'));
+	const isLoggedIn = localStorage.getItem('token');
+	// &&
+	// !JSON.parse(sessionStorage.getItem('isRevoked'));
 	const roles = sessionStorage.getItem('roles');
 	const isAdmin = roles !== null ? roles.includes('ADMIN') : false;
-
 	const location = useLocation();
+
 	const [search, setSearch] = useState({
 		id: '',
 		title: '',
@@ -84,12 +86,15 @@ function Songs() {
 	};
 	useEffect(() => {
 		checkToken(navigate, 0);
-		const searchParams = new URLSearchParams(window.location.search);
+		const searchParams = new URLSearchParams(location.search);
 		const params = {};
 		if (location.pathname === '/my_songs')
 			params._owner_email = sessionStorage.getItem('username');
-		if (location.pathname.includes('my_playlist'))
+		if (location.pathname.includes('my_playlist')) {
+			if (JSON.parse(sessionStorage.getItem('isRevoked')))
+				navigate('/error/403');
 			params._playlist_id = prams.playlist_id;
+		}
 		[
 			{ field: 'id', default: '' },
 			{ field: 'title', default: '' },
@@ -116,16 +121,17 @@ function Songs() {
 		songService.get(params, navigate).then((data) => {
 			setTotalPages(data.data.totalPages);
 			setCurrentSongs(data.data.content);
-			playlistService
-				.get({ _owner_email: sessionStorage.getItem('username') })
-				.then((data) => setPlaylists(data.data.content));
+			if (isLoggedIn)
+				playlistService
+					.get({ _owner_email: sessionStorage.getItem('username') })
+					.then((data) => setPlaylists(data.data.content));
 			if (currentSongPlaying === -1) {
 				setCurrentSongPlaying(
 					data.data.content.length !== 0 ? data.data.content[0].id : -1,
 				);
 				sessionStorage.setItem(
 					'urlPlayingList',
-					window.location.pathname + window.location.search,
+					location.pathname + location.search,
 				);
 				sessionStorage.setItem(
 					'currentSongsPlaying',
@@ -162,7 +168,7 @@ function Songs() {
 		sessionStorage.setItem('currentSongsPlaying', JSON.stringify(currentSongs));
 		sessionStorage.setItem(
 			'urlPlayingList',
-			window.location.pathname + window.location.search,
+			location.pathname + location.search,
 		);
 		if (currentSongPlaying !== id) {
 			setIsPlaying(true);
@@ -257,6 +263,7 @@ function Songs() {
 	};
 	/////////////////
 	const [contextMenuPosition, setContextMenuPosition] = useState({
+		id: -1,
 		visible: false,
 		playlists: [],
 	});
@@ -270,7 +277,10 @@ function Songs() {
 				: { ...contextMenuPosition, visible: false },
 		);
 	}, [playlists]);
-	const handleContextMenu = (event, id) => {
+	const handleContextMenu = (event, id, type = 'song') => {
+		if (id !== -1 || (id === -1 && type.includes('playlist'))) {
+			event.stopPropagation();
+		}
 		event.preventDefault();
 		setContextMenuPosition({
 			x: event.pageX,
@@ -279,13 +289,20 @@ function Songs() {
 			setPlaylists: setPlaylists,
 			id: id,
 			navigate: navigate,
+			handleAddPlaylist: handleAddPlaylist,
+			handleUpdatePlaylist: handleUpdatePlaylist,
+			handleDeletePlaylist: handleDeletePlaylist,
 			handlePlaySong: handlePlaySong,
 			handleNewSong: handleNewSong,
 			handleUpdateSong: handleUpdateSong,
 			handleDeleteSong: handleDeleteSong,
+			addSongToPlaylist: addSongToPlaylist,
+			deleteSongInPlaylist: deleteSongInPlaylist,
 			isLoggedIn: isLoggedIn,
 			isAdmin: isAdmin,
 			location: location,
+			prams: prams,
+			type: type,
 			visible: true,
 		});
 	};
@@ -296,17 +313,87 @@ function Songs() {
 			playlists: [],
 		});
 	};
-	const handleDeletePlaylist = (id) => {
-		playlistService.deletePlaylist(id, navigate).then((res) => {
-			if (res.status === 'ok')
-				setPlaylists(playlists.filter((playlist) => playlist.id !== id));
-			else alert('Delete playlist failed.');
+	const [playlist, setPlaylist] = useState({ name: '' });
+
+	const setPl = (prop, value) => {
+		setPlaylist({ ...playlist, [prop]: value });
+	};
+	const getPl = (field) => {
+		return playlist[field];
+	};
+	const [showFormAddPlaylist, setShowFormAddPlaylist] = useState(false);
+	const handleAddPlaylist = () => {
+		if (JSON.parse(sessionStorage.getItem('isRevoked'))) {
+			alert(alertRevoked);
+		} else setShowFormAddPlaylist(!showFormAddPlaylist);
+	};
+	const addPlaylist = () => {
+		playlistService.insertPlaylist(playlist, navigate).then((res) => {
+			if (res.status === 'ok') {
+				setPlaylists([...playlists, res.data]);
+				handleAddPlaylist();
+				setPlaylist({ name: '' });
+				handleAddPlaylist();
+			} else alert(res.message);
 		});
+	};
+	const [showUpdatePlaylistFrom, setShowUpdatePlaylistFrom] = useState(-1);
+	const handleUpdatePlaylist = (id) => {
+		if (JSON.parse(sessionStorage.getItem('isRevoked'))) {
+			alert(alertRevoked);
+		} else {
+			if (id !== -1) setShowUpdatePlaylistFrom(id);
+			else setShowUpdatePlaylistFrom(-1);
+		}
+	};
+	const updatePlaylist = (id, playlist, navigate) => {
+		playlistService.updatePlayList(id, playlist, navigate).then((res) => {
+			if (res.status === 'ok') {
+				playlists.forEach((playlist) => {
+					if (playlist.id === id) playlist.name = res.data.name;
+				});
+				setPlaylists([...playlists]);
+				handleUpdatePlaylist();
+			} else alert(res.message);
+		});
+	};
+	const handleDeletePlaylist = (id, navigate) => {
+		if (JSON.parse(sessionStorage.getItem('isRevoked'))) {
+			alert(alertRevoked);
+		} else if (window.confirm('Do you want to delete this playlist?')) {
+			playlistService.deletePlaylist(id, navigate).then((res) => {
+				if (res.status === 'ok') {
+					setPlaylists(playlists.filter((playlist) => playlist.id !== id));
+					if (parseInt(prams.playlist_id) === id)
+						navigate('/songs' + location.search);
+				} else alert(res.message);
+			});
+		}
+	};
+	const addSongToPlaylist = (playlistId, id) => {
+		playlistService.addSongToPlayList(playlistId, id, navigate).then((res) => {
+			if (res.status === 'ok') {
+				// setPlaylists([...playlists, res.data]);
+				alert('Add song to playlist success.');
+			} else alert(res.message);
+		});
+	};
+	const deleteSongInPlaylist = (playlistId, id) => {
+		playlistService
+			.deleteSongInPlaylist(playlistId, id, navigate)
+			.then((res) => {
+				if (res.status === 'ok') {
+					// setPlaylists([...playlists, res.data]);
+					setCurrentSongs(currentSongs.filter((song) => song.id !== id));
+					alert('Delete song in this playlist success.');
+				} else alert(res.message);
+			});
 	};
 	return (
 		<div
 			style={{ width: '100%', height: '100%' }}
 			onClick={handleCloseContextMenu}
+			onContextMenu={(event) => handleContextMenu(event, -1)}
 		>
 			{/* /////////////////////////////////////// */}
 			{contextMenuPosition.visible && (
@@ -472,175 +559,366 @@ function Songs() {
 					alignContent: 'flex-start',
 				}}
 			>
-				<Container
-					style={{
-						display: 'block',
-						position: 'fixed',
-						backgroundColor: 'rgba(255,255,255,0.2)',
-						width: '20%',
-						// height: 'auto',
-						maxWidth: 180,
-						minWidth: 120,
-						margin: 0,
-						top: isAdmin ? 360 : 310,
-						height: `calc(100% - ${isAdmin ? 410 : 360}px)`,
-						// paddingTop: isAdmin ? 360 : 310,
-						// marginBottom: 50,
-						overflow: 'auto',
-						// justifyContent: "center",
-					}}
-					className={`filter-container ${
-						expandFilter
-							? isAdmin
-								? 'expanded-no-admin'
-								: 'expanded-admin'
-							: ''
-					}`}
-				>
-					{/* <div style={{ height: isAdmin ? 360 : 310 }}></div> */}
-					<div>
-						<Link
-							to={`/songs${window.location.search}`}
-							style={{ color: 'white', textDecoration: 'none' }}
-						>
-							<h3
-								className='neon'
-								style={{
-									margin: 0,
-									borderBottom: '1px solid rgba(255,255,255,1)',
-									marginBottom: 25,
-									paddingTop: 20,
-								}}
-							>
-								All Songs
-							</h3>
-						</Link>
-						<h4
-							style={{
-								fontWeight: 'bold',
-								fontStyle: 'italic',
-								color: 'rgba(255,255,255,0.7)',
-								borderBottom: '1px solid rgba(255,255,255,1)',
-								marginBottom: 25,
-								paddingTop: 20,
+				{isLoggedIn && (
+					<>
+						<Container
+							onContextMenu={(event) => {
+								handleContextMenu(event, -1, 'playlist');
 							}}
-						>
-							My Play List
-						</h4>
-						{playlists.map((playlist) => (
-							<div
-								key={'playlist-' + playlist.id}
-								style={{
-									display: 'flex',
-									alignItems: 'center',
-									justifyContent: 'space-between',
-									// borderBottom: '1px solid rgba(255,255,255,0.4)',
-									marginBottom: 15,
-								}}
-							>
-								<Link
-									to={`/my_playlist/${playlist.id}${window.location.search}`}
-									style={{ color: 'white', textDecoration: 'none' }}
-								>
-									<h6 style={{ margin: 0 }}>{playlist.name}</h6>
-								</Link>
-								<CustomButton
-									field={playlist.id}
-									IconButton={AiOutlineDelete}
-									func={handleDeletePlaylist}
-									size={25}
-									id={`delete-playlist-${playlist.id}`}
-								/>
-							</div>
-						))}
-					</div>
-				</Container>
-				<Container
-					style={{
-						visibility: 'hidden',
-						display: 'block',
-						backgroundColor: 'rgba(255,255,255,0.2)',
-						width: '20%',
-						height: '100%',
-						maxWidth: 180,
-						minWidth: 120,
-						margin: 0,
-						marginTop: isAdmin ? 360 : 310,
-						// paddingTop: isAdmin ? 360 : 310,
-						// marginBottom: 50,
-						overflow: 'auto',
-						// justifyContent: "center",
-					}}
-					className={`filter-container ${
-						expandFilter
-							? isAdmin
-								? 'expanded-no-admin'
-								: 'expanded-admin'
-							: ''
-					}`}
-				>
-					{/* <div style={{ height: isAdmin ? 360 : 310 }}></div> */}
-					<div>
-						<Link
-							to={`/songs${window.location.search}`}
-							style={{ color: 'white', textDecoration: 'none' }}
-						>
-							<h3
-								style={{
-									margin: 0,
-									borderBottom: '1px solid rgba(255,255,255,1)',
-									marginBottom: 25,
-									paddingTop: 20,
-								}}
-							>
-								All Songs
-							</h3>
-						</Link>
-						<h3
 							style={{
-								fontWeight: 'bold',
-								fontStyle: 'italic',
-								color: 'rgba(255,255,255,0.7)',
-								borderBottom: '1px solid rgba(255,255,255,1)',
-								marginBottom: 25,
-								paddingTop: 20,
+								display: 'block',
+								position: 'fixed',
+								backgroundColor: 'rgba(255,255,255,0.2)',
+								width: '15%',
+								// height: 'auto',
+								maxWidth: 150,
+								minWidth: 120,
+								margin: 0,
+								top: isAdmin ? 360 : 310,
+								height: `calc(100% - ${
+									isAdmin
+										? 410 - (expandFilter ? 155 : 0)
+										: 360 - (expandFilter ? 130 : 0)
+								}px)`,
+								// height: '100%',
+								// paddingTop: isAdmin ? 360 : 310,
+								// marginBottom: 50,
+								overflow: 'auto',
+								padding: 0,
+								// justifyContent: "center",
 							}}
+							className={`filter-container ${
+								expandFilter
+									? isAdmin
+										? 'expanded-no-admin'
+										: 'expanded-admin'
+									: ''
+							}`}
 						>
-							My Play List
-						</h3>
-						{playlists.map((playlist) => (
-							<div
-								key={'playlist-' + playlist.id}
-								style={{
-									display: 'flex',
-									alignItems: 'center',
-									justifyContent: 'space-between',
-									borderBottom: '1px solid rgba(255,255,255,0.4)',
-									marginBottom: 15,
-								}}
-							>
+							<div style={{ padding: 10 }}>
 								<Link
-									to={`/my_playlist/${playlist.id}${window.location.search}`}
-									style={{ color: 'white', textDecoration: 'none' }}
+									to={`/songs${location.search}`}
+									className='flex neon'
+									style={{
+										color: 'white',
+										textDecoration: 'none',
+										height: '40px',
+									}}
 								>
-									<h5 style={{ margin: 0 }}>{playlist.name}</h5>
+									<BsMusicNoteList size={20}></BsMusicNoteList>
+									<h7
+										style={{
+											margin: '20px 0 20px 0',
+											padding: 0,
+											display: 'inline',
+										}}
+									>
+										All Songs
+									</h7>
 								</Link>
-								<CustomButton
-									field={playlist.id}
-									IconButton={AiOutlineDelete}
-									func={handleDeletePlaylist}
-									size={25}
-									id={`delete-playlist-${playlist.id}`}
-								/>
+								<Link
+									to={`/my_songs${location.search}`}
+									className='flex neon'
+									style={{
+										color: 'white',
+										textDecoration: 'none',
+										height: '40px',
+									}}
+								>
+									<BsFileEarmarkMusic size={20}></BsFileEarmarkMusic>
+									<h7
+										style={{
+											margin: '20px 0 20px 0',
+											padding: 0,
+											display: 'inline',
+										}}
+									>
+										My Songs
+									</h7>
+								</Link>
 							</div>
-						))}
-					</div>
-				</Container>
+							<div
+								style={{ borderTop: '4px dashed rgba(255,255,255,0.6)' }}
+							></div>
+							<div className='playlist-context' style={{ padding: 10 }}>
+								<div className='flex neon'>
+									<h7
+										style={{
+											fontWeight: 'bold',
+											fontStyle: 'italic',
+											color: 'rgba(255,255,255,0.7)',
+											marginBottom: 10,
+										}}
+									>
+										My Play List
+									</h7>
+								</div>
+
+								{showFormAddPlaylist && (
+									<>
+										<input
+											onClick={(event) => event.stopPropagation()}
+											onChange={(event) => {
+												// event.stopPropagation();
+												setPl('name', event.target.value);
+											}}
+											style={{ width: '100%', fontSize: '12px' }}
+											value={getPl('name')}
+											onKeyDown={(event) => {
+												console.log(event.key);
+												if (event.key === 'Enter') {
+													event.preventDefault();
+													addPlaylist();
+												}
+												if (event.key === 'Escape') {
+													event.preventDefault();
+													setPlaylist({ name: '' });
+													handleAddPlaylist();
+												}
+											}}
+											placeholder='Enter name playlist'
+										></input>
+										<div className='flex'>
+											<CustomButton
+												IconButton={IoMdAdd}
+												func={addPlaylist}
+												size={20}
+												id='esc-add-playlist'
+											/>
+											<CustomButton
+												IconButton={MdOutlineCancel}
+												func={() => {
+													setPlaylist({ name: '' });
+													handleAddPlaylist();
+												}}
+												size={20}
+												id='add-playlist'
+											/>
+										</div>
+									</>
+								)}
+								{playlists.map((playlist) =>
+									showUpdatePlaylistFrom === playlist.id ? (
+										<div key={'playlist-' + playlist.id}>
+											<input
+												onClick={(event) => event.stopPropagation()}
+												style={{ width: '100%', fontSize: '12px' }}
+												defaultValue={playlist.name}
+												onKeyDown={(event) => {
+													console.log(event.key);
+													if (event.key === 'Enter') {
+														event.preventDefault();
+														updatePlaylist(
+															playlist.id,
+															{ name: event.target.value },
+															navigate,
+														);
+													}
+													if (event.key === 'Escape') {
+														event.preventDefault();
+														setPlaylist({ name: '' });
+														handleUpdatePlaylist();
+													}
+												}}
+												placeholder='Enter name playlist'
+											></input>
+										</div>
+									) : (
+										<div
+											onClick={() => {
+												if (JSON.parse(sessionStorage.getItem('isRevoked'))) {
+													alert(alertRevoked);
+												} else if (parseInt(prams.playlist_id) !== playlist.id)
+													navigate(
+														`/my_playlist/${playlist.id}${location.search}`,
+													);
+											}}
+											key={'playlist-' + playlist.id}
+											className='context-menu-row flex'
+											onContextMenu={(event) =>
+												handleContextMenu(event, playlist.id, 'playlist')
+											}
+											style={
+												parseInt(prams.playlist_id) === playlist.id
+													? {
+															backgroundColor: 'rgba(255, 255, 255, 0.3)',
+													  }
+													: {}
+											}
+										>
+											<h6
+												style={
+													parseInt(prams.playlist_id) === playlist.id
+														? {
+																color: 'rgba(0, 0, 0, 0.6)',
+														  }
+														: { color: 'white' }
+												}
+											>
+												{playlist.name}
+											</h6>
+										</div>
+									),
+								)}
+							</div>
+						</Container>
+						<Container
+							style={{
+								visibility: 'hidden',
+								display: 'block',
+								backgroundColor: 'rgba(255,255,255,0.2)',
+								width: '15%',
+								maxWidth: 150,
+								minWidth: 120,
+								margin: 0,
+								top: isAdmin ? 360 : 310,
+								height: `calc(100% - ${
+									isAdmin
+										? 410 - (expandFilter ? 155 : 0)
+										: 360 - (expandFilter ? 130 : 0)
+								}px)`,
+								overflow: 'auto',
+								padding: 0,
+							}}
+							className={`filter-container ${
+								expandFilter
+									? isAdmin
+										? 'expanded-no-admin'
+										: 'expanded-admin'
+									: ''
+							}`}
+						>
+							<div className='playlist-context'>
+								<div>
+									<Link
+										to={`/songs${location.search}`}
+										className='flex neon'
+										style={{
+											color: 'white',
+											textDecoration: 'none',
+										}}
+									>
+										<BiLeftArrow size={25}></BiLeftArrow>
+										<h5
+											style={{
+												borderBottom: '1px solid rgba(255,255,255,1)',
+												margin: '20px 0 20px 0',
+												padding: 0,
+												display: 'inline',
+											}}
+										>
+											All Songs
+										</h5>
+									</Link>
+								</div>
+								<h5
+									style={{
+										fontWeight: 'bold',
+										fontStyle: 'italic',
+										color: 'rgba(255,255,255,0.7)',
+										borderBottom: '1px solid rgba(255,255,255,0.6)',
+										marginTop: 10,
+									}}
+								>
+									My Play List
+								</h5>
+								{showFormAddPlaylist && (
+									<>
+										<input
+											onClick={(event) => event.stopPropagation()}
+											onChange={(event) => {
+												// event.stopPropagation();
+												setPl('name', event.target.value);
+											}}
+											style={{ width: '100%', fontSize: '12px' }}
+											value={getPl('name')}
+											onKeyDown={(event) => {
+												console.log(event.key);
+												if (event.key === 'Enter') {
+													event.preventDefault();
+													addPlaylist();
+												}
+												if (event.key === 'Escape') {
+													event.preventDefault();
+													setPlaylist({ name: '' });
+													handleAddPlaylist();
+												}
+											}}
+											placeholder='Enter name playlist'
+										></input>
+										<div className='flex'>
+											<CustomButton
+												IconButton={IoMdAdd}
+												func={addPlaylist}
+												size={20}
+												id='esc-add-playlist'
+											/>
+											<CustomButton
+												IconButton={MdOutlineCancel}
+												func={() => {
+													setPlaylist({ name: '' });
+													handleAddPlaylist();
+												}}
+												size={20}
+												id='add-playlist'
+											/>
+										</div>
+									</>
+								)}
+								{playlists.map((playlist) =>
+									showUpdatePlaylistFrom === playlist.id ? (
+										<div key={'playlist-' + playlist.id}>
+											<input
+												onClick={(event) => event.stopPropagation()}
+												style={{ width: '100%', fontSize: '12px' }}
+												defaultValue={playlist.name}
+												onKeyDown={(event) => {
+													console.log(event.key);
+													if (event.key === 'Enter') {
+														event.preventDefault();
+														updatePlaylist(
+															playlist.id,
+															{ name: event.target.value },
+															navigate,
+														);
+													}
+													if (event.key === 'Escape') {
+														event.preventDefault();
+														setPlaylist({ name: '' });
+														handleUpdatePlaylist();
+													}
+												}}
+												placeholder='Enter name playlist'
+											></input>
+										</div>
+									) : (
+										<div
+											key={'playlist-' + playlist.id}
+											className='context-menu-row flex'
+											onContextMenu={(event) =>
+												handleContextMenu(event, playlist.id, 'playlist')
+											}
+										>
+											<Link
+												to={`/my_playlist/${playlist.id}${location.search}`}
+												style={{ color: 'white', textDecoration: 'none' }}
+											>
+												<h6>{playlist.name}</h6>
+											</Link>
+										</div>
+									),
+								)}
+							</div>
+						</Container>
+					</>
+				)}
 				<Container
+					// onContextMenu={(event) => handleContextMenu(event, -1, 'song')}
 					style={{
 						marginTop: isAdmin ? 350 : 300,
 						width: '85%',
 						marginLeft: 'auto',
+
 						// marginBottom: 50,
 						// overflow: "auto",
 					}}
@@ -716,7 +994,7 @@ function Songs() {
 										style={{
 											backgroundColor:
 												currentSongPlaying === song.id &&
-												window.location.pathname + window.location.search ===
+												location.pathname + location.search ===
 													sessionStorage.getItem('urlPlayingList')
 													? 'rgba(255,255,255,0.5)'
 													: 'transparent',
@@ -734,7 +1012,7 @@ function Songs() {
 												IconButton={
 													currentSongPlaying !== song.id ||
 													!isPlaying ||
-													window.location.pathname + window.location.search !==
+													location.pathname + location.search !==
 														sessionStorage.getItem('urlPlayingList')
 														? AiOutlinePlayCircle
 														: AiOutlinePauseCircle
@@ -744,7 +1022,7 @@ function Songs() {
 												title={
 													currentSongPlaying !== song.id ||
 													!isPlaying ||
-													window.location.pathname + window.location.search !==
+													location.pathname + location.search !==
 														sessionStorage.getItem('urlPlayingList')
 														? 'Play'
 														: 'Pause'

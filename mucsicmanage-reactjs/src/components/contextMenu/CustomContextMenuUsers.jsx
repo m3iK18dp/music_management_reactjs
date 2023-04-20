@@ -26,15 +26,15 @@ const CustomContextMenuUser = ({
 
 	useEffect(() => {
 		let winWidth = window.innerWidth,
-			cmWidth = 250,
+			cmWidth = 200,
 			winHeight = window.innerHeight,
-			cmHeight = 210;
+			cmHeight = id === -1 ? 54 : 186;
 		setShow({
 			display: 'block',
 			left: x > winWidth - cmWidth - 10 ? x - cmWidth : x,
-			top: y > winHeight - cmHeight - 10 ? y - cmHeight : y,
+			top: y > winHeight - cmHeight - 50 ? y - cmHeight : y,
 		});
-	}, [x, y]);
+	}, [id, x, y]);
 
 	return (
 		<div
@@ -49,48 +49,53 @@ const CustomContextMenuUser = ({
 					<h6 style={{ marginBottom: 0 }}>Add new User</h6>
 				</div>
 			</div>
-			<hr style={{ margin: 0 }}></hr>
-			<div
-				style={{
-					padding: 5,
-					borderRadius: 5,
-					marginBottom: 5,
-				}}
-			>
-				<div>
-					<h6 style={{ marginBottom: 0 }}>User ID : {id}</h6>
-				</div>
-			</div>
-			<div className='context-menu-row flex'>
-				<div
-					onClick={() => {
-						handleChangeStatus(id);
-						document.getElementById(`context-menu`).style.display = 'none';
-					}}
-				>
-					{status ? <RiUserUnfollowLine /> : <RiUserFollowLine />}
-					<h6 style={{ marginBottom: 0 }}>
-						{(status ? 'Disable' : 'Enable') + ' User'}
-					</h6>
-				</div>
-			</div>
+			{id !== -1 && (
+				<>
+					<hr style={{ margin: 0 }}></hr>
+					<div
+						style={{
+							padding: 5,
+							borderRadius: 5,
+							marginBottom: 5,
+						}}
+					>
+						<div>
+							<h6 style={{ marginBottom: 0 }}>User ID : {id}</h6>
+						</div>
+					</div>
+					<div className='context-menu-row flex'>
+						<div
+							onClick={() => {
+								handleChangeStatus(id);
+								setShow({ ...show, display: 'none' });
+							}}
+						>
+							{status ? <RiUserUnfollowLine /> : <RiUserFollowLine />}
+							<h6 style={{ marginBottom: 0 }}>
+								{(status ? 'Disable' : 'Enable') + ' User'}
+							</h6>
+						</div>
+					</div>
 
-			<div className='context-menu-row flex'>
-				<div
-					onClick={(event) => {
-						handleResetPassword(id);
-					}}
-				>
-					<MdLockReset />
-					<h6 style={{ marginBottom: 0 }}>Reset password</h6>
-				</div>
-			</div>
-			<div className='context-menu-row flex'>
-				<div onClick={() => navigate(`/user/${id}`)}>
-					<RiUserSettingsLine />
-					<h6 style={{ marginBottom: 0 }}>Update User</h6>
-				</div>
-			</div>
+					<div className='context-menu-row flex'>
+						<div
+							onClick={(event) => {
+								handleResetPassword(id);
+								setShow({ ...show, display: 'none' });
+							}}
+						>
+							<MdLockReset />
+							<h6 style={{ marginBottom: 0 }}>Reset password</h6>
+						</div>
+					</div>
+					<div className='context-menu-row flex'>
+						<div onClick={() => navigate(`/users/${id}`)}>
+							<RiUserSettingsLine />
+							<h6 style={{ marginBottom: 0 }}>Update User</h6>
+						</div>
+					</div>
+				</>
+			)}
 		</div>
 	);
 };

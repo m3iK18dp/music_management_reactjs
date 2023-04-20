@@ -45,7 +45,7 @@ public class PlayListServiceImpl implements IPlaylistService {
             return userRepository.findByEmail(jwtTokenUtil.extractUserName(token)).map(user -> {
                 if (jwtTokenUtil.isTokenExpired(token))
                     throw new RuntimeException("Your token has expired, please re-enter to make a new token.");
-                if (!user.isStatus())
+                if (!request.getMethod().equals("GET") && !user.isStatus())
                     throw new RuntimeException("The user of the above token has been disabled. Please use another user's token or contact the admin to activate the user.");
                 return user;
             }).orElse(new User());
@@ -62,15 +62,24 @@ public class PlayListServiceImpl implements IPlaylistService {
         log.info("findPlaylists with " + filter);
         User userFromAuth = extractUser(request);
         Pageable pageable = PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field));
-        if (Objects.equals(ownerEmail, "") ||
-                Objects.equals(userFromAuth.getEmail(), ownerEmail) ||
-                userFromAuth.getRoles().stream().anyMatch(r -> Objects.equals(r.getName(), "ADMIN"))
+        if (
+                (Objects.equals(ownerEmail, "") && userFromAuth.isStatus())
+                        || Objects.equals(userFromAuth.getEmail(), ownerEmail)
+//                        || (userFromAuth.getRoles().stream().anyMatch(r -> Objects.equals(r.getName(), "ADMIN")) && userFromAuth.isStatus())
         ) {
             return PlayListRequestDto.fromPlaylists(
-                    playlistRepository.findPlaylistsWithPaginationAndSort(id, name, ownerEmail, pageable),
+                    Objects.equals(userFromAuth.getEmail(), ownerEmail) && !userFromAuth.isStatus()
+                            ? playlistRepository.findPlaylistsWithPaginationAndSort
+                            (
+                                    (long) -1,
+                                    "",
+                                    ownerEmail,
+                                    PageRequest.of(0, Integer.MAX_VALUE).withSort(Sort.Direction.ASC, "id")
+                            )
+                            : playlistRepository.findPlaylistsWithPaginationAndSort(id, name, ownerEmail, pageable),
                     pageable
             );
-        } else throw new RuntimeException("You not admin, you can only get playlists with your own email address");
+        } else throw new RuntimeException("You can only get playlists with your own email address");
     }
 
     @Override
@@ -104,8 +113,8 @@ public class PlayListServiceImpl implements IPlaylistService {
     public PlayListRequestDto updatePlaylist(Long id, PlayListRequestDto playList, HttpServletRequest request) {
         log.info("Update playlist: {}", playList);
         User userFromAuth = extractUser(request);
-        if (userFromAuth.getPlayLists().stream().anyMatch(playList1 -> Objects.equals(playList1.getId(), id)) ||
-                userFromAuth.getRoles().stream().anyMatch(r -> Objects.equals(r.getName(), "ADMIN"))
+        if (userFromAuth.getPlayLists().stream().anyMatch(playList1 -> Objects.equals(playList1.getId(), id))
+//                || userFromAuth.getRoles().stream().anyMatch(r -> Objects.equals(r.getName(), "ADMIN"))
         ) {
             if (playlistRepository.findAll()
                     .stream().anyMatch(
@@ -129,15 +138,15 @@ public class PlayListServiceImpl implements IPlaylistService {
             } catch (Exception exception) {
                 throw new RuntimeException("Update Playlist failed.");
             }
-        } else throw new RuntimeException("You not admin, you can only update playlists with your own email address.");
+        } else throw new RuntimeException("You can only update playlists with your own email address.");
     }
 
     @Override
     public PlayListRequestDto deletePlayList(Long id, HttpServletRequest request) {
         log.info("Delete Playlist");
         User userFromAuth = extractUser(request);
-        if (userFromAuth.getPlayLists().stream().anyMatch(playList1 -> Objects.equals(playList1.getId(), id)) ||
-                userFromAuth.getRoles().stream().anyMatch(r -> Objects.equals(r.getName(), "ADMIN"))
+        if (userFromAuth.getPlayLists().stream().anyMatch(playList1 -> Objects.equals(playList1.getId(), id))
+//                || userFromAuth.getRoles().stream().anyMatch(r -> Objects.equals(r.getName(), "ADMIN"))
         ) {
             return
                     playlistRepository.findById(id).map(
@@ -150,20 +159,23 @@ public class PlayListServiceImpl implements IPlaylistService {
                                 }
                             }
                     ).orElseThrow(() -> new RuntimeException("Playlist not found."));
-        } else throw new RuntimeException("You not admin, you can only delete playlists with your own email address.");
+        } else throw new RuntimeException("You can only delete playlists with your own email address.");
     }
 
     @Override
     public PlayListRequestDto addSongToPlayList(Long playlistId, Long songId, HttpServletRequest request) {
         log.info("Adding song to playlist");
         User userFromAuth = extractUser(request);
-        if (userFromAuth.getPlayLists().stream().anyMatch(playList1 -> Objects.equals(playList1.getId(), playlistId)) ||
-                userFromAuth.getRoles().stream().anyMatch(r -> Objects.equals(r.getName(), "ADMIN"))
+        if (userFromAuth.getPlayLists().stream().anyMatch(playList1 -> Objects.equals(playList1.getId(), playlistId))
+//                || userFromAuth.getRoles().stream().anyMatch(r -> Objects.equals(r.getName(), "ADMIN"))
         ) {
             return
                     playlistRepository.findById(playlistId).map(
                             playList ->
                                     songRepository.findById(songId).map(song -> {
+                                        if (playList.getSongs().stream().anyMatch(pl -> Objects.equals(pl.getId(), songId))) {
+                                            throw new RuntimeException("The song you want to add is already in the playlist.");
+                                        }
                                         try {
                                             List<Song> newSongs = playList.getSongs();
                                             newSongs.add(song);
@@ -175,15 +187,15 @@ public class PlayListServiceImpl implements IPlaylistService {
                                         }
                                     }).orElseThrow(() -> new RuntimeException("Song not found."))
                     ).orElseThrow(() -> new RuntimeException("Playlist not found."));
-        } else throw new RuntimeException("You not admin, you can only add songs to your playlists.");
+        } else throw new RuntimeException("You can only add songs to your playlists.");
     }
 
     @Override
     public PlayListRequestDto deleteSongInPlayList(Long playlistId, Long songId, HttpServletRequest request) {
         log.info("Delete song to playlist");
         User userFromAuth = extractUser(request);
-        if (userFromAuth.getPlayLists().stream().anyMatch(playList1 -> Objects.equals(playList1.getId(), playlistId)) ||
-                userFromAuth.getRoles().stream().anyMatch(r -> Objects.equals(r.getName(), "ADMIN"))
+        if (userFromAuth.getPlayLists().stream().anyMatch(playList1 -> Objects.equals(playList1.getId(), playlistId))
+//                || userFromAuth.getRoles().stream().anyMatch(r -> Objects.equals(r.getName(), "ADMIN"))
         ) {
             return
                     playlistRepository.findById(playlistId).map(
@@ -200,6 +212,6 @@ public class PlayListServiceImpl implements IPlaylistService {
                                         }
                                     }).orElseThrow(() -> new RuntimeException("Song not found."))
                     ).orElseThrow(() -> new RuntimeException("Playlist not found."));
-        } else throw new RuntimeException("You not admin, you can only delete songs in your playlists.");
+        } else throw new RuntimeException("You can only delete songs in your playlists.");
     }
 }

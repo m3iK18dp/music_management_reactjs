@@ -52,18 +52,18 @@ public class MyFileServiceImpl implements IStorageService {
         float fileSizeInMegabytes = file.getSize() / 1_000_000.0f;
         if (type == 0) {
             if (!isMusicFile(file)) {
-                throw new RuntimeException("You can only upload music file.");
+                throw new RuntimeException("Failed. You can only upload music file.");
             }
             if (fileSizeInMegabytes > 20.0f) {
-                throw new RuntimeException("Music file size must be <= 20Mb.");
+                throw new RuntimeException("Failed. Music file size must be <= 20Mb.");
             }
         }
         if (type == 1) {
             if (!isImageFile(file)) {
-                throw new RuntimeException("You can only upload music/image file.");
+                throw new RuntimeException("Failed. You can only upload music/image file.");
             }
             if (fileSizeInMegabytes > 40.0f) {
-                throw new RuntimeException("Image File size must be <= 40Mb.");
+                throw new RuntimeException("Failed. Image File size must be <= 40Mb.");
             }
         }
         return true;
@@ -73,8 +73,8 @@ public class MyFileServiceImpl implements IStorageService {
     @Override
     public String uploadFileToCloundinary(int type, MultipartFile file) {
         log.info("Upload File To Cloudinary: {}", file.getOriginalFilename());
+        checkBindingForFile(type, file);
         try {
-            checkBindingForFile(type, file);
             return (String) cloudinary
                     .uploader()
                     .upload(
@@ -94,8 +94,9 @@ public class MyFileServiceImpl implements IStorageService {
     @Override
     public String updateFileToCloundinary(int type, String url, MultipartFile file) {
         log.info("Update File To Cloudinary: {}", file.getOriginalFilename());
+        checkBindingForFile(type, file);
         try {
-            checkBindingForFile(type, file);
+
             String[] arrUrl = url.split("/");
             String[] publicId = arrUrl[arrUrl.length - 1].split("\\.");
             return (String) cloudinary

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState, useRef } from 'react';
 import { Container, Row, Button, Form } from 'react-bootstrap';
 import songService from '../services/SongService';
@@ -41,6 +42,8 @@ function UploadSong() {
 	const [isFirst, setIsFirst] = useState(true);
 	const [changeFile, setChangeFile] = useState(true);
 	const [checkForm, setCheckForm] = useState(true);
+	const [inProcessing, setInProcessing] = useState(false);
+
 	useEffect(() => {
 		if (createOrUpdate === 'Error') navigate('/error/404');
 		checkToken(navigate);
@@ -89,6 +92,7 @@ function UploadSong() {
 		setIsFirst(false);
 		if (checkForm) {
 			setStatus(`Please wait...${createOrUpdate} song is in progress`);
+			setInProcessing(true);
 			const songServiceFunction =
 				createOrUpdate === 'Update'
 					? file.current.files.length > 0
@@ -115,13 +119,14 @@ function UploadSong() {
 						res.message,
 					);
 				}
+				setInProcessing(false);
 			});
 		} else setStatus('Failed. Please check information entered.');
 	}
 
 	return (
 		<>
-			<NavbarComponent />
+			<NavbarComponent disabled={inProcessing} />
 			<div className='background-container' />
 			<div className=' background-container-opacity-low' />
 			<Container
@@ -174,6 +179,7 @@ function UploadSong() {
 									value={song.title}
 									type='text'
 									warning={titleIsFilled}
+									readonly={inProcessing}
 								/>
 								<CustomFormGroup
 									funcEnter={handleSubmit}
@@ -184,6 +190,7 @@ function UploadSong() {
 									value={song.genre}
 									type='text'
 									warning={genreIsFilled}
+									readonly={inProcessing}
 								/>
 								<CustomFormGroup
 									funcEnter={handleSubmit}
@@ -194,6 +201,7 @@ function UploadSong() {
 									value={song.musician}
 									type='text'
 									warning={musicianIsFilled}
+									readonly={inProcessing}
 								/>
 								<CustomFormGroup
 									funcEnter={handleSubmit}
@@ -205,9 +213,11 @@ function UploadSong() {
 										func: set,
 										warning: fileIsFilled,
 									})}
+									disabled={inProcessing}
 								/>
 								<div className='box-footer'>
 									<Button
+										disabled={inProcessing}
 										onClick={handleSubmit}
 										style={{
 											backgroundColor: '#e9ecef',
@@ -219,6 +229,7 @@ function UploadSong() {
 										<AiFillSave size={30}></AiFillSave>Save
 									</Button>
 									<Button
+										disabled={inProcessing}
 										variant='danger'
 										// href="/songs"
 										onClick={() => navigate('/songs')}

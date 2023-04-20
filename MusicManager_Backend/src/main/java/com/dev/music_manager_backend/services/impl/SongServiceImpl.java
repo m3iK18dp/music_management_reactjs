@@ -46,7 +46,7 @@ public class SongServiceImpl implements ISongService {
             return userRepository.findByEmail(jwtTokenUtil.extractUserName(token)).map(user -> {
                 if (jwtTokenUtil.isTokenExpired(token))
                     throw new RuntimeException("Your token has expired, please re-enter to make a new token.");
-                if (!user.isStatus())
+                if (!request.getMethod().equals("GET") && !user.isStatus())
                     throw new RuntimeException("The user of the above token has been disabled. Please use another user's token or contact the admin to activate the user.");
                 return user;
             }).orElse(new User());
@@ -70,9 +70,10 @@ public class SongServiceImpl implements ISongService {
 
         log.info("findSongsWithPaginationAndSort with " + filter);
         User userFromAuth = extractUser(request);
-        if ((Objects.equals(ownerEmail, "") && playlistId == -1) ||
+        if ((Objects.equals(ownerEmail, "") && playlistId == -1 && userFromAuth.isStatus()) ||
                 Objects.equals(userFromAuth.getEmail(), ownerEmail) ||
-                userFromAuth.getRoles().stream().anyMatch(r -> Objects.equals(r.getName(), "ADMIN"))
+//                (userFromAuth.getRoles().stream().anyMatch(r -> Objects.equals(r.getName(), "ADMIN")) && userFromAuth.isStatus()) ||
+                userFromAuth.getPlayLists().stream().anyMatch(pl -> Objects.equals(pl.getId(), playlistId))
         ) {
             Pageable pageable = PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field));
             return SongRequestDto.fromSongs(
@@ -84,7 +85,7 @@ public class SongServiceImpl implements ISongService {
                     ),
                     pageable
             );
-        } else throw new RuntimeException("You not admin, you can only get songs with your own email address");
+        } else throw new RuntimeException("You can only get songs with your own email address or your own playlists");
     }
 
     @Override
@@ -111,7 +112,7 @@ public class SongServiceImpl implements ISongService {
                             .build()
             ));
         } catch (Exception exception) {
-            throw new RuntimeException(exception.getMessage().contains("failed") ? exception.getMessage() : "Upload song failed.");
+            throw new RuntimeException(exception.getMessage().toLowerCase().contains("failed") ? exception.getMessage() : "Upload song failed.");
         }
     }
 
@@ -143,7 +144,7 @@ public class SongServiceImpl implements ISongService {
                                     .build()
                     ));
                 } catch (Exception exception) {
-                    throw new RuntimeException(exception.getMessage().contains("failed") ? exception.getMessage() : "Update song failed.");
+                    throw new RuntimeException(exception.getMessage().toLowerCase().contains("failed") ? exception.getMessage() : "Update song failed.");
                 }
             }).orElseThrow(() -> new RuntimeException("Song not found."));
         } else
@@ -164,7 +165,7 @@ public class SongServiceImpl implements ISongService {
                                     storageService.deleteFileFromCloundinary(song.getUrl());
                                     return new SongRequestDto(song);
                                 } catch (Exception exception) {
-                                    throw new RuntimeException(exception.getMessage().contains("failed") ? exception.getMessage() : "Delete song failed.");
+                                    throw new RuntimeException(exception.getMessage().toLowerCase().contains("failed") ? exception.getMessage() : "Delete song failed.");
                                 }
                             }
                     ).orElseThrow(() -> new RuntimeException("Song not found.")
@@ -180,8 +181,8 @@ public class SongServiceImpl implements ISongService {
             storageService.deleteAllFileFromCloundinary(songRepository.findAll());
             songRepository.deleteAll();
             return Boolean.TRUE;
-        } catch (Exception e) {
-            throw new RuntimeException("Delete all songs failed. " + (e.getMessage().contains("failed") ? "" : e.getMessage()));
+        } catch (Exception exception) {
+            throw new RuntimeException("Delete all songs failed. " + (exception.getMessage().toLowerCase().contains("failed") ? "" : exception.getMessage()));
         }
     }
 }

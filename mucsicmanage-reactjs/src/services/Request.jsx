@@ -18,8 +18,8 @@ const callApi = async (
 		timeout:
 			endpoint.includes('songs') &&
 			['post', 'put'].includes(method.toLowerCase())
-				? 15000
-				: 5000,
+				? 30000
+				: 10000,
 	};
 	if (
 		!(

@@ -105,8 +105,9 @@ code {
 		0 0 80px #00ffff, 0 0 100px #00ffff;
 }
 .filter-container {
+	transition: 1s;
 	transform: translateY(0);
-	transition: transform 0.3s ease-out;
+	/* transition: transform 0.3s ease-out; */
 }
 
 .filter-container.expanded-no-admin {
@@ -115,10 +116,23 @@ code {
 .filter-container.expanded-admin {
 	transform: translateY(-130px);
 }
-.filter-container-x {
-	transform: translateX(0);
-	transition: transform 0.3s ease-out;
+/* width */
+::-webkit-scrollbar {
+	width: 5px;
+	height: 5px;
 }
-.filter-container-x.expanded-x {
-	transform: translateX(-155px);
+
+/* Track */
+::-webkit-scrollbar-track {
+	background: #ffffffad;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+	background: #5ca2ff8a;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+	background: #2fb6779f;
 }

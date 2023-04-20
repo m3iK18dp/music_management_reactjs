@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Button, Form } from 'react-bootstrap';
 import userService from '../services/UserService';
@@ -41,6 +42,8 @@ function UploadUser() {
 	};
 	const [isFirst, setIsFirst] = useState(true);
 	const [checkForm, setCheckForm] = useState(true);
+	const [inProcessing, setInProcessing] = useState(false);
+
 	useEffect(() => {
 		if (createOrUpdate === 'Error') navigate('/error/404');
 		checkToken(navigate);
@@ -86,6 +89,7 @@ function UploadUser() {
 		setIsFirst(false);
 		if (checkForm) {
 			setStatus('Please wait...Updating user is in progress');
+			setInProcessing(true);
 			(createOrUpdate === 'Create'
 				? userService.insertUser(user, navigate)
 				: userService.updateUser(user.id, user, navigate)
@@ -99,16 +103,16 @@ function UploadUser() {
 				} else {
 					setStatus(res.message);
 				}
+				setInProcessing(false);
 			});
 		} else setStatus('Failed. Please check information entered.');
 	}
 
 	return (
 		<>
-			<NavbarComponent />
+			<NavbarComponent disabled={inProcessing} />
 			<div className='background-container' />
 			<div className=' background-container-opacity-low' />
-
 			<Container
 				style={{
 					margin: '50px auto',
@@ -160,6 +164,7 @@ function UploadUser() {
 										label='First Name'
 										value={user.firstName}
 										warning={firstNameIsFilled}
+										readonly={inProcessing}
 									/>
 									<CustomFormGroup
 										funcEnter={handleSubmit}
@@ -169,6 +174,7 @@ function UploadUser() {
 										label='Last Name'
 										value={user.lastName}
 										warning={lastNameIsFilled}
+										readonly={inProcessing}
 									/>
 								</Col>
 								<div>
@@ -180,6 +186,7 @@ function UploadUser() {
 										label='Email'
 										value={user.email}
 										warning={emailIsFilled}
+										readonly={inProcessing}
 									/>
 								</div>
 								<Form.Group className='mb-3' controlId='status'>
@@ -196,6 +203,7 @@ function UploadUser() {
 										onChange={() => {
 											set('status', !user.status);
 										}}
+										disabled={inProcessing}
 									/>
 								</Form.Group>
 								<Form.Group className='mb-3' controlId='roles'>
@@ -204,6 +212,7 @@ function UploadUser() {
 										check={user.roleIds}
 										setCheck={(value) => set('roleIds', value)}
 										all={allRoles}
+										disabled={inProcessing}
 									/>
 									<p
 										style={{
@@ -218,6 +227,7 @@ function UploadUser() {
 								</Form.Group>
 								<div className='box-footer'>
 									<Button
+										disabled={inProcessing}
 										onClick={() => handleSubmit()}
 										style={{
 											backgroundColor: '#e9ecef',
@@ -229,6 +239,7 @@ function UploadUser() {
 										<AiFillSave size={30}></AiFillSave>Save
 									</Button>
 									<Button
+										disabled={inProcessing}
 										variant='danger'
 										// href="/users"
 										onClick={() => navigate('/users')}

@@ -28,13 +28,15 @@ public class PlaylistController {
             @RequestParam(value = "_name", defaultValue = "") String name,
             @RequestParam(value = "_owner_email", defaultValue = "") String ownerEmail,
             @RequestParam(value = "_page", defaultValue = "0") int page,
-            @RequestParam(value = "_limit", defaultValue = "10") int limit,
+            @RequestParam(value = "_limit", defaultValue = "-1") int limit,
             @RequestParam(value = "_field", defaultValue = "id") String field,
             @RequestParam(value = "_type_sort", defaultValue = "asc") String typeSort,
             HttpServletRequest request
     ) {
         Page<PlayListRequestDto> playLists = new PageImpl<>(new ArrayList<>());
         try {
+            if (limit == -1)
+                limit = Integer.MAX_VALUE;
             playLists = playlistService.findPlayListsWithPaginationAndSort(id, name, ownerEmail, page, limit, field, typeSort, request);
             if (playLists.isEmpty()) {
                 return new ResponseObject<>(

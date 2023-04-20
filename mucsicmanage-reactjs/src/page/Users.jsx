@@ -1,8 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import '../css/users.css';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Container, Row, Col, Form, Table } from 'react-bootstrap';
-import { AiOutlineUserAdd } from 'react-icons/ai';
 import {
 	BsSortNumericUpAlt,
 	BsSortAlphaUpAlt,
@@ -10,13 +10,8 @@ import {
 	BsSortAlphaDownAlt,
 	BsArrowsExpand,
 } from 'react-icons/bs';
-import {
-	RiUserSearchLine,
-	RiUserFollowLine,
-	RiUserUnfollowLine,
-	RiUserSettingsLine,
-} from 'react-icons/ri';
-import { MdCancel, MdLockReset, MdOutlineSearchOff } from 'react-icons/md';
+import { RiUserSearchLine } from 'react-icons/ri';
+import { MdCancel, MdOutlineSearchOff } from 'react-icons/md';
 import PaginationComponent from '../components/PaginationComponent';
 import NavbarComponent from '../components/NavbarComponent';
 import userService from '../services/UserService';
@@ -182,6 +177,9 @@ function Users() {
 	});
 
 	const handleContextMenu = (event, id, status) => {
+		if (id !== -1) {
+			event.stopPropagation();
+		}
 		event.preventDefault();
 		setContextMenuPosition({
 			x: event.pageX,
@@ -206,6 +204,7 @@ function Users() {
 		<div
 			style={{ width: '100%', height: '100%' }}
 			onClick={handleCloseContextMenu}
+			onContextMenu={(event) => handleContextMenu(event, -1, true)}
 		>
 			{/* /////////////////////////////////////// */}
 			{contextMenuPosition.visible && (

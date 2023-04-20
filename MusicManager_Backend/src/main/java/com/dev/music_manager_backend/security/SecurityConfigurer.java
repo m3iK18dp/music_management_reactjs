@@ -83,7 +83,10 @@ public class SecurityConfigurer {
 //                                        .requestMatchers(HttpMethod.PUT, "/api/songs/**").hasAnyAuthority("ADMIN")
                                         .requestMatchers(HttpMethod.POST, "/api/songs/**").authenticated()
                                         .requestMatchers(HttpMethod.DELETE, "/api/songs/**").authenticated()
-                                        .requestMatchers("/api/playlists/**").authenticated()
+                                        .requestMatchers(HttpMethod.GET, "/api/playlists/**").permitAll()
+                                        .requestMatchers(HttpMethod.POST, "/api/playlists/**").authenticated()
+                                        .requestMatchers(HttpMethod.PUT, "/api/playlists/**").authenticated()
+                                        .requestMatchers(HttpMethod.DELETE, "/api/playlists/**").authenticated()
 //                                .requestMatchers(HttpMethod.GET, "/api/users", "/api/users/**").authenticated()
                                         .requestMatchers(HttpMethod.POST, "/api/users", "/api/users/**").hasAnyAuthority("ADMIN")
                                         .requestMatchers(HttpMethod.DELETE, "/api/users", "/api/users/**").hasAnyAuthority("ADMIN")
@@ -117,7 +120,8 @@ public class SecurityConfigurer {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173"));
+//        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173", "http://192.168.107.115:3000", "http://192.168.107.115:5173", "http://192.168.107.143:3000"));
+        configuration.setAllowedOrigins(List.of("*"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
