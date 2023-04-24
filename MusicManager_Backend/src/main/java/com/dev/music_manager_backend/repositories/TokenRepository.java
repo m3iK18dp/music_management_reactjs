@@ -8,15 +8,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TokenRepository extends JpaRepository<Token, Long> {
-    @Query(value = """
-                SELECT t.* FROM musicmanager.tokens t INNER JOIN musicmanager.users u ON t.USER_ID = u.ID
-                WHERE u.EMAIL = :userEmail AND t.REVOKED = false
-            """, nativeQuery = true)
-    List<Token> findAllValidTokenByUserEmail(String userEmail);
+//    @Query(value = """
+//                SELECT t.* FROM musicmanager.tokens t INNER JOIN musicmanager.users u ON t.USER_ID = u.ID
+//                WHERE u.EMAIL = :userEmail AND t.REVOKED = 0
+//            """, nativeQuery = true)
+//    List<Token> findAllValidTokenByUserEmail(String userEmail);
 
     @Query(value = """
                 SELECT t.* FROM musicmanager.tokens t INNER JOIN musicmanager.users u ON t.USER_ID = u.ID
-                WHERE u.EMAIL = :userEmail
+                WHERE u.EMAIL = :userEmail AND t.REVOKED != -1
             """, nativeQuery = true)
     List<Token> findAllTokenByUserEmail(String userEmail);
 

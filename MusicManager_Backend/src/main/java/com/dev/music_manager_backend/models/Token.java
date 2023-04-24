@@ -20,13 +20,13 @@ public class Token {
     private String token;
     @Enumerated(EnumType.STRING)
     private TokenType tokenType;
-    private boolean revoked;
+    private int revoked;
     @ManyToOne()
     @JoinColumn(name = "USER_ID", referencedColumnName = "id")
 //    @JsonManagedReference
     private User user;
 
-    public Token(String token, TokenType tokenType, boolean revoked) {
+    public Token(String token, TokenType tokenType, int revoked) {
         this.token = token;
         this.tokenType = tokenType;
         this.revoked = revoked;

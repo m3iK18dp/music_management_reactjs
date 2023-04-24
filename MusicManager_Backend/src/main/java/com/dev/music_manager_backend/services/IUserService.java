@@ -15,6 +15,8 @@ public interface IUserService {
 
     Optional<User> findUserByEmail(String email);
 
+    User extractUser(HttpServletRequest request);
+
     UserRequestDto registerUser(User user);
 
     UserRequestDto saveUser(UserRequestDto user);
@@ -28,7 +30,7 @@ public interface IUserService {
     UserRequestDto changeStatusUser(Long userId, HttpServletRequest request);
 
     ////////////////////////////////Important
-    void revokeAllUserTokens(String username);
+    void changeRevokeAllUserTokens(String username, int value);
 
     UserRequestDto resetUserPassword(Long id, HttpServletRequest request);
 

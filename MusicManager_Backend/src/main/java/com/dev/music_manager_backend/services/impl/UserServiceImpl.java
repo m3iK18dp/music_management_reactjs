@@ -2,10 +2,8 @@ package com.dev.music_manager_backend.services.impl;
 
 import com.dev.music_manager_backend.DTO.UserRequestDto;
 import com.dev.music_manager_backend.models.Role;
-import com.dev.music_manager_backend.models.Token;
 import com.dev.music_manager_backend.models.User;
 import com.dev.music_manager_backend.repositories.RoleRepository;
-import com.dev.music_manager_backend.repositories.SongRepository;
 import com.dev.music_manager_backend.repositories.TokenRepository;
 import com.dev.music_manager_backend.repositories.UserRepository;
 import com.dev.music_manager_backend.services.IUserService;
@@ -35,22 +33,23 @@ public class UserServiceImpl implements IUserService {
     private final UserRepository userRepository;
     @Autowired
     private final RoleRepository roleRepository;
-    @Autowired
-    private final SongRepository songRepository;
+    //    @Autowired
+//    private final SongRepository songRepository;
     @Autowired
     private final TokenRepository tokenRepository;
     @Autowired
     private final EntityManager entityManager;
 
-    private User extractUser(HttpServletRequest request) {
+    @Override
+    public User extractUser(HttpServletRequest request) {
         if (request.getHeader("Authorization") != null) {
             if (!request.getHeader("Authorization").startsWith("Bearer "))
                 throw new RuntimeException("Token is invalid.");
-            JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
+            JwtTokenUtil jwtTokenUtil = new JwtTokenUtil(tokenRepository);
             String token = request.getHeader("Authorization").substring(7);
             return userRepository.findByEmail(jwtTokenUtil.extractUserName(token)).map(user -> {
-                if (jwtTokenUtil.isTokenExpired(token))
-                    throw new RuntimeException("Your token has expired, please re-enter to make a new token.");
+//                if (jwtTokenUtil.isTokenExpired(token))
+//                    throw new RuntimeException("Your token has expired, please re-enter to make a new token.");
                 if (!user.isStatus())
                     throw new RuntimeException("The user of the above token has been disabled. Please use another user's token or contact the admin to activate the user.");
                 return user;
@@ -109,7 +108,6 @@ public class UserServiceImpl implements IUserService {
                     )
             );
         } catch (Exception exception) {
-            exception.printStackTrace();
             throw new RuntimeException("Email already exists, please enter another email to continue.");
         }
     }
@@ -134,7 +132,7 @@ public class UserServiceImpl implements IUserService {
                 if (!Objects.equals(updateUser.getEmail(), user.getEmail()) && userRepository.findByEmail(user.getEmail()).isPresent())
                     throw new RuntimeException("Email already exists, please enter another email to continue.");
                 if (!Objects.equals(updateUser.getEmail(), user.getEmail()))
-                    revokeAllUserTokens(updateUser.getEmail());
+                    changeRevokeAllUserTokens(updateUser.getEmail(), -1);
                 return new UserRequestDto(
                         userRepository.save(
                                 User.builder()
@@ -227,17 +225,11 @@ public class UserServiceImpl implements IUserService {
                 )
         ) {
             return userRepository.findById(userId).map(user -> {
-
-                if (user.isStatus())
-                    revokeAllUserTokens(user.getEmail());
-                else {
-                    List<Token> lstToken = tokenRepository.findAllTokenByUserEmail(user.getEmail());
-                    if (lstToken.size() > 0) {
-                        Token lastestToken = lstToken.get(lstToken.size() - 1);
-                        lastestToken.setRevoked(false);
-                        tokenRepository.save(lastestToken);
-                    }
-                }
+//                if ()
+                changeRevokeAllUserTokens(user.getEmail(), user.isStatus() ? 1 : 0);
+//                else {
+//                    changeRevokeAllUserTokens(user.getEmail(), 0);
+//                }
                 user.setStatus(!user.isStatus());
                 user.setLastUpdate(LocalDateTime.now());
                 return new UserRequestDto(userRepository.save(user));
@@ -286,13 +278,13 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public void revokeAllUserTokens(String username) {
+    public void changeRevokeAllUserTokens(String username, int value) {
         log.info("Revoking all tokens for user {}", username);
         try {
-            var validUserTokens = tokenRepository.findAllValidTokenByUserEmail(username);
+            var validUserTokens = tokenRepository.findAllTokenByUserEmail(username);
             if (validUserTokens.isEmpty())
                 return;
-            validUserTokens.forEach(t -> t.setRevoked(true));
+            validUserTokens.forEach(t -> t.setRevoked(value));
             tokenRepository.saveAll(validUserTokens);
         } catch (Exception e) {
             throw new RuntimeException("Error when querying.");

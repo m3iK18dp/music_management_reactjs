@@ -24,6 +24,7 @@ export function checkToken(navigate = useNavigate, check = 1) {
           alert(res.message);
           localStorage.clear();
           sessionStorage.clear();
+          // authenticationService.logout(navigate);
           navigate("/login");
         } else {
           if (!res.data[1]) {

@@ -128,7 +128,6 @@ public class MyFileServiceImpl implements IStorageService {
                     );
             return Boolean.TRUE;
         } catch (IOException exception) {
-            exception.printStackTrace();
             throw new RuntimeException("Delete file in storage failed.");
         }
     }

@@ -1,6 +1,7 @@
 package com.dev.music_manager_backend.services.authenticationService;
 
 import com.dev.music_manager_backend.repositories.TokenRepository;
+import com.dev.music_manager_backend.services.IUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Component;
 public class LogoutService implements LogoutHandler {
     @Autowired
     private final TokenRepository tokenRepository;
+    @Autowired
+    private final IUserService userService;
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
@@ -24,11 +27,20 @@ public class LogoutService implements LogoutHandler {
             return;
         }
         String jwtToken = authorizationHeader.substring(7);
-        var storedToken = tokenRepository.findByToken(jwtToken)
-                .orElse(null);
-        if (storedToken != null) {
-            storedToken.setRevoked(true);
-            tokenRepository.save(storedToken);
-        }
+        tokenRepository.findByToken(jwtToken)
+                .map(
+                        storedToken -> {
+                            if (storedToken.getRevoked() != -1) {
+//                                storedToken.setRevoked(true, -1);
+//                                tokenRepository.save(storedToken);
+                                userService.changeRevokeAllUserTokens(storedToken.getUser().getEmail(), -1);
+                            }
+                            return null;
+                        }
+                );
+//        if (storedToken != null) {
+//            storedToken.setRevoked(true);
+//            tokenRepository.save(storedToken);
+//        }
     }
 }

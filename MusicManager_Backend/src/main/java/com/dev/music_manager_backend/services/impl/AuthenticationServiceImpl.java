@@ -43,7 +43,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
                         .user(userService.findUserByEmail(username).orElse(null))
                         .token(JwtTokenUtil.generateJwtToken(userDetails))
                         .tokenType(TokenType.BEARER)
-                        .revoked(false)
+                        .revoked(0)
                         .build()
         );
     }
@@ -87,16 +87,16 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     @Override
     public List<Object> getAccountInformationByToken(String token) {
         log.info("Get Account Information");
-        System.out.println(token);
         //List: isRevoked, isExpired, username, listRoles
-        JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
+        JwtTokenUtil jwtTokenUtil = new JwtTokenUtil(tokenRepository);
         return tokenRepository.findByToken(token.substring(0, token.length() - 1))
                 .map(tokenRepo -> Arrays.asList(
-                                tokenRepo.isRevoked(),
+                                tokenRepo.getRevoked(),
                                 jwtTokenUtil.isTokenExpired(tokenRepo.getToken()),
                                 jwtTokenUtil.extractUserName(tokenRepo.getToken()),
                                 tokenRepository.findRoleByToken(tokenRepo.getToken())
                         )
                 ).orElseThrow(() -> new RuntimeException("Your token is invalid, please login again to continue."));
+
     }
 }

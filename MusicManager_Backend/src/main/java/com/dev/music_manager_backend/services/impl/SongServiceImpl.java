@@ -4,6 +4,7 @@ import com.dev.music_manager_backend.DTO.SongRequestDto;
 import com.dev.music_manager_backend.models.Song;
 import com.dev.music_manager_backend.models.User;
 import com.dev.music_manager_backend.repositories.SongRepository;
+import com.dev.music_manager_backend.repositories.TokenRepository;
 import com.dev.music_manager_backend.repositories.UserRepository;
 import com.dev.music_manager_backend.services.ISongService;
 import com.dev.music_manager_backend.services.IStorageService;
@@ -36,16 +37,19 @@ public class SongServiceImpl implements ISongService {
     private final IStorageService storageService;
     @Autowired
     private final UserRepository userRepository;
+    @Autowired
+    private final TokenRepository tokenRepository;
 
-    private User extractUser(HttpServletRequest request) {
+    @Override
+    public User extractUser(HttpServletRequest request) {
         if (request.getHeader("Authorization") != null) {
             if (!request.getHeader("Authorization").startsWith("Bearer "))
                 throw new RuntimeException("Token is invalid.");
-            JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
+            JwtTokenUtil jwtTokenUtil = new JwtTokenUtil(tokenRepository);
             String token = request.getHeader("Authorization").substring(7);
             return userRepository.findByEmail(jwtTokenUtil.extractUserName(token)).map(user -> {
-                if (jwtTokenUtil.isTokenExpired(token))
-                    throw new RuntimeException("Your token has expired, please re-enter to make a new token.");
+//                if (jwtTokenUtil.isTokenExpired(token))
+//                    throw new RuntimeException("Your token has expired, please re-enter to make a new token.");
                 if (!request.getMethod().equals("GET") && !user.isStatus())
                     throw new RuntimeException("The user of the above token has been disabled. Please use another user's token or contact the admin to activate the user.");
                 return user;
