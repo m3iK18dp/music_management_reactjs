@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import "./css/index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import App from "./page/App";
 import Login from "./page/Login";
 import Register from "./page/Register";

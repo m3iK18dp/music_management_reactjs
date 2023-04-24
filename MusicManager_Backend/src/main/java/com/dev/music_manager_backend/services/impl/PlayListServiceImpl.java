@@ -63,8 +63,9 @@ public class PlayListServiceImpl implements IPlaylistService {
         User userFromAuth = extractUser(request);
         Pageable pageable = PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field));
         if (
-                (Objects.equals(ownerEmail, "") && userFromAuth.isStatus())
-                        || Objects.equals(userFromAuth.getEmail(), ownerEmail)
+//                Objects.equals(ownerEmail, "")
+//                        ||
+                Objects.equals(userFromAuth.getEmail(), ownerEmail)
 //                        || (userFromAuth.getRoles().stream().anyMatch(r -> Objects.equals(r.getName(), "ADMIN")) && userFromAuth.isStatus())
         ) {
             return PlayListRequestDto.fromPlaylists(

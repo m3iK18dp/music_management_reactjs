@@ -66,7 +66,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         } catch (BadCredentialsException exception) {
             throw new RuntimeException("Your password is incorrect. Please re-enter your password.");
         }
-        userService.revokeAllUserTokens(username);
+//        userService.revokeAllUserTokens(username);
         String token = saveUserToken(username).getToken();
         return Arrays.asList(token,
                 tokenRepository.findRoleByToken(token)

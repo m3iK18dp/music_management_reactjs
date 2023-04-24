@@ -70,10 +70,11 @@ public class SongServiceImpl implements ISongService {
 
         log.info("findSongsWithPaginationAndSort with " + filter);
         User userFromAuth = extractUser(request);
-        if ((Objects.equals(ownerEmail, "") && playlistId == -1 && userFromAuth.isStatus()) ||
-                Objects.equals(userFromAuth.getEmail(), ownerEmail) ||
+        if ((Objects.equals(ownerEmail, "") && playlistId == -1) ||
+                (Objects.equals(userFromAuth.getEmail(), ownerEmail)) ||
 //                (userFromAuth.getRoles().stream().anyMatch(r -> Objects.equals(r.getName(), "ADMIN")) && userFromAuth.isStatus()) ||
-                userFromAuth.getPlayLists().stream().anyMatch(pl -> Objects.equals(pl.getId(), playlistId))
+
+                (userFromAuth.getPlayLists().stream().anyMatch(pl -> Objects.equals(pl.getId(), playlistId)))
         ) {
             Pageable pageable = PageRequest.of(page, limit).withSort(Sort.by(typeSort.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, field));
             return SongRequestDto.fromSongs(

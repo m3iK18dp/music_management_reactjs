@@ -20,7 +20,7 @@ public class SongRequestDto {
     private String genre;
     private LocalDateTime lastUpdate;
     private String url;
-//    private String ownerEmail;
+    private String ownerEmail;
 
     public SongRequestDto() {
 
@@ -33,7 +33,7 @@ public class SongRequestDto {
         this.genre = song.getGenre();
         this.lastUpdate = song.getLastUpdate();
         this.url = song.getUrl();
-//        this.ownerEmail = song.getOwner().getEmail();
+        this.ownerEmail = song.getOwner().getEmail();
     }
 
     public static Page<SongRequestDto> fromSongs(Page<Song> songs, Pageable pageable) {

@@ -18,7 +18,9 @@
 --
 -- Table structure for table `playlists`
 --
-
+Drop database if exists musicmanager;
+Create database musicmanager;
+Use musicmanager;
 DROP TABLE IF EXISTS `playlists`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -181,7 +183,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'admin@gmail.com','admin','admin','2023-04-20 14:11:55.933423','$2a$10$pd3j.orlx.iUOlPoTNLwvObK8DdWFsS9YVjYxE.ibP5Pdk4wdpmWm',_binary ''),(4,'e@gmail.com','aa','aa','2023-04-19 16:46:32.051131','$2a$10$Sm.6IW5hsnr4WSDFlVK78OUuZUhq3nSrucOhYRu3hKDqk7e4beFW.',_binary ''),(6,'acbd@gmail.com','abc','d','2023-04-19 14:40:36.033600','$2a$10$NbfRhIg4BaCj3CJgcpgI7u65kZcWncfDaUYakCJf3JVYH5YTc.U9q',_binary ''),(7,'a@gmail.com','aaa','aaaa','2023-04-04 15:15:15.608487','$2a$10$NXUNYPbJO4t2Qdpq98hH.uPSle621ml6qhSChe646LRb6lrdiGjYy',_binary ''),(10,'abc@gmail.com','ab','c','2023-03-17 14:18:03.865114','$2a$10$/dF8e7ZI8xgNi47lUPdQXu6XSxz9fAttrrzX5ym8GX6Vu6A/qSAVe',_binary ''),(20,'afaw@gmail.com','aaaa','aaaaaaaa','2023-04-04 15:09:56.561714','$2a$10$tJ/6IqzA0i0ytqtz615gpeVdPCZ5mJCU/57I7Sn/2pnLpPqyYgL/e',_binary ''),(23,'afaaaw@gmail.com','aaaa','aaaaaaaa','2023-04-11 11:29:05.874749','$2a$10$Epj3rHEbyJGeuceXIlenCOOAc5wFuRVVj1RuxbAKDmqL9SttFiree',_binary ''),(24,'kiem@gmail.com','Kiem Doan','Pham','2023-04-11 11:29:00.347432','$2a$10$B.3Lm7t9hkhoCLsgj7k.5OUBbAzkilGYyj7hQ2FGZhy0WjFGRfzIy',_binary ''),(31,'phanaa@gmail.com','Phan','A',NULL,'$2a$10$y6r5HPwGDGVjlJD2X5C.JO89AOOtmlosiElX4pJX7wNCQHtpkMqaq',_binary ''),(33,'phanbb@gmail.com','Phan','B','2023-04-19 14:41:17.938649','$2a$10$HsYB3bp3HIO5ioVXepcv2uZFYzXCV1WI4RenUZuFvKtO95Mdej6zq',_binary ''),(34,'nguyenvanb@gmail.com','Nguyễn Văn','B','2023-04-20 14:14:21.022593','$2a$10$s6ISnsFTgUjSBdYxP.iswe5Ow7uGiHRTazmSyOPQy6qK7hAX5.8.S',_binary '');
+INSERT INTO `users` VALUES (1,'admin@gmail.com','admin','admin','2023-04-20 14:11:55.933423','$2a$10$O./azYETBqmt8CLq.j..9ONAJtU1wV549dtRXVhCNO0.6cscEFFFa',_binary ''),(4,'e@gmail.com','aa','aa','2023-04-19 16:46:32.051131','$2a$10$Sm.6IW5hsnr4WSDFlVK78OUuZUhq3nSrucOhYRu3hKDqk7e4beFW.',_binary ''),(6,'acbd@gmail.com','abc','d','2023-04-19 14:40:36.033600','$2a$10$NbfRhIg4BaCj3CJgcpgI7u65kZcWncfDaUYakCJf3JVYH5YTc.U9q',_binary ''),(7,'a@gmail.com','aaa','aaaa','2023-04-04 15:15:15.608487','$2a$10$NXUNYPbJO4t2Qdpq98hH.uPSle621ml6qhSChe646LRb6lrdiGjYy',_binary ''),(10,'abc@gmail.com','ab','c','2023-03-17 14:18:03.865114','$2a$10$/dF8e7ZI8xgNi47lUPdQXu6XSxz9fAttrrzX5ym8GX6Vu6A/qSAVe',_binary ''),(20,'afaw@gmail.com','aaaa','aaaaaaaa','2023-04-04 15:09:56.561714','$2a$10$tJ/6IqzA0i0ytqtz615gpeVdPCZ5mJCU/57I7Sn/2pnLpPqyYgL/e',_binary ''),(23,'afaaaw@gmail.com','aaaa','aaaaaaaa','2023-04-11 11:29:05.874749','$2a$10$Epj3rHEbyJGeuceXIlenCOOAc5wFuRVVj1RuxbAKDmqL9SttFiree',_binary ''),(24,'kiem@gmail.com','Kiem Doan','Pham','2023-04-11 11:29:00.347432','$2a$10$B.3Lm7t9hkhoCLsgj7k.5OUBbAzkilGYyj7hQ2FGZhy0WjFGRfzIy',_binary ''),(31,'phanaa@gmail.com','Phan','A',NULL,'$2a$10$y6r5HPwGDGVjlJD2X5C.JO89AOOtmlosiElX4pJX7wNCQHtpkMqaq',_binary ''),(33,'phanbb@gmail.com','Phan','B','2023-04-19 14:41:17.938649','$2a$10$HsYB3bp3HIO5ioVXepcv2uZFYzXCV1WI4RenUZuFvKtO95Mdej6zq',_binary ''),(34,'nguyenvanb@gmail.com','Nguyễn Văn','B','2023-04-20 14:14:21.022593','$2a$10$s6ISnsFTgUjSBdYxP.iswe5Ow7uGiHRTazmSyOPQy6qK7hAX5.8.S',_binary '');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 

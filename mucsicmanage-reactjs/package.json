@@ -49,6 +49,7 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
+  }
+  ,
   "start": "react-scripts start --host 192.168.107.115"
 }

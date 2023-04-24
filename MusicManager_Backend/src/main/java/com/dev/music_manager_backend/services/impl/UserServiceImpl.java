@@ -113,7 +113,7 @@ public class UserServiceImpl implements IUserService {
             throw new RuntimeException("Email already exists, please enter another email to continue.");
         }
     }
-    
+
 
     @Override
     public UserRequestDto updateUser(Long id, UserRequestDto user, HttpServletRequest request) {
@@ -194,7 +194,6 @@ public class UserServiceImpl implements IUserService {
         log.info("Updating password to user: {}", id);
         User userFromAuth = extractUser(request);
         if (Objects.equals(userFromAuth.getId(), id)) {
-
             return userRepository.findById(id).map(user -> {
                 BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
                 if (encoder.matches(oldPassword, user.getPassword())) {
@@ -364,7 +363,7 @@ public class UserServiceImpl implements IUserService {
                                 .firstName("admin")
                                 .lastName("admin")
                                 .email("admin@gmail.com")
-                                .password(new BCryptPasswordEncoder().encode("admin"))
+                                .password(new BCryptPasswordEncoder().encode("admin_Abcd@1234"))
                                 .status(true)
                                 .roles(Collections.singletonList(roleRepository.findByName("ADMIN").orElse(null)))
                                 .build()
