@@ -178,6 +178,7 @@ function NavbarComponent({ disabled = false }) {
 						disable={disabled}
 					/>
 					<Nav.Link
+						id='logout-btn'
 						onClick={() => handleLogout()}
 						title='Logout'
 						style={{

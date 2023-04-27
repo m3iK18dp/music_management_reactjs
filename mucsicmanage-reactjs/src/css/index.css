@@ -121,7 +121,10 @@ code {
 	width: 5px;
 	height: 5px;
 }
-
+::-webkit-scrollbar:hover {
+	width: 5px !important;
+	height: 5px !important;
+}
 /* Track */
 ::-webkit-scrollbar-track {
 	background: #ffffffad;

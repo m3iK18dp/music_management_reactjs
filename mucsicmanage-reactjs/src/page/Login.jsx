@@ -10,6 +10,7 @@ import CustomButton from '../components/CustomButton';
 import { checkToken } from '../services/CheckToken';
 
 const Login = () => {
+	document.title = 'Login';
 	const navigate = useNavigate();
 	useEffect(() => {
 		checkToken(navigate, 0);
@@ -46,8 +47,7 @@ const Login = () => {
 			authenticationService.login(authLogin, navigate).then((data) => {
 				console.log(data);
 				if (data.status === 'ok') {
-					setStatus('');
-					alert('Login successful!');
+					setStatus('Login successful!');
 					navigate('/songs');
 				} else {
 					setStatus('Login failed. ' + data.message);
@@ -68,9 +68,9 @@ const Login = () => {
 			<div
 				fluid='true'
 				style={{
-					with: '50%',
+					with: '70%',
 					minWidth: 300,
-					maxWidth: 400,
+					maxWidth: 370,
 					margin: '100px auto',
 				}}
 			>
@@ -94,9 +94,9 @@ const Login = () => {
 					<div
 						className='card-body'
 						style={{
-							with: '80%',
-							minWidth: 400,
-							maxWidth: 900,
+							with: '70%',
+							minWidth: 350,
+							maxWidth: 350,
 						}}
 					>
 						<Form className='card-body'>

@@ -214,7 +214,7 @@ function PaginationComponent({ currentPage, totalPages, objectsPerPage }) {
 						overflow: 'hidden',
 					}}
 				>
-					{[1, 2, 5, 10, 20, 50].map((value) => (
+					{[5, 10, 20, 50, 100].map((value) => (
 						<option
 							key={value}
 							value={value}

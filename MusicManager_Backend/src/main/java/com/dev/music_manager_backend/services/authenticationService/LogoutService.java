@@ -30,11 +30,8 @@ public class LogoutService implements LogoutHandler {
         tokenRepository.findByToken(jwtToken)
                 .map(
                         storedToken -> {
-                            if (storedToken.getRevoked() != -1) {
-//                                storedToken.setRevoked(true, -1);
-//                                tokenRepository.save(storedToken);
-                                userService.changeRevokeAllUserTokens(storedToken.getUser().getEmail(), -1);
-                            }
+                            storedToken.setRevoked(-1);
+                            tokenRepository.save(storedToken);
                             return null;
                         }
                 );

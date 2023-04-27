@@ -11,6 +11,7 @@ import { checkToken } from '../services/CheckToken';
 function Register() {
 	const navigate = useNavigate();
 	useEffect(() => {
+		document.title = 'Register';
 		checkToken(navigate, 0);
 		if (localStorage.getItem('token')) navigate('/songs');
 	});
@@ -121,9 +122,9 @@ function Register() {
 			<div
 				fluid='true'
 				style={{
-					with: '50%',
+					with: '70%',
 					minWidth: 300,
-					maxWidth: 500,
+					maxWidth: 420,
 					margin: '100px auto',
 				}}
 			>

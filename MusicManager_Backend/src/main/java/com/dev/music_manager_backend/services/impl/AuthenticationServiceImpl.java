@@ -9,6 +9,7 @@ import com.dev.music_manager_backend.services.IAuthenticationService;
 import com.dev.music_manager_backend.services.IUserService;
 import com.dev.music_manager_backend.services.authenticationService.CustomUserDetailsService;
 import com.dev.music_manager_backend.util.JwtTokenUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,10 +18,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -86,10 +89,11 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
     @Override
     public List<Object> getAccountInformationByToken(String token) {
+        System.out.print(token);
         log.info("Get Account Information");
-        //List: isRevoked, isExpired, username, listRoles
+        //List: revoked, isExpired, username, listRoles
         JwtTokenUtil jwtTokenUtil = new JwtTokenUtil(tokenRepository);
-        return tokenRepository.findByToken(token.substring(0, token.length() - 1))
+        return tokenRepository.findByToken(token)
                 .map(tokenRepo -> Arrays.asList(
                                 tokenRepo.getRevoked(),
                                 jwtTokenUtil.isTokenExpired(tokenRepo.getToken()),
@@ -97,6 +101,24 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
                                 tokenRepository.findRoleByToken(tokenRepo.getToken())
                         )
                 ).orElseThrow(() -> new RuntimeException("Your token is invalid, please login again to continue."));
+    }
 
+    @Override
+    public Boolean logoutAllInOtherDevices(String password, HttpServletRequest request) {
+        User userFromAuth = userService.extractUser(request);
+        System.out.println(userFromAuth.getPassword());
+        System.out.println(password);
+        System.out.println(new BCryptPasswordEncoder().matches(password, userFromAuth.getPassword()));
+        if (!new BCryptPasswordEncoder().matches(password, userFromAuth.getPassword()))
+            throw new RuntimeException("Password Incorrect");
+        List<Token> lstTokens = tokenRepository.findAllTokenByUserEmail(userFromAuth.getEmail());
+        lstTokens.forEach(
+                token -> {
+                    if (!Objects.equals(token.getToken(), request.getHeader("Authorization").substring(7)))
+                        token.setRevoked(-1);
+                }
+        );
+        tokenRepository.saveAll(lstTokens);
+        return Boolean.TRUE;
     }
 }

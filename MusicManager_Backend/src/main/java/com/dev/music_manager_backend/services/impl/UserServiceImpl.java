@@ -33,8 +33,6 @@ public class UserServiceImpl implements IUserService {
     private final UserRepository userRepository;
     @Autowired
     private final RoleRepository roleRepository;
-    //    @Autowired
-//    private final SongRepository songRepository;
     @Autowired
     private final TokenRepository tokenRepository;
     @Autowired

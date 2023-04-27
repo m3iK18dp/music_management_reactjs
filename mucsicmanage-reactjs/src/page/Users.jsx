@@ -53,6 +53,7 @@ function Users() {
 	};
 	const [expandFilter, setExpandFilter] = useState(false);
 	useEffect(() => {
+		document.title = 'Users manager';
 		checkToken(navigate);
 		if (!isAdmin) navigate('/error/403');
 		const searchParams = new URLSearchParams(window.location.search);

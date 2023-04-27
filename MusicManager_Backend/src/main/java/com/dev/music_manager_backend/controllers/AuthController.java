@@ -4,6 +4,7 @@ import com.dev.music_manager_backend.DTO.AuthenticationRequest;
 import com.dev.music_manager_backend.models.ResponseObject;
 import com.dev.music_manager_backend.models.User;
 import com.dev.music_manager_backend.services.IAuthenticationService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -45,7 +46,7 @@ public class AuthController {
             return new ResponseObject<>(
                     "ok",
                     "Get Account Information success.",
-                    authenticationService.getAccountInformationByToken(token)
+                    authenticationService.getAccountInformationByToken(token.replaceAll("\"", ""))
             );
         } catch (Exception exception) {
             return new ResponseObject<>(
@@ -73,5 +74,20 @@ public class AuthController {
         }
     }
 
-
+    @PostMapping("/logout_on_all_other_devices")
+    public ResponseObject<Boolean> logoutAllInOtherDevices(@RequestBody String password, HttpServletRequest request) {
+        try {
+            return new ResponseObject<>(
+                    "ok",
+                    "Logout All In Other Devices Successfully.",
+                    authenticationService.logoutAllInOtherDevices(password.replaceAll("\"", ""), request)
+            );
+        } catch (Exception exception) {
+            return new ResponseObject<>(
+                    "error",
+                    exception.getMessage(),
+                    Boolean.FALSE
+            );
+        }
+    }
 }

@@ -5,13 +5,14 @@ import userService from '../services/UserService';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AiFillSave } from 'react-icons/ai';
 import { MdCancel } from 'react-icons/md';
-import { FiEdit } from 'react-icons/fi';
+import { FiEdit, FiLogOut } from 'react-icons/fi';
 import { FaUserEdit, FaUserLock } from 'react-icons/fa';
 import NavbarComponent from '../components/NavbarComponent';
 import CustomButton from '../components/CustomButton';
 import LastUpdateTimeComponent from '../components/LastUpdateTimeComponent';
 import CustomFormGroup from '../components/CustomFormGroup';
 import { checkToken } from '../services/CheckToken';
+import authenticationService from '../services/AuthenticationService';
 function MyAccount() {
 	const navigate = useNavigate();
 
@@ -39,8 +40,12 @@ function MyAccount() {
 	const username = useParams();
 	const [checkForm, setCheckForm] = useState(true);
 	const [inProcessing, setInProcessing] = useState(false);
-
+	const [passwordLogoutAll, setPasswordLogoutAll] = useState('');
+	const [showLogoutAll, setShowLogoutAll] = useState(false);
+	const [passwordInLogoutIsFull, setPasswordInLogoutIsFull] = useState(false);
 	useEffect(() => {
+		document.title = 'My Account';
+
 		checkToken(navigate);
 		userService.get({ _email: username.username }, navigate).then((data) => {
 			console.log(data.data);
@@ -169,6 +174,29 @@ function MyAccount() {
 			});
 		} else setStatus('Update failed! Check your information.');
 	}
+	useEffect(() => {
+		setPasswordInLogoutIsFull(
+			passwordLogoutAll === ''
+				? 'Please enter Password to Logout On All Other Devices'
+				: '',
+		);
+	}, [passwordLogoutAll]);
+	const showLogoutAllForm = () => {
+		setPasswordInLogoutIsFull('');
+		setShowLogoutAll(!showLogoutAll);
+	};
+	const logoutAll = (password) => {
+		if (passwordLogoutAll !== '')
+			authenticationService
+				.logoutAllInOtherDevices(navigate, password)
+				.then((res) => {
+					if (res.status === 'ok') {
+						setShowLogoutAll(false);
+						alert('Logout on All Other Devices success.');
+					} else setPasswordInLogoutIsFull(res.message);
+				});
+		// else
+	};
 	return (
 		<>
 			<NavbarComponent disabled={inProcessing} />
@@ -182,8 +210,8 @@ function MyAccount() {
 							margin: '30px auto',
 							border: '3px solid purple',
 							width: '60%',
-							minWidth: 400,
-							maxWidth: 500,
+							minWidth: 380,
+							maxWidth: 450,
 							borderRadius: 10,
 						}}
 					>
@@ -318,12 +346,19 @@ function MyAccount() {
 															e.target.style.color = 'rgb(40, 144, 144)';
 															e.target.style.cursor = 'pointer';
 														}}
-														onMouseOut={(e) => (e.target.style.color = 'black')}
+														onMouseOut={(e) =>
+															(e.target.style.color = 'rgba(255,255,255,0.7)')
+														}
 														onClick={() => {
 															if (!inProcessing) changeReadOnly();
 														}}
 													>
-														<Form.Text className='neon'>
+														<Form.Text
+															style={{
+																color: 'rgba(255,255,255,0.7)',
+															}}
+															className='neon'
+														>
 															Change User Information
 														</Form.Text>
 													</div>
@@ -347,16 +382,84 @@ function MyAccount() {
 															e.target.style.color = 'rgb(40, 144, 144)';
 															e.target.style.cursor = 'pointer';
 														}}
-														onMouseOut={(e) => (e.target.style.color = 'black')}
+														onMouseOut={(e) =>
+															(e.target.style.color = 'rgba(255,255,255,0.7)')
+														}
 														onClick={() => {
 															if (!inProcessing) navigate(`/my_songs`);
 														}}
 													>
-														<Form.Text className='neon'>
+														<Form.Text
+															style={{
+																color: 'rgba(255,255,255,0.7)',
+															}}
+															className='neon'
+														>
 															My Song Management
 														</Form.Text>
 													</div>
 												</Form.Group>
+												<Form.Group className='mb-3' controlId='change'>
+													<CustomButton
+														field={user.id}
+														IconButton={FiLogOut}
+														size={30}
+														func={showLogoutAllForm}
+														title={'Enable User'}
+														id='logout-all'
+														color='rgba(255,255,255,0.7)'
+													/>
+													<div
+														style={{
+															display: 'inline-block',
+															marginLeft: 20,
+														}}
+														onMouseOver={(e) => {
+															e.target.style.color = 'rgb(40, 144, 144)';
+															e.target.style.cursor = 'pointer';
+														}}
+														onMouseOut={(e) =>
+															(e.target.style.color = 'rgba(255,255,255,0.7)')
+														}
+														onClick={() => {
+															if (!inProcessing) showLogoutAllForm();
+														}}
+													>
+														<Form.Text
+															style={{
+																color: 'rgba(255,255,255,0.7)',
+															}}
+															className='neon'
+														>
+															Logout on all other devices
+														</Form.Text>
+													</div>
+												</Form.Group>
+												{showLogoutAll && (
+													<Col>
+														<Row>
+															<CustomFormGroup
+																funcEnter={() => logoutAll(passwordLogoutAll)}
+																type='password'
+																controlId='password'
+																func={(p, password) =>
+																	setPasswordLogoutAll(password)
+																}
+																placeholder='Enter password'
+																// label=''
+																value={passwordLogoutAll}
+																warning={passwordInLogoutIsFull}
+																readonly={inProcessing}
+															/>
+														</Row>
+														<Row style={{ marginLeft: 20 }}>
+															<CustomButton
+																text='Verification'
+																func={() => logoutAll(passwordLogoutAll)}
+															></CustomButton>
+														</Row>
+													</Col>
+												)}
 											</>
 										)
 									) : (

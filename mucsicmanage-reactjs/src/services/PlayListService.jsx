@@ -19,8 +19,6 @@ const playlistService = {
 			`playlists/add_song_to_playlist/${playlistId}`,
 			'post',
 			songId,
-			{},
-			{ 'Content-Type': 'application/json' },
 		);
 	},
 	deleteSongInPlaylist: async (playlistId, songId, navigate) => {
@@ -29,8 +27,6 @@ const playlistService = {
 			`playlists/delete_song_in_playlist/${playlistId}`,
 			'delete',
 			songId,
-			{},
-			{ 'Content-Type': 'application/json' },
 		);
 	},
 };

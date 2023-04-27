@@ -72,7 +72,6 @@ public class JwtTokenUtil {
         boolean check = extractExpiration(token).before(new Date());
         if (check)
             tokenRepository.findByToken(token).map(t -> {
-//                System.out.println("================================================================");
                 t.setRevoked(-1);
                 return tokenRepository.save(t);
             });
