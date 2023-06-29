@@ -1,3 +1,10 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
 
 FinalReport-PhamDoanKiem-Batch39.pdf
 
